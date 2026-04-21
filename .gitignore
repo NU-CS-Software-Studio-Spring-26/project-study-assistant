@@ -1,0 +1,6 @@
+/config/master.key
+/config/credentials.yml.enc
+.env
+/log/*
+/tmp/*
+/node_modules
