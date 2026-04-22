@@ -22,19 +22,18 @@ Study Assistant pulls your Canvas assignments and due dates into a single, time-
 - **Custom notifications** — set reminders however far in advance you want
 - **Multi-course support** — everything in one place
  
-### 🚀 Roadmap
+### Roadmap
  
 | Feature | Status |
 |---|---|
-| Canvas OAuth login | MVP |
-| Unified assignment calendar | MVP |
-| Due-time display | MVP |
-| Custom push/email notifications | MVP |
-| Study group formation & discovery | Planned |
-| Shared class calendars | Planned |
-| Group chat & coordination tools | Planned |
-| AI-powered study assistant | Planned |
- 
+| Canvas OAuth login
+| Unified assignment calendar 
+| Due-time display 
+| Custom push/email notifications
+| Study group formation & discovery
+| Shared class calendars 
+| Group chat & coordination tools
+| AI-powered study assistant 
  
 ## Getting Started
  
