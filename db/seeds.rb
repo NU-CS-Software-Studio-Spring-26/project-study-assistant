@@ -9,34 +9,39 @@
 #   end
 
 
-require 'faker'
+# require 'faker'
 
-# Clear existing data
+# # Clear existing data
+# Assignment.destroy_all
+# User.destroy_all
+
+# # Create 10 users
+# 10.times do
+#   User.create!(
+#     name: Faker::Name.name,
+#     email: Faker::Internet.email,
+#     canvas_token: SecureRandom.hex(16),
+#     calendar_preference: ["google", "apple"].sample
+#   )
+# end
+
+# # Create 30 assignments
+# course_names = ["CS 394", "CS 340", "CS 335", "ECON 201", "MATH 230"]
+# assignment_titles = ["Homework", "Project", "Lab", "Quiz", "Essay"]
+
+# 30.times do |i|
+#   Assignment.create!(
+#     title: "#{assignment_titles.sample} #{i + 1}",
+#     course_name: course_names.sample,
+#     due_date: Faker::Time.forward(days: 60),
+#     estimated_hours: rand(1..10),
+#     synced_to_calendar: [true, false].sample
+#   )
+# end
+
+# puts "Seeded #{User.count} users and #{Assignment.count} assignments"
+
 Assignment.destroy_all
 User.destroy_all
 
-# Create 10 users
-10.times do
-  User.create!(
-    name: Faker::Name.name,
-    email: Faker::Internet.email,
-    canvas_token: SecureRandom.hex(16),
-    calendar_preference: ["google", "apple"].sample
-  )
-end
-
-# Create 30 assignments
-course_names = ["CS 394", "CS 340", "CS 335", "ECON 201", "MATH 230"]
-assignment_titles = ["Homework", "Project", "Lab", "Quiz", "Essay"]
-
-30.times do |i|
-  Assignment.create!(
-    title: "#{assignment_titles.sample} #{i + 1}",
-    course_name: course_names.sample,
-    due_date: Faker::Time.forward(days: 60),
-    estimated_hours: rand(1..10),
-    synced_to_calendar: [true, false].sample
-  )
-end
-
-puts "Seeded #{User.count} users and #{Assignment.count} assignments"
+puts "Database cleared"

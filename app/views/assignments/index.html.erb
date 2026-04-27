@@ -1,16 +1,31 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Assignments" %>
 
-<h1>Assignments</h1>
+<p style="color: green"><%= notice %></p>
 
-<div id="assignments">
-  <% @assignments.each do |assignment| %>
-    <%= render assignment %>
-    <p>
-      <%= link_to "Show this assignment", assignment %>
-    </p>
-  <% end %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Assignments</h1>
+  <%= link_to "New Assignment", new_assignment_path, class: "btn btn-dark" %>
 </div>
 
-<%= link_to "New assignment", new_assignment_path %>
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Course</th>
+      <th>Due Date</th>
+      <th>Estimated Hours</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @assignments.each do |assignment| %>
+      <tr>
+        <td><%= assignment.title %></td>
+        <td><%= assignment.course_name %></td>
+        <td><%= assignment.due_date&.strftime("%b %d, %Y %I:%M %p") %></td>
+        <td><%= assignment.estimated_hours %></td>
+        <td><%= link_to "View", assignment, class: "btn btn-sm btn-outline-dark" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

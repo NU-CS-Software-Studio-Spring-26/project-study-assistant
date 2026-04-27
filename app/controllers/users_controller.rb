@@ -1,3 +1,5 @@
+require_dependency 'ical_sync'
+
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
@@ -25,6 +27,7 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
+        IcalSyncService.new(@user).sync
         format.html { redirect_to @user, notice: "User was successfully created." }
         format.json { render :show, status: :created, location: @user }
       else
@@ -38,6 +41,7 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
+        IcalSyncService.new(@user).sync
         format.html { redirect_to @user, notice: "User was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -65,6 +69,6 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :name, :email, :canvas_token, :calendar_preference ])
+      params.expect(user: [ :name, :email, :ical_url ])
     end
 end
