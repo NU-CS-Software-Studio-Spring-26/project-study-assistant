@@ -4,6 +4,7 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @study_group = study_groups(:one)
     @user = users(:one)
+    post login_url, params: { email: @user.email }
   end
 
   test "should get index" do
@@ -19,7 +20,7 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
           study_time: 2.days.from_now,
           location_mode: "Online",
           communication_style: "Quiet",
-          creator_id: @user.id,
+          join_password: "",
           tags: [ "Focused" ]
         },
         extra_tags: "exam prep"
@@ -31,13 +32,37 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should join study group" do
+    delete logout_url
     second_user = users(:two)
+    post login_url, params: { email: second_user.email }
 
     assert_difference("GroupMembership.count") do
-      post join_study_group_url(@study_group), params: { user_id: second_user.id }
+      post join_study_group_url(@study_group), params: { join_password: "lock123" }
+    end
+
+    assert_redirected_to study_group_url(@study_group)
+    assert @study_group.members.reload.include?(second_user)
+  end
+
+  test "should not join password protected group with wrong password" do
+    delete logout_url
+    second_user = users(:two)
+    post login_url, params: { email: second_user.email }
+
+    assert_no_difference("GroupMembership.count") do
+      post join_study_group_url(@study_group), params: { join_password: "wrong" }
     end
 
     assert_redirected_to study_groups_url
-    assert @study_group.members.reload.include?(second_user)
+  end
+
+  test "should block access to group page when not a member" do
+    delete logout_url
+    second_user = users(:two)
+    post login_url, params: { email: second_user.email }
+
+    get study_group_url(@study_group)
+
+    assert_redirected_to study_groups_url
   end
 end

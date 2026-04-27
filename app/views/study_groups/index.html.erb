@@ -26,10 +26,7 @@
             <%= form.text_field :name, class: "form-control", placeholder: "BIO 101 Midterm Sprint" %>
           </div>
 
-          <div class="mb-3">
-            <%= form.label :creator_id, "Created By", class: "form-label" %>
-            <%= form.collection_select :creator_id, @users, :id, :name, { prompt: "Select a user" }, class: "form-select" %>
-          </div>
+          <p class="text-muted">Creating as <strong><%= current_user.name %></strong></p>
 
           <div class="mb-3">
             <%= form.label :study_time, "Study Time", class: "form-label" %>
@@ -59,6 +56,11 @@
           <div class="mb-3">
             <%= label_tag :extra_tags, "Custom Tags (comma separated)", class: "form-label" %>
             <%= text_field_tag :extra_tags, nil, class: "form-control", placeholder: "weekend, library, calculus" %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :join_password, "Join Password (optional)", class: "form-label" %>
+            <%= form.password_field :join_password, class: "form-control", placeholder: "Leave blank for open group" %>
           </div>
 
           <%= form.submit "Create Group", class: "btn btn-primary" %>
@@ -92,6 +94,9 @@
                   <% group.all_tags.each do |tag| %>
                     <span class="badge text-bg-secondary"><%= tag %></span>
                   <% end %>
+                  <% if group.password_protected? %>
+                    <span class="badge text-bg-dark">Password Protected</span>
+                  <% end %>
                 </div>
                 <div>
                   <strong>Members:</strong>
@@ -105,8 +110,8 @@
                 </div>
                 <%= form_with url: join_study_group_path(group), method: :post do |join_form| %>
                   <div class="mb-2">
-                    <%= join_form.label :user_id, "Join as", class: "form-label" %>
-                    <%= join_form.collection_select :user_id, @users, :id, :name, { prompt: "Select user" }, class: "form-select form-select-sm" %>
+                    <%= join_form.label :join_password, "Password", class: "form-label" %>
+                    <%= join_form.password_field :join_password, class: "form-control form-control-sm", placeholder: "Only needed if locked" %>
                   </div>
                   <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
                 <% end %>

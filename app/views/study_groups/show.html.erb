@@ -36,8 +36,8 @@
 
         <%= form_with url: join_study_group_path(@study_group), method: :post do |join_form| %>
           <div class="mb-2">
-            <%= join_form.label :user_id, "Join as", class: "form-label" %>
-            <%= join_form.collection_select :user_id, User.order(:name), :id, :name, { prompt: "Select user" }, class: "form-select form-select-sm" %>
+            <%= join_form.label :join_password, "Password", class: "form-label" %>
+            <%= join_form.password_field :join_password, class: "form-control form-control-sm", placeholder: "Only needed if group is locked" %>
           </div>
           <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
         <% end %>
@@ -59,8 +59,7 @@
         <%= form_with model: [@study_group, @study_group_message], url: study_group_study_group_messages_path(@study_group) do |form| %>
           <div class="row g-2 align-items-end">
             <div class="col-md-4">
-              <%= form.label :user_id, "Post as", class: "form-label" %>
-              <%= form.collection_select :user_id, @users, :id, :name, { prompt: "Select member" }, class: "form-select" %>
+              <div class="small text-muted mb-2">Posting as <strong><%= current_user.name %></strong></div>
             </div>
             <div class="col-md-6">
               <%= form.label :content, "Message", class: "form-label" %>

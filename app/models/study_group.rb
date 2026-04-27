@@ -12,6 +12,11 @@ class StudyGroup < ApplicationRecord
   validates :study_time, presence: true
   validates :location_mode, inclusion: { in: LOCATION_MODES }
   validates :communication_style, inclusion: { in: COMMUNICATION_STYLES }
+  validates :join_password, length: { maximum: 128 }, allow_blank: true
+
+  def password_protected?
+    join_password.present?
+  end
 
   def all_tags
     normalized_tags = tags.to_a.reject(&:blank?)
