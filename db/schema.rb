@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_27_051751) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_27_065000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,6 +36,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_051751) do
     t.index ["user_id"], name: "index_group_memberships_on_user_id"
   end
 
+  create_table "study_group_messages", force: :cascade do |t|
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.bigint "study_group_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["study_group_id", "created_at"], name: "index_study_group_messages_on_study_group_id_and_created_at"
+    t.index ["study_group_id"], name: "index_study_group_messages_on_study_group_id"
+    t.index ["user_id"], name: "index_study_group_messages_on_user_id"
+  end
+
   create_table "study_groups", force: :cascade do |t|
     t.string "communication_style", null: false
     t.datetime "created_at", null: false
@@ -58,5 +69,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_27_051751) do
 
   add_foreign_key "group_memberships", "study_groups"
   add_foreign_key "group_memberships", "users"
+  add_foreign_key "study_group_messages", "study_groups"
+  add_foreign_key "study_group_messages", "users"
   add_foreign_key "study_groups", "users", column: "creator_id"
 end

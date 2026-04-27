@@ -6,6 +6,7 @@ class StudyGroup < ApplicationRecord
 
   has_many :group_memberships, dependent: :destroy
   has_many :members, through: :group_memberships, source: :user
+  has_many :study_group_messages, dependent: :destroy
 
   validates :name, presence: true
   validates :study_time, presence: true

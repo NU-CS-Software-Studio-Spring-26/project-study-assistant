@@ -5,6 +5,13 @@ class StudyGroupsController < ApplicationController
     @study_groups = StudyGroup.includes(:creator, :members).order(study_time: :asc)
   end
 
+  def show
+    @study_group = StudyGroup.includes(:creator, :members, study_group_messages: :user).find(params.expect(:id))
+    @users = @study_group.members.order(:name)
+    @study_group_message = @study_group.study_group_messages.new
+    @messages = @study_group.study_group_messages.includes(:user).order(:created_at)
+  end
+
   def create
     @study_group = StudyGroup.new(study_group_params)
     @study_group.tags = parsed_tags
@@ -25,9 +32,9 @@ class StudyGroupsController < ApplicationController
 
     membership = study_group.group_memberships.find_or_initialize_by(user: user)
     if membership.persisted? || membership.save
-      redirect_to study_groups_path, notice: "#{user.name} joined #{study_group.name}."
+      redirect_back fallback_location: study_group_path(study_group), notice: "#{user.name} joined #{study_group.name}."
     else
-      redirect_to study_groups_path, alert: membership.errors.full_messages.to_sentence
+      redirect_back fallback_location: study_group_path(study_group), alert: membership.errors.full_messages.to_sentence
     end
   end
 
