@@ -94,13 +94,10 @@
                   <% group.all_tags.each do |tag| %>
                     <span class="badge text-bg-secondary"><%= tag %></span>
                   <% end %>
-                  <% if group.password_protected? %>
-                    <span class="badge text-bg-dark">Password Protected</span>
-                  <% end %>
                 </div>
                 <div>
                   <strong>Members:</strong>
-                  <%= pluralize(group.members.size, "member") %>
+                  <%= group.members.size %>
                 </div>
               </div>
 
@@ -108,12 +105,21 @@
                 <div class="mb-2">
                   <%= link_to "Open Group", study_group_path(group), class: "btn btn-sm btn-primary" %>
                 </div>
-                <%= form_with url: join_study_group_path(group), method: :post do |join_form| %>
-                  <div class="mb-2">
-                    <%= join_form.label :join_password, "Password", class: "form-label" %>
-                    <%= join_form.password_field :join_password, class: "form-control form-control-sm", placeholder: "Only needed if locked" %>
+                <%= form_with url: join_study_group_path(group), method: :post,
+                              html: {
+                                class: "js-join-group-form",
+                                data: {
+                                  protected: group.password_protected?,
+                                  group_name: group.name
+                                }
+                              } do |join_form| %>
+                  <%= hidden_field_tag :join_password, "", class: "js-join-password-input" %>
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <span aria-hidden="true" title="<%= group.password_protected? ? "Password Protected" : "Open Group" %>">
+                      <%= group.password_protected? ? "🔒" : "🔓" %>
+                    </span>
+                    <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
                   </div>
-                  <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
                 <% end %>
               </div>
             </div>
@@ -123,3 +129,27 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    document.querySelectorAll(".js-join-group-form").forEach(function (form) {
+      form.addEventListener("submit", function (event) {
+        var isProtected = form.dataset.protected === "true";
+        var passwordInput = form.querySelector(".js-join-password-input");
+
+        if (!isProtected) {
+          passwordInput.value = "";
+          return;
+        }
+
+        var enteredPassword = window.prompt("Enter password to join " + form.dataset.groupName + ":", "");
+        if (enteredPassword === null) {
+          event.preventDefault();
+          return;
+        }
+
+        passwordInput.value = enteredPassword;
+      });
+    });
+  });
+</script>
