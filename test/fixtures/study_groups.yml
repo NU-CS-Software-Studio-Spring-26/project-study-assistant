@@ -3,6 +3,7 @@ one:
   study_time: 2026-04-22 18:00:00
   location_mode: Online
   communication_style: Balanced
+  join_password: lock123
   tags:
     - Exam Prep
     - Focused
@@ -13,6 +14,7 @@ two:
   study_time: 2026-04-23 16:30:00
   location_mode: In Person
   communication_style: Talkative
+  join_password:
   tags:
     - Homework Help
   creator: two

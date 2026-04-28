@@ -1,0 +1,76 @@
+<p style="color: green"><%= notice %></p>
+<p style="color: red"><%= alert %></p>
+
+<% content_for :title, @study_group.name %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0"><%= @study_group.name %></h1>
+  <%= link_to "Back To Groups", study_groups_path, class: "btn btn-outline-secondary btn-sm" %>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Group Details</h2>
+        <p class="mb-1"><strong>Created by:</strong> <%= @study_group.creator.name %></p>
+        <p class="mb-1"><strong>Time:</strong> <%= @study_group.study_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
+        <p class="mb-2"><strong>Members:</strong> <%= pluralize(@study_group.members.size, "member") %></p>
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <% @study_group.all_tags.each do |tag| %>
+            <span class="badge text-bg-secondary"><%= tag %></span>
+          <% end %>
+        </div>
+
+        <h3 class="h6">Members</h3>
+        <% if @study_group.members.any? %>
+          <ul class="mb-3">
+            <% @study_group.members.each do |member| %>
+              <li><%= member.name %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted">No members yet.</p>
+        <% end %>
+
+        <%= form_with url: join_study_group_path(@study_group), method: :post do |join_form| %>
+          <div class="mb-2">
+            <%= join_form.label :join_password, "Password", class: "form-label" %>
+            <%= join_form.password_field :join_password, class: "form-control form-control-sm", placeholder: "Only needed if group is locked" %>
+          </div>
+          <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Group Chat</h2>
+
+        <%= turbo_stream_from [@study_group, :messages] %>
+
+        <div id="study_group_<%= @study_group.id %>_messages" class="mb-3" style="max-height: 380px; overflow-y: auto;">
+          <%= render partial: "study_group_messages/study_group_message", collection: @messages, as: :message %>
+        </div>
+
+        <%= form_with model: [@study_group, @study_group_message], url: study_group_study_group_messages_path(@study_group) do |form| %>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+              <div class="small text-muted mb-2">Posting as <strong><%= current_user.name %></strong></div>
+            </div>
+            <div class="col-md-6">
+              <%= form.label :content, "Message", class: "form-label" %>
+              <%= form.text_field :content, class: "form-control", placeholder: "Share updates, plans, or links" %>
+            </div>
+            <div class="col-md-2 d-grid">
+              <%= form.submit "Send", class: "btn btn-primary" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
