@@ -31,6 +31,45 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
     assert StudyGroup.last.members.include?(@user)
   end
 
+  test "should not create study group in the past" do
+    assert_no_difference("StudyGroup.count") do
+      post study_groups_url, params: {
+        study_group: {
+          name: "Past Session",
+          study_time: 1.hour.ago,
+          location_mode: "Online",
+          communication_style: "Quiet",
+          join_password: "",
+          tags: [ "Focused" ]
+        },
+        extra_tags: ""
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_match "Study time must be in the future", response.body
+  end
+
+  test "should remove expired study groups when loading index" do
+    expired_group = StudyGroup.new(
+      name: "Expired Session",
+      study_time: 1.hour.ago,
+      location_mode: "Online",
+      communication_style: "Quiet",
+      creator: @user,
+      join_password: "",
+      tags: []
+    )
+    expired_group.save(validate: false)
+
+    assert_difference("StudyGroup.count", -1) do
+      get study_groups_url
+    end
+
+    assert_response :success
+    assert_not StudyGroup.exists?(expired_group.id)
+  end
+
   test "should join study group" do
     delete logout_url
     second_user = users(:two)

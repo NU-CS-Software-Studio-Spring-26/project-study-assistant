@@ -1,5 +1,6 @@
 class StudyGroupsController < ApplicationController
   before_action :require_login
+  before_action :remove_expired_study_groups
   before_action :set_study_group, only: [ :show, :join ]
   before_action :ensure_group_member!, only: :show
 
@@ -61,5 +62,9 @@ class StudyGroupsController < ApplicationController
     base_tags = study_group_params[:tags].to_a
     custom_tags = params[:extra_tags].to_s.split(",").map(&:strip)
     (base_tags + custom_tags).reject(&:blank?).uniq
+  end
+
+  def remove_expired_study_groups
+    StudyGroup.where("study_time < ?", Time.current).destroy_all
   end
 end

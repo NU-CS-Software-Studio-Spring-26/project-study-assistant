@@ -10,6 +10,7 @@ class StudyGroup < ApplicationRecord
 
   validates :name, presence: true
   validates :study_time, presence: true
+  validate :study_time_must_be_in_the_future
   validates :location_mode, inclusion: { in: LOCATION_MODES }
   validates :communication_style, inclusion: { in: COMMUNICATION_STYLES }
   validates :join_password, length: { maximum: 128 }, allow_blank: true
@@ -21,5 +22,14 @@ class StudyGroup < ApplicationRecord
   def all_tags
     normalized_tags = tags.to_a.reject(&:blank?)
     [ location_mode, communication_style, *normalized_tags ].uniq
+  end
+
+  private
+
+  def study_time_must_be_in_the_future
+    return if study_time.blank?
+    return if study_time >= Time.current
+
+    errors.add(:study_time, "must be in the future")
   end
 end
