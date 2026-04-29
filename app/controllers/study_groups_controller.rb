@@ -50,7 +50,6 @@ class StudyGroupsController < ApplicationController
 
   def ensure_group_member!
     return if @study_group.members.exists?(id: current_user.id)
-
     redirect_to study_groups_path, alert: "You need to join this group before you can enter it."
   end
 
