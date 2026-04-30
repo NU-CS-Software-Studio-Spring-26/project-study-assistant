@@ -29,8 +29,13 @@
           <p class="text-muted">Creating as <strong><%= current_user.name %></strong></p>
 
           <div class="mb-3">
-            <%= form.label :study_time, "Study Time", class: "form-label" %>
-            <%= form.datetime_local_field :study_time, class: "form-control" %>
+            <%= form.label :start_time, "Start Time", class: "form-label" %>
+            <%= form.datetime_local_field :start_time, class: "form-control" %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :end_time, "End Time", class: "form-label" %>
+            <%= form.datetime_local_field :end_time, class: "form-control" %>
           </div>
 
           <div class="mb-3">
@@ -43,19 +48,9 @@
             <%= form.select :communication_style, StudyGroup::COMMUNICATION_STYLES, { prompt: "Choose one" }, class: "form-select" %>
           </div>
 
-          <fieldset class="mb-3">
-            <legend class="col-form-label pt-0">Extra Tags</legend>
-            <% ["Focused", "Accountability", "Exam Prep", "Homework Help"].each do |tag| %>
-              <div class="form-check">
-                <%= check_box_tag "study_group[tags][]", tag, false, id: "study_group_tags_#{tag.parameterize}", class: "form-check-input" %>
-                <%= label_tag "study_group_tags_#{tag.parameterize}", tag, class: "form-check-label" %>
-              </div>
-            <% end %>
-          </fieldset>
-
           <div class="mb-3">
-            <%= label_tag :extra_tags, "Custom Tags (comma separated)", class: "form-label" %>
-            <%= text_field_tag :extra_tags, nil, class: "form-control", placeholder: "weekend, library, calculus" %>
+            <%= label_tag :custom_tags, "Custom Tags (optional, comma separated)", class: "form-label" %>
+            <%= text_field_tag :custom_tags, nil, class: "form-control", placeholder: "homework, library, calculus" %>
           </div>
 
           <div class="mb-3">
@@ -87,8 +82,12 @@
                 </h3>
                 <div class="text-muted mb-2">Created by <%= group.creator.name %></div>
                 <div class="mb-2">
-                  <strong>Time:</strong>
-                  <%= group.study_time.strftime("%a, %b %-d at %-I:%M %p") %>
+                  <strong>Starts:</strong>
+                  <%= group.start_time.strftime("%a, %b %-d at %-I:%M %p") %>
+                </div>
+                <div class="mb-2">
+                  <strong>Ends:</strong>
+                  <%= group.end_time.strftime("%a, %b %-d at %-I:%M %p") %>
                 </div>
                 <div class="d-flex flex-wrap gap-2 mb-2">
                   <% group.all_tags.each do |tag| %>

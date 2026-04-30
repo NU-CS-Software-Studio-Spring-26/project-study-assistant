@@ -9,8 +9,10 @@ class StudyGroup < ApplicationRecord
   has_many :study_group_messages, dependent: :destroy
 
   validates :name, presence: true
-  validates :study_time, presence: true
-  validate :study_time_must_be_in_the_future
+  validates :start_time, presence: true
+  validates :end_time, presence: true
+  validate :start_time_must_be_in_the_future
+  validate :end_time_must_be_after_start_time
   validates :location_mode, inclusion: { in: LOCATION_MODES }
   validates :communication_style, inclusion: { in: COMMUNICATION_STYLES }
   validates :join_password, length: { maximum: 128 }, allow_blank: true
@@ -26,10 +28,17 @@ class StudyGroup < ApplicationRecord
 
   private
 
-  def study_time_must_be_in_the_future
-    return if study_time.blank?
-    return if study_time >= Time.current
+  def start_time_must_be_in_the_future
+    return if start_time.blank?
+    return if start_time >= Time.current
 
-    errors.add(:study_time, "must be in the future")
+    errors.add(:start_time, "must be in the future")
+  end
+
+  def end_time_must_be_after_start_time
+    return if start_time.blank? || end_time.blank?
+    return if end_time > start_time
+
+    errors.add(:end_time, "must be after the start time")
   end
 end

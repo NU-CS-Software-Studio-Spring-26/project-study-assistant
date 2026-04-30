@@ -14,7 +14,8 @@
       <div class="card-body">
         <h2 class="h5">Group Details</h2>
         <p class="mb-1"><strong>Created by:</strong> <%= @study_group.creator.name %></p>
-        <p class="mb-1"><strong>Time:</strong> <%= @study_group.study_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
+        <p class="mb-1"><strong>Starts:</strong> <%= @study_group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
+        <p class="mb-1"><strong>Ends:</strong> <%= @study_group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
         <p class="mb-2"><strong>Members:</strong> <%= @study_group.members.size %></p>
 
         <div class="d-flex flex-wrap gap-2 mb-3">
