@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user
 
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+
   private
 
   def current_user
@@ -17,5 +19,9 @@ class ApplicationController < ActionController::Base
     return if current_user
 
     redirect_to login_path, alert: "Please sign in to continue."
+  end
+
+  def render_not_found
+    redirect_to root_path, alert: "The page you requested was not found."
   end
 end

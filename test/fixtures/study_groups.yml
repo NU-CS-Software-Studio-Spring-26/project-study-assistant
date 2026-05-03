@@ -1,7 +1,8 @@
 one:
   name: Calculus Review
-  start_time: 2026-05-02 18:00:00
-  end_time: 2026-05-02 20:00:00
+  study_time: <%= 2.days.from_now.to_fs(:db) %>
+  start_time: <%= 2.days.from_now.to_fs(:db) %>
+  end_time: <%= (2.days.from_now + 2.hours).to_fs(:db) %>
   location_mode: Online
   communication_style: Balanced
   join_password: lock123
@@ -12,8 +13,9 @@ one:
 
 two:
   name: Chemistry Homework Lab
-  start_time: 2026-05-03 16:30:00
-  end_time: 2026-05-03 18:00:00
+  study_time: <%= 3.days.from_now.to_fs(:db) %>
+  start_time: <%= 3.days.from_now.to_fs(:db) %>
+  end_time: <%= (3.days.from_now + 2.hours).to_fs(:db) %>
   location_mode: In Person
   communication_style: Talkative
   join_password:

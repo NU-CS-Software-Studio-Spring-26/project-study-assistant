@@ -1,79 +1,62 @@
 # Study Assistant
- 
-> A smarter calendar for students — syncs Canvas assignments with exact due times, custom reminders, and study group coordination.
- 
 
- 
-## The Problem
- 
-Canvas has a built-in schedule view, but it only shows *dates* — not the specific time an assignment is due. Students are left piecing together deadlines from individual course pages, missing late-night cutoffs, and juggling multiple classes with no unified view.
- 
+Study Assistant is a Rails app for students who need one place to manage assignments and coordinate study groups.
 
- 
-## What Study Assistant Does
- 
-Study Assistant pulls your Canvas assignments and due dates into a single, time-accurate calendar you actually want to use.
- 
-### MVP (v1.0)
- 
-- **Authenticated Canvas integration** via the Canvas LMS REST API
-- **Unified calendar view** displaying all assignments across all enrolled courses
-- **Exact due times** — not just dates
-- **Custom notifications** — set reminders however far in advance you want
-- **Multi-course support** — everything in one place
- 
-### Roadmap
- 
-| Feature | Status |
-|---|---|
-| Canvas OAuth login
-| Unified assignment calendar 
-| Due-time display 
-| Custom push/email notifications
-| Study group formation & discovery
-| Shared class calendars 
-| Group chat & coordination tools
-| AI-powered study assistant 
- 
+## MVP
+
+- Password-protected signup, login, and logout.
+- Personal assignment dashboard with create, read, update, delete, search, and sort.
+- Study group discovery with create, read, update, delete, optional join passwords, membership, and group chat.
+- Bootstrap UI with consistent navigation, flash messages, empty states, and validation errors.
+- Realistic demo data through `db:seed`.
+
 ## Getting Started
- 
-### Prerequisites
- 
-- A Canvas account with API access enabled
-- Node.js v18+ (or your runtime of choice)
-- A Canvas API token ([how to generate one](https://community.canvaslms.com/t5/Student-Guide/How-do-I-manage-API-access-tokens-as-a-student/ta-p/273))
- 
 
- 
-### Configuration
- 
-Create a `.env` file in the root directory:
- 
-```env
-CANVAS_API_TOKEN=your_token_here
-CANVAS_BASE_URL=https://your-institution.instructure.com
+Install dependencies and prepare the database:
+
+```bash
+bundle install
+ruby bin/rails db:prepare
+ruby bin/rails db:seed
 ```
 
- 
-## Architecture
+Run the app:
 
-canvassync/
-├── src/
-│   ├── api/          # Canvas API client
-│   ├── calendar/     # Calendar sync logic
-│   ├── notifications/# Notification scheduler
-│   └── ui/           # Frontend components
-├── .env.example
-└── README.md
+```bash
+ruby bin/rails server
+```
 
- 
-## Contributing
+Run checks:
 
-Contributors: 
+```bash
+ruby bin/rails test
+ruby bin/rubocop
+ruby bin/brakeman --no-pager
+ruby bin/bundler-audit
+```
 
-Andrew, Jace, Natalie, Ken
- 
-Heroku Link:
-(heroku open)
+## Configuration
+
+Database credentials should be provided with environment variables instead of committed secrets:
+
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+DATABASE_URL=postgres://user:password@host/database
+```
+
+## Deployment
+
+Heroku deployment:
 
 https://calm-river-85968-8e2e9aa9b5a5.herokuapp.com/
+
+## Team
+
+Andrew, Jace, Natalie, Ken
+
+## Communication
+
+The team will track work on the project board, keep active tasks assigned, and use pull requests for review before merging. Decisions that affect scope, data, or user workflow should be written in the relevant issue or pull request so everyone can follow the reasoning. Team members should communicate blockers early and keep commits focused with descriptive messages.

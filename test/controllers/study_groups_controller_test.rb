@@ -4,11 +4,17 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @study_group = study_groups(:one)
     @user = users(:one)
-    post login_url, params: { email: @user.email }
+    sign_in_as(@user)
   end
 
   test "should get index" do
     get study_groups_url
+    assert_response :success
+  end
+
+  test "should get new" do
+    get new_study_group_url
+
     assert_response :success
   end
 
@@ -21,14 +27,42 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
           end_time: 2.days.from_now + 2.hours,
           location_mode: "Online",
           communication_style: "Quiet",
-          join_password: "",
+          join_password: ""
         },
         custom_tags: "exam prep"
       }
     end
 
-    assert_redirected_to study_groups_url
+    assert_redirected_to study_group_url(StudyGroup.last)
     assert StudyGroup.last.members.include?(@user)
+  end
+
+  test "creator should edit and update study group" do
+    get edit_study_group_url(@study_group)
+    assert_response :success
+
+    patch study_group_url(@study_group), params: {
+      study_group: {
+        name: "Updated Review",
+        start_time: 2.days.from_now,
+        end_time: 2.days.from_now + 2.hours,
+        location_mode: "Online",
+        communication_style: "Balanced",
+        join_password: "lock123"
+      },
+      custom_tags: "calculus"
+    }
+
+    assert_redirected_to study_group_url(@study_group)
+    assert_equal "Updated Review", @study_group.reload.name
+  end
+
+  test "creator should destroy study group" do
+    assert_difference("StudyGroup.count", -1) do
+      delete study_group_url(@study_group)
+    end
+
+    assert_redirected_to study_groups_url
   end
 
   test "should not create study group in the past" do
@@ -40,7 +74,7 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
           end_time: 30.minutes.ago,
           location_mode: "Online",
           communication_style: "Quiet",
-          join_password: "",
+          join_password: ""
         },
         custom_tags: ""
       }
@@ -72,6 +106,7 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   test "should remove expired study groups when loading index" do
     expired_group = StudyGroup.new(
       name: "Expired Session",
+      study_time: 2.hours.ago,
       start_time: 2.hours.ago,
       end_time: 1.hour.ago,
       location_mode: "Online",
@@ -93,7 +128,7 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   test "should join study group" do
     delete logout_url
     second_user = users(:two)
-    post login_url, params: { email: second_user.email }
+    sign_in_as(second_user)
 
     assert_difference("GroupMembership.count") do
       post join_study_group_url(@study_group), params: { join_password: "lock123" }
@@ -106,7 +141,7 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   test "should not join password protected group with wrong password" do
     delete logout_url
     second_user = users(:two)
-    post login_url, params: { email: second_user.email }
+    sign_in_as(second_user)
 
     assert_no_difference("GroupMembership.count") do
       post join_study_group_url(@study_group), params: { join_password: "wrong" }
@@ -118,10 +153,36 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
   test "should block access to group page when not a member" do
     delete logout_url
     second_user = users(:two)
-    post login_url, params: { email: second_user.email }
+    sign_in_as(second_user)
 
     get study_group_url(@study_group)
 
     assert_redirected_to study_groups_url
+  end
+
+  test "non creator cannot update study group" do
+    delete logout_url
+    sign_in_as(users(:two))
+
+    patch study_group_url(@study_group), params: {
+      study_group: {
+        name: "Unauthorized",
+        start_time: 2.days.from_now,
+        end_time: 2.days.from_now + 2.hours,
+        location_mode: "Online",
+        communication_style: "Balanced",
+        join_password: "lock123"
+      },
+      custom_tags: ""
+    }
+
+    assert_redirected_to study_groups_url
+    assert_not_equal "Unauthorized", @study_group.reload.name
+  end
+
+  private
+
+  def sign_in_as(user)
+    post login_url, params: { email: user.email, password: "password" }
   end
 end

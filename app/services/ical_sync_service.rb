@@ -1,5 +1,5 @@
-require 'open-uri'
-require 'icalendar'
+require "open-uri"
+require "icalendar"
 
 class IcalSyncService
   def initialize(user)
@@ -14,7 +14,7 @@ class IcalSyncService
     calendar = calendars.first
 
     calendar.events.each do |event|
-      Assignment.find_or_create_by(canvas_id: event.uid.to_s) do |a|
+      @user.assignments.find_or_create_by(canvas_id: event.uid.to_s) do |a|
         a.title = event.summary.to_s
         a.course_name = extract_course(event.summary.to_s)
         a.due_date = event.dtend&.to_time || event.dtstart&.to_time
@@ -23,6 +23,8 @@ class IcalSyncService
         a.estimated_hours = 1
       end
     end
+  rescue OpenURI::HTTPError, SocketError, Socket::ResolutionError
+    Rails.logger.info("Skipped iCal sync for user #{@user.id}: calendar URL was not reachable")
   end
 
   private

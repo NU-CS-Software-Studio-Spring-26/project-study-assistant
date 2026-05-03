@@ -18,7 +18,7 @@ class StudyGroupMessage < ApplicationRecord
 
   def broadcast_message
     broadcast_append_to(
-      [study_group, :messages],
+      [ study_group, :messages ],
       target: "study_group_#{study_group.id}_messages",
       partial: "study_group_messages/study_group_message",
       locals: { message: self }

@@ -4,8 +4,10 @@ one:
   name: Alex
   email: alex@example.com
   ical_url: https://calendar.example.com/alex.ics
+  password_digest: <%= BCrypt::Password.create("password") %>
 
 two:
   name: Sam
   email: sam@example.com
   ical_url: https://calendar.example.com/sam.ics
+  password_digest: <%= BCrypt::Password.create("password") %>

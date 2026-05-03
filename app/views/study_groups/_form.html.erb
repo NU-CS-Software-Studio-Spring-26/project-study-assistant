@@ -1,0 +1,58 @@
+<%= form_with model: study_group do |form| %>
+  <% if study_group.errors.any? %>
+    <div class="alert alert-danger">
+      <strong>Could not save group:</strong>
+      <ul class="mb-0 mt-2">
+        <% study_group.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :name, "Group Name", class: "form-label" %>
+    <%= form.text_field :name, class: "form-control", placeholder: "BIO 101 Midterm Sprint" %>
+  </div>
+
+  <p class="text-muted">Saving as <strong><%= current_user.name %></strong></p>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <%= form.label :start_time, "Start Time", class: "form-label" %>
+      <%= form.datetime_local_field :start_time, class: "form-control" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :end_time, "End Time", class: "form-label" %>
+      <%= form.datetime_local_field :end_time, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-1">
+    <div class="col-md-6">
+      <%= form.label :location_mode, "Online Or In Person", class: "form-label" %>
+      <%= form.select :location_mode, StudyGroup::LOCATION_MODES, { prompt: "Choose one" }, class: "form-select" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= form.label :communication_style, "Group Style", class: "form-label" %>
+      <%= form.select :communication_style, StudyGroup::COMMUNICATION_STYLES, { prompt: "Choose one" }, class: "form-select" %>
+    </div>
+  </div>
+
+  <div class="mb-3 mt-3">
+    <%= label_tag :custom_tags, "Custom Tags", class: "form-label" %>
+    <%= text_field_tag :custom_tags, study_group.tags.to_a.join(", "), class: "form-control", placeholder: "homework, library, calculus" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :join_password, "Join Password", class: "form-label" %>
+    <%= form.password_field :join_password, value: study_group.join_password, class: "form-control", placeholder: "Leave blank for open group" %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", study_groups_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

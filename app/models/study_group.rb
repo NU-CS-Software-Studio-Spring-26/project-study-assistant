@@ -8,6 +8,8 @@ class StudyGroup < ApplicationRecord
   has_many :members, through: :group_memberships, source: :user
   has_many :study_group_messages, dependent: :destroy
 
+  before_validation :sync_legacy_study_time
+
   validates :name, presence: true
   validates :start_time, presence: true
   validates :end_time, presence: true
@@ -27,6 +29,10 @@ class StudyGroup < ApplicationRecord
   end
 
   private
+
+  def sync_legacy_study_time
+    self.study_time = start_time if has_attribute?(:study_time) && study_time.blank? && start_time.present?
+  end
 
   def start_time_must_be_in_the_future
     return if start_time.blank?

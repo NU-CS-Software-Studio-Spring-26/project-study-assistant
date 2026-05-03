@@ -1,132 +1,59 @@
-<p style="color: green"><%= notice %></p>
-<p style="color: red"><%= alert %></p>
-
 <% content_for :title, "Groups" %>
 
-<div class="row g-4">
-  <div class="col-lg-5">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="h4 mb-3">Create A Study Group</h2>
-
-        <% if @study_group.errors.any? %>
-          <div class="alert alert-danger">
-            <strong>Could not create group:</strong>
-            <ul class="mb-0 mt-2">
-              <% @study_group.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
-
-        <%= form_with model: @study_group, url: study_groups_path do |form| %>
-          <div class="mb-3">
-            <%= form.label :name, "Group Name", class: "form-label" %>
-            <%= form.text_field :name, class: "form-control", placeholder: "BIO 101 Midterm Sprint" %>
-          </div>
-
-          <p class="text-muted">Creating as <strong><%= current_user.name %></strong></p>
-
-          <div class="mb-3">
-            <%= form.label :start_time, "Start Time", class: "form-label" %>
-            <%= form.datetime_local_field :start_time, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :end_time, "End Time", class: "form-label" %>
-            <%= form.datetime_local_field :end_time, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :location_mode, "Online Or In Person", class: "form-label" %>
-            <%= form.select :location_mode, StudyGroup::LOCATION_MODES, { prompt: "Choose one" }, class: "form-select" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :communication_style, "Group Style", class: "form-label" %>
-            <%= form.select :communication_style, StudyGroup::COMMUNICATION_STYLES, { prompt: "Choose one" }, class: "form-select" %>
-          </div>
-
-          <div class="mb-3">
-            <%= label_tag :custom_tags, "Custom Tags (optional, comma separated)", class: "form-label" %>
-            <%= text_field_tag :custom_tags, nil, class: "form-control", placeholder: "homework, library, calculus" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :join_password, "Join Password (optional)", class: "form-label" %>
-            <%= form.password_field :join_password, class: "form-control", placeholder: "Leave blank for open group" %>
-          </div>
-
-          <%= form.submit "Create Group", class: "btn btn-primary" %>
-        <% end %>
-      </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h2 mb-1">Study Groups</h1>
+    <p class="text-muted mb-0">Find a group that matches your study style.</p>
   </div>
+  <%= link_to "New Study Group", new_study_group_path, class: "btn btn-primary" %>
+</div>
 
-  <div class="col-lg-7">
-    <h1 class="h3 mb-3">Study Groups</h1>
+<% if @study_groups.empty? %>
+  <div class="alert alert-info">No groups yet. Create the first one.</div>
+<% end %>
 
-    <% if @study_groups.empty? %>
-      <div class="alert alert-info">No groups yet. Create the first one.</div>
-    <% end %>
-
-    <div class="d-grid gap-3">
-      <% @study_groups.each do |group| %>
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start gap-3">
-              <div>
-                <h3 class="h5 mb-1">
-                  <%= link_to group.name, study_group_path(group), class: "text-decoration-none" %>
-                </h3>
-                <div class="text-muted mb-2">Created by <%= group.creator.name %></div>
-                <div class="mb-2">
-                  <strong>Starts:</strong>
-                  <%= group.start_time.strftime("%a, %b %-d at %-I:%M %p") %>
-                </div>
-                <div class="mb-2">
-                  <strong>Ends:</strong>
-                  <%= group.end_time.strftime("%a, %b %-d at %-I:%M %p") %>
-                </div>
-                <div class="d-flex flex-wrap gap-2 mb-2">
-                  <% group.all_tags.each do |tag| %>
-                    <span class="badge text-bg-secondary"><%= tag %></span>
-                  <% end %>
-                </div>
-                <div>
-                  <strong>Members:</strong>
-                  <%= group.members.size %>
-                </div>
-              </div>
-
-              <div class="text-end" style="min-width: 210px;">
-                <div class="mb-2">
-                  <%= link_to "Open Group", study_group_path(group), class: "btn btn-sm btn-primary" %>
-                </div>
-                <%= form_with url: join_study_group_path(group), method: :post,
-                              html: {
-                                class: "js-join-group-form",
-                                data: {
-                                  protected: group.password_protected?,
-                                  group_name: group.name
-                                }
-                              } do |join_form| %>
-                  <%= hidden_field_tag :join_password, "", class: "js-join-password-input" %>
-                  <div class="d-inline-flex align-items-center gap-2">
-                    <span aria-hidden="true" title="<%= group.password_protected? ? "Password Protected" : "Open Group" %>">
-                      <%= group.password_protected? ? "🔒" : "🔓" %>
-                    </span>
-                    <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
-                  </div>
-                <% end %>
-              </div>
+<div class="d-grid gap-3">
+  <% @study_groups.each do |group| %>
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+          <div>
+            <h2 class="h5 mb-1">
+              <%= link_to group.name, study_group_path(group), class: "text-decoration-none" %>
+            </h2>
+            <div class="text-muted mb-2">Created by <%= group.creator.name %></div>
+            <div class="mb-2"><strong>Starts:</strong> <%= group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></div>
+            <div class="mb-2"><strong>Ends:</strong> <%= group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></div>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+              <% group.all_tags.each do |tag| %>
+                <span class="badge text-bg-secondary"><%= tag %></span>
+              <% end %>
             </div>
+            <div><strong>Members:</strong> <%= group.members.size %></div>
+          </div>
+
+          <div class="text-end" style="min-width: 210px;">
+            <div class="mb-2">
+              <%= link_to "Open Group", study_group_path(group), class: "btn btn-sm btn-primary" %>
+            </div>
+            <%= form_with url: join_study_group_path(group), method: :post,
+                          html: {
+                            class: "js-join-group-form",
+                            data: { protected: group.password_protected?, group_name: group.name }
+                          } do |join_form| %>
+              <%= hidden_field_tag :join_password, "", class: "js-join-password-input" %>
+              <div class="d-inline-flex align-items-center gap-2">
+                <span class="badge <%= group.password_protected? ? "text-bg-warning" : "text-bg-success" %>">
+                  <%= group.password_protected? ? "Password" : "Open" %>
+                </span>
+                <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
+              </div>
+            <% end %>
           </div>
         </div>
-      <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 </div>
 
 <script>

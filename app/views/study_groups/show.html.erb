@@ -1,11 +1,14 @@
-<p style="color: green"><%= notice %></p>
-<p style="color: red"><%= alert %></p>
-
 <% content_for :title, @study_group.name %>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h1 class="h3 mb-0"><%= @study_group.name %></h1>
-  <%= link_to "Back To Groups", study_groups_path, class: "btn btn-outline-secondary btn-sm" %>
+  <div class="d-flex gap-2">
+    <% if @study_group.creator == current_user %>
+      <%= link_to "Edit", edit_study_group_path(@study_group), class: "btn btn-outline-primary btn-sm" %>
+      <%= button_to "Delete", @study_group, method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Delete this study group?" } } %>
+    <% end %>
+    <%= link_to "Back To Groups", study_groups_path, class: "btn btn-outline-secondary btn-sm" %>
+  </div>
 </div>
 
 <div class="row g-4">
@@ -46,7 +49,11 @@
         <%= turbo_stream_from [@study_group, :messages] %>
 
         <div id="study_group_<%= @study_group.id %>_messages" class="mb-3" style="max-height: 380px; overflow-y: auto;">
-          <%= render partial: "study_group_messages/study_group_message", collection: @messages, as: :message %>
+          <% if @messages.any? %>
+            <%= render partial: "study_group_messages/study_group_message", collection: @messages, as: :message %>
+          <% else %>
+            <div class="alert alert-info">No messages yet.</div>
+          <% end %>
         </div>
 
         <%= form_with model: [@study_group, @study_group_message], url: study_group_study_group_messages_path(@study_group) do |form| %>

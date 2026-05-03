@@ -1,27 +1,27 @@
 <div id="<%= dom_id assignment %>">
-  <div>
+  <div class="mb-2">
     <strong>Title:</strong>
     <%= assignment.title %>
   </div>
 
-  <div>
+  <div class="mb-2">
     <strong>Course name:</strong>
     <%= assignment.course_name %>
   </div>
 
-  <div>
+  <div class="mb-2">
     <strong>Due date:</strong>
-    <%= assignment.due_date %>
+    <%= assignment.due_date&.strftime("%b %d, %Y %I:%M %p") %>
   </div>
 
-  <div>
+  <div class="mb-2">
     <strong>Estimated hours:</strong>
-    <%= assignment.estimated_hours %>
+    <%= assignment.estimated_hours.presence || "Not set" %>
   </div>
 
   <div>
     <strong>Synced to calendar:</strong>
-    <%= assignment.synced_to_calendar %>
+    <%= assignment.synced_to_calendar? ? "Yes" : "No" %>
   </div>
 
 </div>

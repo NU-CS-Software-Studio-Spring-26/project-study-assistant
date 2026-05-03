@@ -1,10 +1,7 @@
 class UsersController < ApplicationController
+  before_action :require_login, except: %i[ new create ]
   before_action :set_user, only: %i[ show edit update destroy ]
-
-  # GET /users or /users.json
-  def index
-    @users = User.all
-  end
+  before_action :ensure_current_user, only: %i[ show edit update destroy ]
 
   # GET /users/1 or /users/1.json
   def show
@@ -26,7 +23,8 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.save
         IcalSyncService.new(@user).sync
-        format.html { redirect_to @user, notice: "User was successfully created." }
+        session[:user_id] = @user.id
+        format.html { redirect_to dashboard_path, notice: "Account created. Welcome to Study Assistant." }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -54,7 +52,8 @@ class UsersController < ApplicationController
     @user.destroy!
 
     respond_to do |format|
-      format.html { redirect_to users_path, notice: "User was successfully destroyed.", status: :see_other }
+      reset_session
+      format.html { redirect_to root_path, notice: "Account deleted.", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -67,6 +66,17 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :name, :email, :ical_url ])
+      permitted = params.expect(user: [ :name, :email, :ical_url, :password, :password_confirmation ])
+      if permitted[:password].blank? && permitted[:password_confirmation].blank?
+        permitted.except(:password, :password_confirmation)
+      else
+        permitted
+      end
+    end
+
+    def ensure_current_user
+      return if @user == current_user
+
+      redirect_to dashboard_path, alert: "You can only access your own account."
     end
 end

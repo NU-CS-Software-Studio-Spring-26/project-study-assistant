@@ -1,18 +1,25 @@
 class StudyGroupsController < ApplicationController
   before_action :require_login
   before_action :remove_expired_study_groups
-  before_action :set_study_group, only: [ :show, :join ]
+  before_action :set_study_group, only: %i[ show edit update destroy join ]
   before_action :ensure_group_member!, only: :show
+  before_action :ensure_group_creator!, only: %i[ edit update destroy ]
 
   def index
-    @study_group = StudyGroup.new
     @study_groups = StudyGroup.includes(:creator, :members).order(start_time: :asc)
+  end
+
+  def new
+    @study_group = StudyGroup.new
   end
 
   def show
     @study_group = StudyGroup.includes(:creator, :members, study_group_messages: :user).find(@study_group.id)
     @study_group_message = @study_group.study_group_messages.new(user: current_user)
     @messages = @study_group.study_group_messages.includes(:user).order(:created_at)
+  end
+
+  def edit
   end
 
   def create
@@ -22,11 +29,26 @@ class StudyGroupsController < ApplicationController
 
     if @study_group.save
       @study_group.group_memberships.find_or_create_by!(user: current_user)
-      redirect_to study_groups_path, notice: "Study group was successfully created."
+      redirect_to study_group_path(@study_group), notice: "Study group was successfully created."
     else
-      @study_groups = StudyGroup.includes(:creator, :members).order(start_time: :asc)
-      render :index, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
+  end
+
+  def update
+    @study_group.assign_attributes(study_group_params)
+    @study_group.tags = parsed_tags
+
+    if @study_group.save
+      redirect_to study_group_path(@study_group), notice: "Study group was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @study_group.destroy!
+    redirect_to study_groups_path, notice: "Study group was successfully deleted.", status: :see_other
   end
 
   def join
@@ -52,6 +74,12 @@ class StudyGroupsController < ApplicationController
   def ensure_group_member!
     return if @study_group.members.exists?(id: current_user.id)
     redirect_to study_groups_path, alert: "You need to join this group before you can enter it."
+  end
+
+  def ensure_group_creator!
+    return if @study_group.creator == current_user
+
+    redirect_to study_groups_path, alert: "Only the creator can change that study group."
   end
 
   def study_group_params

@@ -1,7 +1,7 @@
 <%= form_with(model: assignment) do |form| %>
   <% if assignment.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(assignment.errors.count, "error") %> prohibited this assignment from being saved:</h2>
+    <div class="alert alert-danger">
+      <strong><%= pluralize(assignment.errors.count, "error") %> prohibited this assignment from being saved:</strong>
 
       <ul>
         <% assignment.errors.each do |error| %>
@@ -11,32 +11,33 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, style: "display: block" %>
-    <%= form.text_field :title %>
+  <div class="mb-3">
+    <%= form.label :title, class: "form-label" %>
+    <%= form.text_field :title, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :course_name, style: "display: block" %>
-    <%= form.text_field :course_name %>
+  <div class="mb-3">
+    <%= form.label :course_name, class: "form-label" %>
+    <%= form.text_field :course_name, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :due_date, style: "display: block" %>
-    <%= form.datetime_field :due_date %>
+  <div class="mb-3">
+    <%= form.label :due_date, class: "form-label" %>
+    <%= form.datetime_field :due_date, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :estimated_hours, style: "display: block" %>
-    <%= form.number_field :estimated_hours %>
+  <div class="mb-3">
+    <%= form.label :estimated_hours, class: "form-label" %>
+    <%= form.number_field :estimated_hours, class: "form-control", min: 0, step: 1 %>
   </div>
 
-  <div>
-    <%= form.label :synced_to_calendar, style: "display: block" %>
-    <%= form.checkbox :synced_to_calendar %>
+  <div class="form-check mb-3">
+    <%= form.checkbox :synced_to_calendar, class: "form-check-input" %>
+    <%= form.label :synced_to_calendar, class: "form-check-label" %>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", assignments_path, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>

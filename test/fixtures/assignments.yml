@@ -1,15 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
-  course_name: MyString
-  due_date: 2026-04-21 00:53:55
+  title: Reading Response
+  course_name: ENG 101
+  due_date: <%= 2.days.from_now.to_fs(:db) %>
   estimated_hours: 1
   synced_to_calendar: false
+  user: one
 
 two:
-  title: MyString
-  course_name: MyString
-  due_date: 2026-04-21 00:53:55
-  estimated_hours: 1
+  title: Chemistry Lab
+  course_name: CHEM 110
+  due_date: <%= 3.days.from_now.to_fs(:db) %>
+  estimated_hours: 2
   synced_to_calendar: false
+  user: two

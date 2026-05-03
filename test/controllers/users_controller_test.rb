@@ -3,24 +3,24 @@ require "test_helper"
 class UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
-  end
-
-  test "should get index" do
-    get users_url
-    assert_response :success
+    @other_user = users(:two)
+    sign_in_as(@user)
   end
 
   test "should get new" do
+    delete logout_url
+
     get new_user_url
+
     assert_response :success
   end
 
   test "should create user" do
     assert_difference("User.count") do
-      post users_url, params: { user: { calendar_preference: @user.calendar_preference, canvas_token: @user.canvas_token, email: @user.email, name: @user.name } }
+      post users_url, params: { user: { email: "new@example.com", name: "New Student", password: "password", password_confirmation: "password" } }
     end
 
-    assert_redirected_to user_url(User.last)
+    assert_redirected_to dashboard_url
   end
 
   test "should show user" do
@@ -34,7 +34,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update user" do
-    patch user_url(@user), params: { user: { calendar_preference: @user.calendar_preference, canvas_token: @user.canvas_token, email: @user.email, name: @user.name } }
+    patch user_url(@user), params: { user: { email: @user.email, name: "Updated Alex", ical_url: @user.ical_url } }
     assert_redirected_to user_url(@user)
   end
 
@@ -43,6 +43,25 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       delete user_url(@user)
     end
 
-    assert_redirected_to users_url
+    assert_redirected_to root_url
+  end
+
+  test "should not show another user" do
+    get user_url(@other_user)
+
+    assert_redirected_to dashboard_url
+  end
+
+  test "should not update another user" do
+    patch user_url(@other_user), params: { user: { name: "Bad Update" } }
+
+    assert_redirected_to dashboard_url
+    assert_not_equal "Bad Update", @other_user.reload.name
+  end
+
+  private
+
+  def sign_in_as(user)
+    post login_url, params: { email: user.email, password: "password" }
   end
 end
