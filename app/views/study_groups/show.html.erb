@@ -6,6 +6,8 @@
     <% if @study_group.creator == current_user %>
       <%= link_to "Edit", edit_study_group_path(@study_group), class: "btn btn-outline-primary btn-sm" %>
       <%= button_to "Delete", @study_group, method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Delete this study group?" } } %>
+    <% else %>
+      <%= button_to "Leave Group", leave_study_group_path(@study_group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{@study_group.name}?" } } %>
     <% end %>
     <%= link_to "Back To Groups", study_groups_path, class: "btn btn-outline-secondary btn-sm" %>
   </div>

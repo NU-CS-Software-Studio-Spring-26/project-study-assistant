@@ -14,6 +14,7 @@
 
 <div class="d-grid gap-3">
   <% @study_groups.each do |group| %>
+    <% current_user_is_member = group.members.include?(current_user) %>
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start gap-3">
@@ -34,20 +35,32 @@
 
           <div class="text-end" style="min-width: 210px;">
             <div class="mb-2">
-              <%= link_to "Open Group", study_group_path(group), class: "btn btn-sm btn-primary" %>
+              <% if current_user_is_member %>
+                <%= link_to "Enter Group", study_group_path(group), class: "btn btn-sm btn-primary" %>
+              <% else %>
+                <span class="badge text-bg-secondary">Join to enter</span>
+              <% end %>
             </div>
-            <%= form_with url: join_study_group_path(group), method: :post,
-                          html: {
-                            class: "js-join-group-form",
-                            data: { protected: group.password_protected?, group_name: group.name }
-                          } do |join_form| %>
-              <%= hidden_field_tag :join_password, "", class: "js-join-password-input" %>
-              <div class="d-inline-flex align-items-center gap-2">
-                <span class="badge <%= group.password_protected? ? "text-bg-warning" : "text-bg-success" %>">
-                  <%= group.password_protected? ? "Password" : "Open" %>
-                </span>
-                <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
-              </div>
+            <% if current_user_is_member %>
+              <% if group.creator == current_user %>
+                <div class="text-muted small">You created this group.</div>
+              <% else %>
+                <%= button_to "Leave Group", leave_study_group_path(group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{group.name}?" } } %>
+              <% end %>
+            <% else %>
+              <%= form_with url: join_study_group_path(group), method: :post, class: "d-grid gap-2" do |join_form| %>
+                <% if group.password_protected? %>
+                  <%= password_field_tag :join_password, nil, class: "form-control form-control-sm", placeholder: "Password" %>
+                <% else %>
+                  <%= hidden_field_tag :join_password, "" %>
+                <% end %>
+                <div class="d-inline-flex justify-content-end align-items-center gap-2">
+                  <span class="badge <%= group.password_protected? ? "text-bg-warning" : "text-bg-success" %>">
+                    <%= group.password_protected? ? "Password" : "Open" %>
+                  </span>
+                  <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
+                </div>
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -55,27 +68,3 @@
     </div>
   <% end %>
 </div>
-
-<script>
-  document.addEventListener("turbo:load", function () {
-    document.querySelectorAll(".js-join-group-form").forEach(function (form) {
-      form.addEventListener("submit", function (event) {
-        var isProtected = form.dataset.protected === "true";
-        var passwordInput = form.querySelector(".js-join-password-input");
-
-        if (!isProtected) {
-          passwordInput.value = "";
-          return;
-        }
-
-        var enteredPassword = window.prompt("Enter password to join " + form.dataset.groupName + ":", "");
-        if (enteredPassword === null) {
-          event.preventDefault();
-          return;
-        }
-
-        passwordInput.value = enteredPassword;
-      });
-    });
-  });
-</script>

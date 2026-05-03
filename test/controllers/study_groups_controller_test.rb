@@ -138,6 +138,41 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
     assert @study_group.members.reload.include?(second_user)
   end
 
+  test "member should leave study group" do
+    delete logout_url
+    second_user = users(:two)
+    sign_in_as(second_user)
+    post join_study_group_url(@study_group), params: { join_password: "lock123" }
+
+    assert_difference("GroupMembership.count", -1) do
+      delete leave_study_group_url(@study_group)
+    end
+
+    assert_redirected_to study_groups_url
+    assert_not @study_group.members.reload.include?(second_user)
+  end
+
+  test "creator should not leave study group" do
+    assert_no_difference("GroupMembership.count") do
+      delete leave_study_group_url(@study_group)
+    end
+
+    assert_redirected_to study_groups_url
+    assert @study_group.members.reload.include?(@user)
+  end
+
+  test "non member should not leave study group" do
+    delete logout_url
+    second_user = users(:two)
+    sign_in_as(second_user)
+
+    assert_no_difference("GroupMembership.count") do
+      delete leave_study_group_url(@study_group)
+    end
+
+    assert_redirected_to study_groups_url
+  end
+
   test "should not join password protected group with wrong password" do
     delete logout_url
     second_user = users(:two)

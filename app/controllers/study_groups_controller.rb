@@ -1,7 +1,7 @@
 class StudyGroupsController < ApplicationController
   before_action :require_login
   before_action :remove_expired_study_groups
-  before_action :set_study_group, only: %i[ show edit update destroy join ]
+  before_action :set_study_group, only: %i[ show edit update destroy join leave ]
   before_action :ensure_group_member!, only: :show
   before_action :ensure_group_creator!, only: %i[ edit update destroy ]
 
@@ -62,6 +62,21 @@ class StudyGroupsController < ApplicationController
       redirect_to study_group_path(@study_group), notice: "You joined #{@study_group.name}."
     else
       redirect_back fallback_location: study_groups_path, alert: membership.errors.full_messages.to_sentence
+    end
+  end
+
+  def leave
+    if @study_group.creator == current_user
+      redirect_to study_groups_path, alert: "Creators can delete their study group instead of leaving it."
+      return
+    end
+
+    membership = @study_group.group_memberships.find_by(user: current_user)
+    if membership
+      membership.destroy!
+      redirect_to study_groups_path, notice: "You left #{@study_group.name}."
+    else
+      redirect_to study_groups_path, alert: "You are not a member of that study group."
     end
   end
 

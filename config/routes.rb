@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :users, except: [ :index ]
   resources :study_groups do
     post :join, on: :member
+    delete :leave, on: :member
     resources :study_group_messages, only: :create
   end
 
