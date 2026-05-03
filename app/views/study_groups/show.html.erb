@@ -14,8 +14,9 @@
       <div class="card-body">
         <h2 class="h5">Group Details</h2>
         <p class="mb-1"><strong>Created by:</strong> <%= @study_group.creator.name %></p>
-        <p class="mb-1"><strong>Time:</strong> <%= @study_group.study_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
-        <p class="mb-2"><strong>Members:</strong> <%= pluralize(@study_group.members.size, "member") %></p>
+        <p class="mb-1"><strong>Starts:</strong> <%= @study_group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
+        <p class="mb-1"><strong>Ends:</strong> <%= @study_group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
+        <p class="mb-2"><strong>Members:</strong> <%= @study_group.members.size %></p>
 
         <div class="d-flex flex-wrap gap-2 mb-3">
           <% @study_group.all_tags.each do |tag| %>
@@ -32,14 +33,6 @@
           </ul>
         <% else %>
           <p class="text-muted">No members yet.</p>
-        <% end %>
-
-        <%= form_with url: join_study_group_path(@study_group), method: :post do |join_form| %>
-          <div class="mb-2">
-            <%= join_form.label :join_password, "Password", class: "form-label" %>
-            <%= join_form.password_field :join_password, class: "form-control form-control-sm", placeholder: "Only needed if group is locked" %>
-          </div>
-          <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
         <% end %>
       </div>
     </div>

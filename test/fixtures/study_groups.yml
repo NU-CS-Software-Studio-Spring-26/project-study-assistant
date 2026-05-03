@@ -1,6 +1,7 @@
 one:
   name: Calculus Review
-  study_time: 2026-04-22 18:00:00
+  start_time: 2026-05-02 18:00:00
+  end_time: 2026-05-02 20:00:00
   location_mode: Online
   communication_style: Balanced
   join_password: lock123
@@ -11,7 +12,8 @@ one:
 
 two:
   name: Chemistry Homework Lab
-  study_time: 2026-04-23 16:30:00
+  start_time: 2026-05-03 16:30:00
+  end_time: 2026-05-03 18:00:00
   location_mode: In Person
   communication_style: Talkative
   join_password:

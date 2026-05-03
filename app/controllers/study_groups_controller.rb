@@ -1,11 +1,12 @@
 class StudyGroupsController < ApplicationController
   before_action :require_login
+  before_action :remove_expired_study_groups
   before_action :set_study_group, only: [ :show, :join ]
   before_action :ensure_group_member!, only: :show
 
   def index
     @study_group = StudyGroup.new
-    @study_groups = StudyGroup.includes(:creator, :members).order(study_time: :asc)
+    @study_groups = StudyGroup.includes(:creator, :members).order(start_time: :asc)
   end
 
   def show
@@ -23,7 +24,7 @@ class StudyGroupsController < ApplicationController
       @study_group.group_memberships.find_or_create_by!(user: current_user)
       redirect_to study_groups_path, notice: "Study group was successfully created."
     else
-      @study_groups = StudyGroup.includes(:creator, :members).order(study_time: :asc)
+      @study_groups = StudyGroup.includes(:creator, :members).order(start_time: :asc)
       render :index, status: :unprocessable_entity
     end
   end
@@ -54,12 +55,14 @@ class StudyGroupsController < ApplicationController
   end
 
   def study_group_params
-    params.expect(study_group: [ :name, :study_time, :location_mode, :communication_style, :join_password, tags: [] ])
+    params.expect(study_group: [ :name, :start_time, :end_time, :location_mode, :communication_style, :join_password ])
   end
 
   def parsed_tags
-    base_tags = study_group_params[:tags].to_a
-    custom_tags = params[:extra_tags].to_s.split(",").map(&:strip)
-    (base_tags + custom_tags).reject(&:blank?).uniq
+    params[:custom_tags].to_s.split(",").map(&:strip).reject(&:blank?).uniq
+  end
+
+  def remove_expired_study_groups
+    StudyGroup.where("end_time < ?", Time.current).destroy_all
   end
 end
