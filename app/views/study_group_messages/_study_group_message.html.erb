@@ -1,6 +1,6 @@
 <div id="<%= dom_id(message) %>" class="border rounded p-2 mb-2">
   <div class="d-flex justify-content-between align-items-center mb-1">
-    <strong><%= message.user.name %></strong>
+    <strong><%= message.user&.name || "Unknown" %></strong>
     <span class="text-muted small"><%= message.created_at.strftime("%b %-d, %-I:%M %p") %></span>
   </div>
   <div><%= message.content %></div>

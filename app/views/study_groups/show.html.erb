@@ -48,7 +48,7 @@
       <div class="card-body">
         <h2 class="h5 mb-3">Group Chat</h2>
 
-        <%= turbo_stream_from [@study_group, :messages] %>
+        <%= turbo_stream_from "study_group_#{@study_group.id}_messages" %>
 
         <div id="study_group_<%= @study_group.id %>_messages" class="mb-3" style="max-height: 380px; overflow-y: auto;">
           <% if @messages.any? %>
