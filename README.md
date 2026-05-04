@@ -47,16 +47,55 @@ POSTGRES_PORT=5432
 DATABASE_URL=postgres://user:password@host/database
 ```
 
+## Data Model
+
+The application uses PostgreSQL with Active Record migrations. The current schema includes:
+
+- `users`: account profile, email, password digest, and optional Canvas iCal URL.
+- `assignments`: user-owned assignment records with due dates, estimated hours, Canvas IDs, source metadata, and due-time confirmation.
+- `study_groups`: user-created study groups with course, topic, meeting time, capacity, and optional join password.
+- `group_memberships`: membership records connecting users to study groups.
+- `study_group_messages`: chat messages posted inside study groups.
+
+Run migrations locally with:
+
+```bash
+ruby bin/rails db:prepare
+```
+
+Load demo data with:
+
+```bash
+ruby bin/rails db:seed
+```
+
 ## Deployment
 
-Heroku deployment:
+Current Heroku deployment:
 
 https://calm-river-85968-8e2e9aa9b5a5.herokuapp.com/
+
+To deploy this branch to a new Heroku app:
+
+```bash
+heroku login
+heroku apps:create
+heroku addons:create heroku-postgresql:essential-0
+heroku config:set SECRET_KEY_BASE="$(ruby bin/rails secret)"
+heroku config:set SOLID_QUEUE_IN_PUMA=true
+git push heroku milestone1:main
+heroku run rails db:prepare
+heroku run rails db:seed
+heroku open
+```
+
+Notes:
+
+- Creating a Heroku app and Postgres database may require account verification and paid resources.
+- The app reads production database credentials from Heroku's `DATABASE_URL`.
+- Do not commit secrets such as `SECRET_KEY_BASE`; set them as Heroku config vars.
+- After deploying a new app, replace the current Heroku URL above with the new app URL.
 
 ## Team
 
 Andrew, Jace, Natalie, Ken
-
-## Communication
-
-The team will track work on the project board, keep active tasks assigned, and use pull requests for review before merging. Decisions that affect scope, data, or user workflow should be written in the relevant issue or pull request so everyone can follow the reasoning. Team members should communicate blockers early and keep commits focused with descriptive messages.
