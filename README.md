@@ -91,7 +91,6 @@ heroku open
 
 Notes:
 
-- Creating a Heroku app and Postgres database may require account verification and paid resources.
 - The app reads production database credentials from Heroku's `DATABASE_URL`.
 - Do not commit secrets such as `SECRET_KEY_BASE`; set them as Heroku config vars.
 - After deploying a new app, replace the current Heroku URL above with the new app URL.
