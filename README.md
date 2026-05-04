@@ -73,7 +73,7 @@ ruby bin/rails db:seed
 
 Current Heroku deployment:
 
-https://calm-river-85968-8e2e9aa9b5a5.herokuapp.com/
+https://calm-river-85968-8e2e9aa9b5a5.herokuapp.com/dashboard
 
 To deploy this branch to a new Heroku app:
 
