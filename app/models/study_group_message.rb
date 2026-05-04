@@ -17,11 +17,14 @@ class StudyGroupMessage < ApplicationRecord
   end
 
   def broadcast_message
-    broadcast_append_to(
-      "study_group_#{study_group.id}_messages",
-      target: "study_group_#{study_group.id}_messages",
+    html = ApplicationController.render(
       partial: "study_group_messages/study_group_message",
       locals: { message: self }
+    )
+
+    ActionCable.server.broadcast(
+      "study_group_#{study_group.id}_messages",
+      "<turbo-stream action=\"append\" target=\"study_group_#{study_group.id}_messages\"><template>#{html}</template></turbo-stream>"
     )
   end
 end
