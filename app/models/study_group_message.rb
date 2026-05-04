@@ -17,7 +17,7 @@ class StudyGroupMessage < ApplicationRecord
   end
 
   def broadcast_message
-    broadcast_append_to(
+    broadcast_append_later_to(
       "study_group_#{study_group.id}_messages",
       target: "study_group_#{study_group.id}_messages",
       partial: "study_group_messages/study_group_message",
