@@ -9,13 +9,19 @@
 </div>
 
 <%= form_with url: assignments_path, method: :get, class: "row g-2 align-items-end mb-3" do |form| %>
-  <div class="col-md-7">
+  <div class="col-md-5">
     <%= form.label :q, "Search", class: "form-label" %>
     <%= form.search_field :q, value: @query, class: "form-control", placeholder: "Search title or course" %>
   </div>
   <div class="col-md-3">
     <%= form.label :sort, "Sort", class: "form-label" %>
     <%= form.select :sort, [["Due soonest", "due_asc"], ["Due latest", "due_desc"]], { selected: @sort }, class: "form-select" %>
+  </div>
+  <div class="col-md-2">
+    <div class="form-check mb-2">
+      <%= check_box_tag :hide_past_due, "1", @hide_past_due, class: "form-check-input" %>
+      <%= label_tag :hide_past_due, "Hide past-due", class: "form-check-label" %>
+    </div>
   </div>
   <div class="col-md-2 d-grid">
     <%= form.submit "Apply", class: "btn btn-outline-primary" %>
@@ -38,7 +44,12 @@
         <tr>
           <td><%= assignment.title %></td>
           <td><%= assignment.course_name %></td>
-          <td><%= assignment.due_date&.strftime("%b %d, %Y %I:%M %p") %></td>
+          <td>
+            <%= assignment.due_date&.strftime("%b %d, %Y %I:%M %p") %>
+            <% if assignment.imported_from_canvas? && !assignment.due_time_confirmed? %>
+              <span class="badge text-bg-warning ms-1">Time needs confirmation</span>
+            <% end %>
+          </td>
           <td><%= assignment.estimated_hours.presence || "Not set" %></td>
           <td class="text-end"><%= link_to "View", assignment, class: "btn btn-sm btn-outline-dark" %></td>
         </tr>

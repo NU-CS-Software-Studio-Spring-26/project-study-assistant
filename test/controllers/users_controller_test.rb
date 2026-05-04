@@ -38,6 +38,28 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to user_url(@user)
   end
 
+  test "should sync own canvas calendar" do
+    result = IcalSyncService::Result.new(imported: 2, updated: 1, skipped_events: 3, failed: 0)
+    service = SyncServiceStub.new(result)
+
+    original_new = IcalSyncService.method(:new)
+    begin
+      IcalSyncService.define_singleton_method(:new) { |_| service }
+      post sync_ical_user_url(@user)
+    ensure
+      IcalSyncService.define_singleton_method(:new, original_new)
+    end
+
+    assert service.synced?
+    assert_redirected_to assignments_url
+  end
+
+  test "should not sync another user's canvas calendar" do
+    post sync_ical_user_url(@other_user)
+
+    assert_redirected_to dashboard_url
+  end
+
   test "should destroy user" do
     assert_difference("User.count", -1) do
       delete user_url(@user)
@@ -63,5 +85,21 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   def sign_in_as(user)
     post login_url, params: { email: user.email, password: "password" }
+  end
+
+  class SyncServiceStub
+    def initialize(result)
+      @result = result
+      @synced = false
+    end
+
+    def sync
+      @synced = true
+      @result
+    end
+
+    def synced?
+      @synced
+    end
   end
 end

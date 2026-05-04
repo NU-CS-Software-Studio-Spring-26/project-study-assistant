@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :require_login, except: %i[ new create ]
-  before_action :set_user, only: %i[ show edit update destroy ]
-  before_action :ensure_current_user, only: %i[ show edit update destroy ]
+  before_action :set_user, only: %i[ show edit update destroy sync_ical ]
+  before_action :ensure_current_user, only: %i[ show edit update destroy sync_ical ]
 
   # GET /users/1 or /users/1.json
   def show
@@ -22,7 +22,6 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
-        IcalSyncService.new(@user).sync
         session[:user_id] = @user.id
         format.html { redirect_to dashboard_path, notice: "Account created. Welcome to Study Assistant." }
         format.json { render :show, status: :created, location: @user }
@@ -37,7 +36,6 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
-        IcalSyncService.new(@user).sync
         format.html { redirect_to @user, notice: "User was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -55,6 +53,15 @@ class UsersController < ApplicationController
       reset_session
       format.html { redirect_to root_path, notice: "Account deleted.", status: :see_other }
       format.json { head :no_content }
+    end
+  end
+
+  def sync_ical
+    result = IcalSyncService.new(@user).sync
+    if result.success?
+      redirect_to assignments_path, notice: "Imported #{result.imported} assignments. Updated #{result.updated}. Skipped #{result.skipped_events} calendar events."
+    else
+      redirect_to user_path(@user), alert: "Canvas calendar sync could not finish. Check your iCal URL and try again."
     end
   end
 

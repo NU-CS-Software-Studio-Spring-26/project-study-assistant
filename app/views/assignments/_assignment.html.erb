@@ -12,6 +12,9 @@
   <div class="mb-2">
     <strong>Due date:</strong>
     <%= assignment.due_date&.strftime("%b %d, %Y %I:%M %p") %>
+    <% if assignment.imported_from_canvas? && !assignment.due_time_confirmed? %>
+      <span class="badge text-bg-warning ms-1">Time needs confirmation</span>
+    <% end %>
   </div>
 
   <div class="mb-2">
@@ -22,6 +25,11 @@
   <div>
     <strong>Synced to calendar:</strong>
     <%= assignment.synced_to_calendar? ? "Yes" : "No" %>
+  </div>
+
+  <div>
+    <strong>Source:</strong>
+    <%= assignment.imported_from_canvas? ? "Canvas iCal" : "Manual" %>
   </div>
 
 </div>

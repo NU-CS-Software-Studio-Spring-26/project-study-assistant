@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :assignments
-  resources :users, except: [ :index ]
+  resources :users, except: [ :index ] do
+    post :sync_ical, on: :member
+  end
   resources :study_groups do
     post :join, on: :member
     delete :leave, on: :member

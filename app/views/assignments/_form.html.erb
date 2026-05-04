@@ -24,6 +24,9 @@
   <div class="mb-3">
     <%= form.label :due_date, class: "form-label" %>
     <%= form.datetime_field :due_date, class: "form-control" %>
+    <% if assignment.imported_from_canvas? && !assignment.due_time_confirmed? %>
+      <div class="form-text">Canvas iCal does not provide exact due times. Saving this form confirms the time above.</div>
+    <% end %>
   </div>
 
   <div class="mb-3">

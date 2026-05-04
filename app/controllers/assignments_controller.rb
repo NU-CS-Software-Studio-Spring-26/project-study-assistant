@@ -6,11 +6,13 @@ class AssignmentsController < ApplicationController
   def index
     @query = params[:q].to_s.strip
     @sort = params[:sort].presence || "due_asc"
+    @hide_past_due = params[:hide_past_due] == "1"
     @assignments = current_user.assignments
     if @query.present?
       escaped_query = ActiveRecord::Base.sanitize_sql_like(@query)
       @assignments = @assignments.where("title ILIKE :query OR course_name ILIKE :query", query: "%#{escaped_query}%")
     end
+    @assignments = @assignments.where("due_date >= ?", Time.current) if @hide_past_due
     @assignments = @sort == "due_desc" ? @assignments.order(due_date: :desc) : @assignments.order(due_date: :asc)
   end
 
@@ -45,7 +47,11 @@ class AssignmentsController < ApplicationController
   # PATCH/PUT /assignments/1 or /assignments/1.json
   def update
     respond_to do |format|
-      if @assignment.update(assignment_params)
+      @assignment.assign_attributes(assignment_params)
+      @assignment.due_time_confirmed = true
+      @assignment.source = "manual" unless @assignment.imported_from_canvas?
+
+      if @assignment.save
         format.html { redirect_to @assignment, notice: "Assignment was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @assignment }
       else

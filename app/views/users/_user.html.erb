@@ -9,6 +9,9 @@
     <%= user.email %>
   </div>
 
-
+  <div>
+    <strong>Canvas iCal URL:</strong>
+    <%= user.ical_url.present? ? "Saved" : "Not added" %>
+  </div>
 
 </div>
