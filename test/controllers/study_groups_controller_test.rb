@@ -125,6 +125,22 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_not StudyGroup.exists?(expired_group.id)
   end
 
+  test "should filter study groups by title keyword" do
+    get study_groups_url, params: { query: "Calculus" }
+
+    assert_response :success
+    assert_match "Calculus Review", response.body
+    assert_no_match "Chemistry Homework Lab", response.body
+  end
+
+  test "should filter study groups by tag keyword" do
+    get study_groups_url, params: { query: "homework" }
+
+    assert_response :success
+    assert_match "Chemistry Homework Lab", response.body
+    assert_no_match "Calculus Review", response.body
+  end
+
   test "should join study group" do
     delete logout_url
     second_user = users(:two)

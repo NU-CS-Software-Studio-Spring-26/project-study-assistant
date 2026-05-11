@@ -19,6 +19,16 @@ class StudyGroup < ApplicationRecord
   validates :communication_style, inclusion: { in: COMMUNICATION_STYLES }
   validates :join_password, length: { maximum: 128 }, allow_blank: true
 
+  scope :keyword_search, ->(query) do
+    next all if query.blank?
+
+    term = "%#{sanitize_sql_like(query.strip)}%"
+    where(
+      "study_groups.name ILIKE :term OR EXISTS (SELECT 1 FROM unnest(study_groups.tags) AS tag WHERE tag ILIKE :term)",
+      term: term
+    )
+  end
+
   def password_protected?
     join_password.present?
   end

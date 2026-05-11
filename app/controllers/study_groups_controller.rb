@@ -6,7 +6,8 @@ class StudyGroupsController < ApplicationController
   before_action :ensure_group_creator!, only: %i[ edit update destroy ]
 
   def index
-    @study_groups = StudyGroup.includes(:creator, :members).order(start_time: :asc)
+    @query = params[:query].to_s.strip
+    @study_groups = StudyGroup.includes(:creator, :members).keyword_search(@query).order(start_time: :asc)
   end
 
   def new

@@ -8,8 +8,27 @@
   <%= link_to "New Study Group", new_study_group_path, class: "btn btn-primary" %>
 </div>
 
+<%= form_with url: study_groups_path, method: :get, class: "row g-2 align-items-end mb-3" do |form| %>
+  <div class="col-12 col-md-8 col-lg-6">
+    <%= form.label :query, "Search by title or tags", class: "form-label" %>
+    <%= form.search_field :query, value: @query, class: "form-control", placeholder: "e.g. calculus, exam prep" %>
+  </div>
+  <div class="col-12 col-md-auto">
+    <%= form.submit "Search", class: "btn btn-outline-primary" %>
+  </div>
+  <% if @query.present? %>
+    <div class="col-12 col-md-auto">
+      <%= link_to "Clear", study_groups_path, class: "btn btn-link px-0" %>
+    </div>
+  <% end %>
+<% end %>
+
 <% if @study_groups.empty? %>
-  <div class="alert alert-info">No groups yet. Create the first one.</div>
+  <% if @query.present? %>
+    <div class="alert alert-info">No groups matched "<%= @query %>".</div>
+  <% else %>
+    <div class="alert alert-info">No groups yet. Create the first one.</div>
+  <% end %>
 <% end %>
 
 <div class="d-grid gap-3">
