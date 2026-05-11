@@ -1,12 +1,188 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+@import "bootstrap";
 
- @import "bootstrap";
+/* ── Tokens ── */
+:root {
+  --sa-bg:        #f8f7f4;
+  --sa-surface:   #ffffff;
+  --sa-border:    #e8e4de;
+  --sa-text:      #1a1a1a;
+  --sa-muted:     #6b6b6b;
+  --sa-accent:    #2c2c2c;
+  --sa-accent-lt: #f0ede8;
+  --sa-radius:    10px;
+}
+
+/* ── Base ── */
+body {
+  background-color: var(--sa-bg);
+  color: var(--sa-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background-color: var(--sa-surface) !important;
+  border-bottom: 1px solid var(--sa-border);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: var(--sa-text) !important;
+}
+
+.nav-link {
+  color: var(--sa-muted) !important;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.nav-link:hover {
+  color: var(--sa-text) !important;
+}
+
+.btn-outline-light {
+  border-color: var(--sa-border) !important;
+  color: var(--sa-text) !important;
+  font-size: 0.8rem;
+}
+
+.btn-outline-light:hover {
+  background-color: var(--sa-accent-lt) !important;
+  color: var(--sa-text) !important;
+}
+
+.btn-primary {
+  background-color: var(--sa-accent) !important;
+  border-color: var(--sa-accent) !important;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+.btn-primary:hover {
+  background-color: #3d3d3d !important;
+}
+
+/* ── Cards / surfaces ── */
+.card, .table, .alert {
+  border-radius: var(--sa-radius);
+  border-color: var(--sa-border);
+}
+
+.card {
+  background-color: var(--sa-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* ── Tables ── */
+.table {
+  background-color: var(--sa-surface);
+  border-radius: var(--sa-radius);
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: var(--sa-accent-lt);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sa-muted);
+  border-bottom: 1px solid var(--sa-border);
+  padding: 0.75rem 1rem;
+}
+
+.table tbody td {
+  padding: 0.85rem 1rem;
+  border-color: var(--sa-border);
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: #faf9f7;
+}
+
+.table-hover > tbody > tr:hover > td {
+  background-color: var(--sa-accent-lt);
+}
+
+/* ── Buttons ── */
+.btn {
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.btn-outline-dark {
+  border-color: var(--sa-border) !important;
+  color: var(--sa-text) !important;
+  background: transparent;
+}
+
+.btn-outline-dark:hover {
+  background-color: var(--sa-accent-lt) !important;
+  border-color: var(--sa-border) !important;
+  color: var(--sa-text) !important;
+}
+
+/* ── Forms ── */
+.form-control, .form-select {
+  border-color: var(--sa-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: var(--sa-surface);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #aaa;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+}
+
+.form-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sa-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Headings ── */
+h1, .h1, h2, .h2 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Badges ── */
+.badge {
+  font-weight: 500;
+  font-size: 0.72rem;
+  border-radius: 4px;
+  padding: 0.3em 0.55em;
+}
+
+/* ── Footer ── */
+footer {
+  background-color: var(--sa-surface);
+  border-top: 1px solid var(--sa-border) !important;
+  color: var(--sa-muted);
+  font-size: 0.8rem;
+}
+
+/* ── Alerts ── */
+.alert-success {
+  background-color: #f0faf4;
+  border-color: #c3e6cb;
+  color: #2d6a4f;
+}
+
+.alert-danger {
+  background-color: #fff5f5;
+  border-color: #f5c2c7;
+  color: #842029;
+}

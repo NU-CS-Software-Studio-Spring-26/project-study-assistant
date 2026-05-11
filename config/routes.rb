@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  resources :assignments
+  resources :assignments do
+    member do
+      patch :toggle_done
+    end
+  end
   resources :users, except: [ :index ] do
     post :sync_ical, on: :member
   end

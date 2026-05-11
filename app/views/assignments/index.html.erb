@@ -1,61 +1,269 @@
 <% content_for :title, "Assignments" %>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
   <div>
-    <h1 class="h2 mb-1">Assignments</h1>
-    <p class="text-muted mb-0">Track deadlines by course and due time.</p>
+    <h1 style="font-size:1.3rem; font-weight:700; margin:0;">Assignments</h1>
+    <p style="font-size:0.78rem; color:var(--sa-muted); margin:0.15rem 0 0;">Track deadlines by course and due time.</p>
   </div>
-  <%= link_to "New Assignment", new_assignment_path, class: "btn btn-primary" %>
+  <%= link_to "+ New Assignment", new_assignment_path, style: "font-size:0.8rem; font-weight:500; padding:6px 14px; border-radius:7px; background:var(--sa-accent); color:#fff; text-decoration:none; white-space:nowrap;" %>
 </div>
 
-<%= form_with url: assignments_path, method: :get, class: "row g-2 align-items-end mb-3" do |form| %>
-  <div class="col-md-5">
-    <%= form.label :q, "Search", class: "form-label" %>
-    <%= form.search_field :q, value: @query, class: "form-control", placeholder: "Search title or course" %>
+<%# ── Filter bar ── %>
+<div style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:10px; padding:0.6rem 1rem; margin-bottom:1rem; display:flex; flex-wrap:wrap; gap:0.6rem 1.25rem; align-items:center;">
+
+  <%# Search %>
+  <%= form_with url: assignments_path, method: :get, id: "filter-form", style: "display:contents;" do |form| %>
+    <%= form.search_field :q, value: @query, placeholder: "Search…",
+        style: "font-size:0.78rem; padding:4px 9px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text); width:140px;" %>
+    <%= form.select :sort, [["Due soonest","due_asc"],["Due latest","due_desc"]], { selected: @sort },
+        style: "font-size:0.78rem; padding:4px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text);" %>
+    <%= form.select :group_by, [["Group: day","day"],["Group: week","week"],["Group: urgency","urgency"]], { selected: params[:group_by] || "day" },
+        style: "font-size:0.78rem; padding:4px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text);" %>
+  <% end %>
+
+  <div style="width:0.5px; height:28px; background:var(--sa-border);"></div>
+
+  <%# Show filter pills %>
+  <div style="display:flex; align-items:center; gap:5px;">
+    <span style="font-size:0.65rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--sa-muted);">Show</span>
+    <% [["All","all"],["Pending","pending"],["Done","done"]].each do |lbl, val| %>
+      <a href="<%= assignments_path(q: @query, sort: @sort, group_by: params[:group_by], hide_past_due: params[:hide_past_due], show: val) %>"
+         style="font-size:0.72rem; padding:3px 9px; border-radius:20px; border:0.5px solid var(--sa-border); text-decoration:none;
+                <%= (params[:show] || 'all') == val ? 'background:var(--sa-accent); color:#fff; border-color:var(--sa-accent);' : 'color:var(--sa-muted);' %>">
+        <%= lbl %>
+      </a>
+    <% end %>
   </div>
-  <div class="col-md-3">
-    <%= form.label :sort, "Sort", class: "form-label" %>
-    <%= form.select :sort, [["Due soonest", "due_asc"], ["Due latest", "due_desc"]], { selected: @sort }, class: "form-select" %>
+
+  <div style="width:0.5px; height:28px; background:var(--sa-border);"></div>
+
+  <%# Urgency thresholds %>
+  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+    <span style="font-size:0.65rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--sa-muted);">Urgency</span>
+    <span style="display:flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--sa-muted);">
+      <span style="width:8px; height:8px; border-radius:50%; background:#E24B4A; display:inline-block;"></span>
+      Red &lt;
+      <input type="number" id="thresh-red" value="24" min="1"
+             style="width:40px; font-size:0.72rem; padding:2px 5px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
+      <select id="thresh-red-unit" style="font-size:0.72rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
+        <option value="hours">hrs</option><option value="days">days</option>
+      </select>
+    </span>
+    <span style="display:flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--sa-muted);">
+      <span style="width:8px; height:8px; border-radius:50%; background:#EF9F27; display:inline-block;"></span>
+      Amber &lt;
+      <input type="number" id="thresh-amber" value="48" min="1"
+             style="width:40px; font-size:0.72rem; padding:2px 5px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
+      <select id="thresh-amber-unit" style="font-size:0.72rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
+        <option value="hours">hrs</option><option value="days">days</option>
+      </select>
+    </span>
+    <span style="display:flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--sa-muted);">
+      <span style="width:8px; height:8px; border-radius:50%; background:#639922; display:inline-block;"></span>
+      Green &lt;
+      <input type="number" id="thresh-green" value="7" min="1"
+             style="width:40px; font-size:0.72rem; padding:2px 5px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
+      <select id="thresh-green-unit" style="font-size:0.72rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
+        <option value="hours">hrs</option><option value="days" selected>days</option>
+      </select>
+    </span>
   </div>
-  <div class="col-md-2">
-    <div class="form-check mb-2">
-      <%= check_box_tag :hide_past_due, "1", @hide_past_due, class: "form-check-input" %>
-      <%= label_tag :hide_past_due, "Hide past-due", class: "form-check-label" %>
+
+  <div style="width:0.5px; height:28px; background:var(--sa-border);"></div>
+
+  <%# Hide toggles %>
+  <div style="display:flex; align-items:center; gap:8px; font-size:0.72rem; color:var(--sa-muted);">
+    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+      <input type="checkbox" id="hide-past-due" <%= params[:hide_past_due] == "1" ? "checked" : "" %>
+             onchange="document.getElementById('filter-form').submit();"
+             name="hide_past_due" value="1" form="filter-form">
+      Hide past-due
+    </label>
+    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+      <input type="checkbox" id="hide-unconfirmed" onchange="toggleUnconfirmed(this.checked)">
+      Hide unconfirmed
+    </label>
+  </div>
+
+  <button onclick="document.getElementById('filter-form').submit();"
+          style="font-size:0.78rem; padding:4px 12px; border-radius:6px; border:0.5px solid var(--sa-border); background:var(--sa-bg); color:var(--sa-text); cursor:pointer; margin-left:auto;">
+    Apply
+  </button>
+</div>
+
+<%# ── Assignment list ── %>
+<% show_filter = params[:show] || "all" %>
+<% group_by = params[:group_by] || "day" %>
+
+<%
+  filtered = @assignments.to_a
+  filtered = filtered.reject(&:done) if show_filter == "pending"
+  filtered = filtered.select(&:done) if show_filter == "done"
+
+  if group_by == "week"
+    groups = filtered.group_by { |a| a.due_date ? a.due_date.beginning_of_week.strftime("%b %-d") : "No date" }
+    group_labels = groups.keys
+  elsif group_by == "urgency"
+    groups = { "Overdue" => [], "Due today" => [], "Due this week" => [], "Upcoming" => [], "No date" => [] }
+    filtered.each do |a|
+      if a.due_date.nil?
+        groups["No date"] << a
+      elsif a.due_date < Time.current
+        groups["Overdue"] << a
+      elsif a.due_date < Time.current.end_of_day
+        groups["Due today"] << a
+      elsif a.due_date < Time.current + 7.days
+        groups["Due this week"] << a
+      else
+        groups["Upcoming"] << a
+      end
+    end
+    group_labels = groups.keys
+  else
+    groups = filtered.group_by { |a| a.due_date ? a.due_date.strftime("%a, %b %-d") : "No date" }
+    group_labels = groups.keys
+  end
+%>
+
+<% if filtered.empty? %>
+  <div style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:10px; padding:2rem; text-align:center; color:var(--sa-muted); font-size:0.875rem;">
+    No assignments found. <%= link_to "Create your first", new_assignment_path, style: "color:var(--sa-text); font-weight:500;" %>.
+  </div>
+<% else %>
+  <% group_labels.each do |label| %>
+    <% group = groups[label] %>
+    <% next if group.nil? || group.empty? %>
+    <div style="margin-bottom:1.1rem;">
+      <div style="font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--sa-muted); margin-bottom:0.35rem; padding-left:2px;"><%= label %></div>
+      <div style="display:flex; flex-direction:column; gap:3px;">
+        <% group.each do |assignment| %>
+          <%
+            urgency_color = if assignment.due_date.nil?
+              "#B4B2A9"
+            else
+              hours_until = (assignment.due_date - Time.current) / 3600.0
+              if hours_until < 0
+                "#E24B4A"
+              else
+                # JS will update these via data attributes, but server-side defaults:
+                "#639922"
+              end
+            end
+          %>
+          <div class="a-card <%= assignment.done ? 'is-done' : '' %>"
+               data-due="<%= assignment.due_date&.iso8601 %>"
+               style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:8px; padding:0.5rem 0.85rem; display:flex; align-items:center; gap:0.7rem; transition:opacity 0.2s;">
+
+            <div class="urgency-bar" style="width:3px; height:32px; border-radius:2px; background:<%= urgency_color %>; flex-shrink:0;"></div>
+
+            <%# Checkbox %>
+            <%= button_to toggle_done_assignment_path(assignment), method: :patch,
+                form: { style: "display:contents;" },
+                style: "width:16px; height:16px; border-radius:4px; border:1.5px solid var(--sa-border); flex-shrink:0; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; background:#{assignment.done ? '#639922' : 'var(--sa-surface)'}; border-color:#{assignment.done ? '#639922' : 'var(--sa-border)'};" do %>
+              <% if assignment.done %>
+                <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><polyline points="1,3.5 3.5,6 8,1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <% end %>
+            <% end %>
+
+            <% if assignment.due_date %>
+              <div style="text-align:center; min-width:34px; flex-shrink:0;">
+                <div style="font-size:1.05rem; font-weight:600; line-height:1; color:var(--sa-text);"><%= assignment.due_date.strftime("%-d") %></div>
+                <div style="font-size:0.6rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--sa-muted);"><%= assignment.due_date.strftime("%b") %></div>
+              </div>
+              <div style="width:0.5px; height:26px; background:var(--sa-border); flex-shrink:0;"></div>
+            <% end %>
+
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:0.83rem; font-weight:500; color:var(--sa-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+                          <%= assignment.done ? 'text-decoration:line-through; opacity:0.5;' : '' %>">
+                <%= assignment.title.gsub(/\[.*?\]/, '').strip %>
+              </div>
+              <div style="font-size:0.68rem; color:var(--sa-muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <%= assignment.course_name.gsub(/^[0-9A-Z_]+SP_/, '').gsub(/_SEC\d+$/, '').gsub('_', ' ') %>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;" class="<%= assignment.done ? 'unconfirmed-badge' : '' %>">
+              <% if assignment.due_date %>
+                <div style="font-size:0.68rem; color:var(--sa-muted);"><%= assignment.due_date.strftime("%I:%M %p").sub(/^0/, '') %></div>
+              <% end %>
+              <% if assignment.imported_from_canvas? && !assignment.due_time_confirmed? %>
+                <span class="unconfirmed-badge" style="font-size:0.6rem; font-weight:500; padding:2px 6px; border-radius:3px; background:#FAEEDA; color:#854F0B;">Unconfirmed</span>
+              <% end %>
+              <%= link_to "View", assignment, style: "font-size:0.68rem; padding:2px 9px; border-radius:5px; border:0.5px solid var(--sa-border); background:transparent; color:var(--sa-muted); text-decoration:none;" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
-  </div>
-  <div class="col-md-2 d-grid">
-    <%= form.submit "Apply", class: "btn btn-outline-primary" %>
-  </div>
+  <% end %>
 <% end %>
 
-<% if @assignments.any? %>
-  <table class="table table-striped table-hover align-middle">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Course</th>
-        <th>Due Date</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @assignments.each do |assignment| %>
-        <tr>
-          <td><%= assignment.title %></td>
-          <td><%= assignment.course_name %></td>
-          <td>
-            <%= assignment.due_date&.strftime("%b %d, %Y %I:%M %p") %>
-            <% if assignment.imported_from_canvas? && !assignment.due_time_confirmed? %>
-              <span class="badge text-bg-warning ms-1">Time needs confirmation</span>
-            <% end %>
-          </td>
-          <td class="text-end"><%= link_to "View", assignment, class: "btn btn-sm btn-outline-dark" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <div class="alert alert-info">
-    No assignments found. <%= link_to "Create your first assignment", new_assignment_path, class: "alert-link" %>.
-  </div>
-<% end %>
+<script>
+const THRESH_KEY = 'sa_thresholds';
+
+function loadThresholds() {
+  try { return JSON.parse(localStorage.getItem(THRESH_KEY)) || {}; } catch { return {}; }
+}
+function saveThresholds() {
+  const t = {
+    red: +document.getElementById('thresh-red').value,
+    redUnit: document.getElementById('thresh-red-unit').value,
+    amber: +document.getElementById('thresh-amber').value,
+    amberUnit: document.getElementById('thresh-amber-unit').value,
+    green: +document.getElementById('thresh-green').value,
+    greenUnit: document.getElementById('thresh-green-unit').value,
+  };
+  localStorage.setItem(THRESH_KEY, JSON.stringify(t));
+  applyUrgencyColors();
+}
+function toHours(val, unit) { return unit === 'days' ? val * 24 : val; }
+
+function applyUrgencyColors() {
+  const t = loadThresholds();
+  const redH   = toHours(t.red   || 24,  t.redUnit   || 'hours');
+  const amberH = toHours(t.amber || 48,  t.amberUnit || 'hours');
+  const greenH = toHours(t.green || 7,   t.greenUnit || 'days');
+  const now = Date.now();
+
+  document.querySelectorAll('.a-card').forEach(card => {
+    const due = card.dataset.due;
+    const bar = card.querySelector('.urgency-bar');
+    if (!bar) return;
+    if (!due) { bar.style.background = '#B4B2A9'; return; }
+    const hoursUntil = (new Date(due) - now) / 3600000;
+    if (hoursUntil < 0)       bar.style.background = '#E24B4A';
+    else if (hoursUntil < redH)   bar.style.background = '#E24B4A';
+    else if (hoursUntil < amberH) bar.style.background = '#EF9F27';
+    else if (hoursUntil < greenH) bar.style.background = '#639922';
+    else                          bar.style.background = '#B4B2A9';
+  });
+}
+
+function restoreThresholds() {
+  const t = loadThresholds();
+  if (t.red)        document.getElementById('thresh-red').value       = t.red;
+  if (t.redUnit)    document.getElementById('thresh-red-unit').value   = t.redUnit;
+  if (t.amber)      document.getElementById('thresh-amber').value     = t.amber;
+  if (t.amberUnit)  document.getElementById('thresh-amber-unit').value = t.amberUnit;
+  if (t.green)      document.getElementById('thresh-green').value     = t.green;
+  if (t.greenUnit)  document.getElementById('thresh-green-unit').value = t.greenUnit;
+}
+
+function toggleUnconfirmed(hide) {
+  document.querySelectorAll('.unconfirmed-badge').forEach(el => {
+    el.style.display = hide ? 'none' : '';
+  });
+}
+
+['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
+  document.getElementById(id)?.addEventListener('change', saveThresholds);
+});
+
+restoreThresholds();
+applyUrgencyColors();
+
+document.querySelectorAll('.is-done').forEach(card => {
+  card.style.opacity = '0.5';
+});
+</script>

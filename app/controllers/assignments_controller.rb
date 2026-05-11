@@ -71,6 +71,12 @@ class AssignmentsController < ApplicationController
     end
   end
 
+  def toggle_done
+  @assignment = current_user.assignments.find(params[:id])
+  @assignment.update(done: !@assignment.done)
+  head :ok
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_assignment
@@ -79,6 +85,6 @@ class AssignmentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def assignment_params
-      params.expect(assignment: [ :title, :course_name, :due_date, :estimated_hours, :synced_to_calendar ])
+      params.expect(assignment: [ :title, :course_name, :due_date, :estimated_hours, :synced_to_calendar,  :done])
     end
 end
