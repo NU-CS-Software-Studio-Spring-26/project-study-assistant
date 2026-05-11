@@ -10,3 +10,18 @@
  */
 
  @import "bootstrap";
+
+ 
+ .red-theme-tags .form-label {
+    color: red !important;
+  }
+  
+  .red-theme-tags .form-control {
+    border-color: red !important;
+    color: red !important;
+  }
+  
+  /* Optional: Change the placeholder color too */
+  .red-theme-tags .form-control::placeholder {
+    color: rgba(255, 0, 0, 0.5);
+  }

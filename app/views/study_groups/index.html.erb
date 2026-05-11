@@ -25,13 +25,32 @@
             <div class="text-muted mb-2">Created by <%= group.creator.name %></div>
             <div class="mb-2"><strong>Starts:</strong> <%= group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></div>
             <div class="mb-2"><strong>Ends:</strong> <%= group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></div>
+   
+            <%= render "description", group: group %>
+
             <div class="d-flex flex-wrap gap-2 mb-2">
-              <% group.all_tags.each do |tag| %>
-                <span class="badge text-bg-secondary"><%= tag %></span>
-              <% end %>
-            </div>
+      <% # 1. Define your own custom hex colors here %>
+      <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
+      
+      <% group.all_tags.each_with_index do |tag, index| %>
+        <% # 2. Pick a color using the same modulo logic %>
+        <% bg_color = custom_colors[index % custom_colors.length] %>
+        
+        <span class="badge" 
+              style="background-color: <%= bg_color %>; color: #333; border: 1px solid rgba(0,0,0,0.1);">
+          <%= tag %>
+        </span>
+      <% end %>
+    </div>
+
+
+    
+
             <div><strong>Members:</strong> <%= group.members.size %></div>
           </div>
+    
+
+    
 
           <div class="text-end" style="min-width: 210px;">
             <div class="mb-2">

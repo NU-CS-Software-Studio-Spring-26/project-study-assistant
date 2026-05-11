@@ -27,7 +27,8 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
           end_time: 2.days.from_now + 2.hours,
           location_mode: "Online",
           communication_style: "Quiet",
-          join_password: ""
+          join_password: "",
+          description: "Let's work through the problem set together and help each other out!"
         },
         custom_tags: "exam prep"
       }
@@ -48,7 +49,8 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
         end_time: 2.days.from_now + 2.hours,
         location_mode: "Online",
         communication_style: "Balanced",
-        join_password: "lock123"
+        join_password: "lock123",
+        description: "Updated description for the study group."
       },
       custom_tags: "calculus"
     }

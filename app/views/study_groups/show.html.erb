@@ -22,12 +22,30 @@
         <p class="mb-1"><strong>Starts:</strong> <%= @study_group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
         <p class="mb-1"><strong>Ends:</strong> <%= @study_group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
         <p class="mb-2"><strong>Members:</strong> <%= @study_group.members.size %></p>
+        <%= render "description", group: @study_group %>
 
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <% @study_group.all_tags.each do |tag| %>
-            <span class="badge text-bg-secondary"><%= tag %></span>
-          <% end %>
-        </div>
+        <%= link_to "Reserve a room", "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", 
+        class: "btn btn-outline-primary btn-sm", 
+        target: "_blank", 
+        rel: "noopener" %>
+        </p>
+
+
+        <div class="d-flex flex-wrap gap-2 mb-2">
+        <% @study_group.all_tags.each_with_index do |tag, index| %>
+        <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
+        
+        <% bg_color = custom_colors[index % custom_colors.length] %>
+          
+          <span class="badge" 
+                style="background-color: <%= bg_color %>; color: #333; border: 1px solid rgba(0,0,0,0.1);">
+            <%= tag %>
+          </span>
+        <% end %>
+      </div>
+
+
+
 
         <h3 class="h6">Members</h3>
         <% if @study_group.members.any? %>
