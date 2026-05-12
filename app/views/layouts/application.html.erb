@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title><%= content_for(:title) || "Study Assistant" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -22,7 +22,7 @@
   </head>
 
   <body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" aria-label="Main navigation">
       <div class="container">
         <a class="navbar-brand" href="/">Study Assistant</a>
         <div class="navbar-nav me-auto">
@@ -43,7 +43,7 @@
       </div>
     </nav>
 
-    <main class="container my-4 flex-grow-1">
+    <main class="container my-4 flex-grow-1" role="main">
       <% flash.each do |type, message| %>
         <% alert_class = type.to_s == "notice" ? "success" : "danger" %>
         <div class="alert alert-<%= alert_class %> alert-dismissible fade show" role="alert">
@@ -55,7 +55,7 @@
       <%= yield %>
     </main>
 
-    <footer class="border-top py-3 text-center text-muted small">
+    <footer class="border-top py-3 text-center text-dark small" role="contentinfo">
       Study Assistant
     </footer>
   </body>
