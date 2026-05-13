@@ -51,6 +51,14 @@
     <%= form.password_field :join_password, value: study_group.join_password, class: "form-control", placeholder: "Leave blank for open group" %>
   </div>
 
+  <div class="mb-3">
+  <%= form.label :description, "Group Description", class: "form-label" %>
+  <%= form.text_area :description, 
+      class: "form-control", 
+      placeholder: "Write what you want out of a study group...", 
+      rows: 5 %>
+  </div>
+
   <div class="d-flex gap-2">
     <%= form.submit class: "btn btn-primary" %>
     <%= link_to "Cancel", study_groups_path, class: "btn btn-outline-secondary" %>
