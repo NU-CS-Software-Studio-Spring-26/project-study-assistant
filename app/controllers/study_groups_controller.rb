@@ -1,9 +1,9 @@
 class StudyGroupsController < ApplicationController
   before_action :require_login
   before_action :remove_expired_study_groups
-  before_action :set_study_group, only: %i[ show edit update destroy join leave ]
+  before_action :set_study_group, only: %i[ show edit update destroy join leave kick ]
   before_action :ensure_group_member!, only: :show
-  before_action :ensure_group_creator!, only: %i[ edit update destroy ]
+  before_action :ensure_group_creator!, only: %i[ edit update destroy kick ]
 
   def index
     @query = params[:query].to_s.strip
@@ -79,6 +79,23 @@ class StudyGroupsController < ApplicationController
     else
       redirect_to study_groups_path, alert: "You are not a member of that study group."
     end
+  end
+
+  def kick
+    member = @study_group.members.find_by(id: params.expect(:user_id))
+
+    if member.nil?
+      redirect_to study_group_path(@study_group), alert: "That user is not a member of this study group."
+      return
+    end
+
+    if member == @study_group.creator
+      redirect_to study_group_path(@study_group), alert: "The creator cannot be removed from the study group."
+      return
+    end
+
+    @study_group.group_memberships.find_by!(user: member).destroy!
+    redirect_to study_group_path(@study_group), notice: "#{member.name} was removed from #{@study_group.name}."
   end
 
   private

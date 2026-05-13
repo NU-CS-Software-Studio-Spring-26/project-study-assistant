@@ -189,6 +189,29 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to study_groups_url
   end
 
+  test "creator should kick a member from study group" do
+    second_user = users(:two)
+    @study_group.group_memberships.create!(user: second_user)
+
+    assert_difference("GroupMembership.count", -1) do
+      delete kick_study_group_url(@study_group, user_id: second_user.id)
+    end
+
+    assert_redirected_to study_group_url(@study_group)
+    assert_not @study_group.members.reload.include?(second_user)
+  end
+
+  test "non creator cannot kick a member from study group" do
+    delete logout_url
+    sign_in_as(users(:two))
+
+    assert_no_difference("GroupMembership.count") do
+      delete kick_study_group_url(@study_group, user_id: users(:one).id)
+    end
+
+    assert_redirected_to study_groups_url
+  end
+
   test "should not join password protected group with wrong password" do
     delete logout_url
     second_user = users(:two)

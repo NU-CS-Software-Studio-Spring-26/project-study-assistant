@@ -48,9 +48,23 @@
 
         <h3 class="h6">Members</h3>
         <% if @study_group.members.any? %>
-          <ul class="mb-3">
+          <ul class="list-group mb-3">
             <% @study_group.members.each do |member| %>
-              <li><%= member.name %></li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <span><%= member.name %></span>
+                  <% if member == @study_group.creator %>
+                    <span class="badge text-bg-secondary ms-2">Creator</span>
+                  <% end %>
+                </div>
+                <% if @study_group.creator == current_user && member != @study_group.creator %>
+                  <%= button_to "Kick",
+                    kick_study_group_path(@study_group, user_id: member.id),
+                    method: :delete,
+                    class: "btn btn-outline-danger btn-sm",
+                    form: { class: "d-inline", data: { turbo_confirm: "Kick #{member.name} from this group?" } } %>
+                <% end %>
+              </li>
             <% end %>
           </ul>
         <% else %>
