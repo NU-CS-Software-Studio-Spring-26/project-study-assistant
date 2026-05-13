@@ -99,7 +99,7 @@ class StudyGroupsController < ApplicationController
   end
 
   def study_group_params
-    params.expect(study_group: [ :name, :start_time, :end_time, :location_mode, :communication_style, :join_password ])
+    params.expect(study_group: [ :name, :start_time, :end_time, :location_mode, :communication_style, :join_password, :description ])
   end
 
   def parsed_tags
