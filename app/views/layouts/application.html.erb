@@ -27,16 +27,16 @@
         <a class="navbar-brand" href="/">Study Assistant</a>
         <div class="navbar-nav me-auto">
           <% if current_user %>
-            <%= link_to "Assignments", assignments_path, class: "nav-link text-white" %>
-            <%= link_to "Study Groups", study_groups_path, class: "nav-link text-white" %>
+            <%= link_to "Assignments", assignments_path, class: "nav-link" %>
+            <%= link_to "Study Groups", study_groups_path, class: "nav-link" %>
           <% end %>
         </div>
         <div class="navbar-nav">
           <% if current_user %>
-            <%= link_to "Account", user_path(current_user), class: "nav-link text-white" %>
+            <%= link_to "Account", user_path(current_user), class: "nav-link" %>
             <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-outline-light btn-sm ms-lg-2" %>
           <% else %>
-            <%= link_to "Login", login_path, class: "nav-link text-white" %>
+            <%= link_to "Login", login_path, class: "nav-link" %>
             <%= link_to "Sign Up", new_user_path, class: "btn btn-primary btn-sm ms-lg-2" %>
           <% end %>
         </div>

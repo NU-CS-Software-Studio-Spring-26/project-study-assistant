@@ -2,13 +2,15 @@
 
 /* ── Tokens ── */
 :root {
-  --sa-bg:        #f8f7f4;
+  --sa-bg:        #f4f1ea;
   --sa-surface:   #ffffff;
-  --sa-border:    #e8e4de;
-  --sa-text:      #1a1a1a;
-  --sa-muted:     #6b6b6b;
-  --sa-accent:    #2c2c2c;
-  --sa-accent-lt: #f0ede8;
+  --sa-border:    #d7dce3;
+  --sa-text:      #18212f;
+  --sa-muted:     #4b5563;
+  --sa-accent:    #0f2747;
+  --sa-accent-lt: #e7eef7;
+  --sa-success:   #2f6b3f;
+  --sa-danger:    #9a2f2f;
   --sa-radius:    10px;
 }
 
@@ -65,7 +67,7 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: #3d3d3d !important;
+  background-color: #14335c !important;
 }
 
 /* ── Cards / surfaces ── */
@@ -140,7 +142,7 @@ body {
 }
 
 .form-control:focus, .form-select:focus {
-  border-color: #aaa;
+  border-color: var(--sa-accent);
   box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
 }
 
@@ -176,13 +178,39 @@ footer {
 
 /* ── Alerts ── */
 .alert-success {
-  background-color: #f0faf4;
-  border-color: #c3e6cb;
-  color: #2d6a4f;
+  background-color: #edf7f0;
+  border-color: #c9e2d0;
+  color: var(--sa-success);
 }
 
 .alert-danger {
-  background-color: #fff5f5;
-  border-color: #f5c2c7;
-  color: #842029;
+  background-color: #fcf0f0;
+  border-color: #efc6c6;
+  color: var(--sa-danger);
+}
+
+/* ── Sign-in page ── */
+.auth-page {
+  background:
+    radial-gradient(circle at top, rgba(15, 39, 71, 0.08), transparent 36%),
+    linear-gradient(180deg, #f7f4ee 0%, var(--sa-bg) 100%);
+}
+
+.auth-card {
+  border: 1px solid var(--sa-border);
+}
+
+.auth-title {
+  color: var(--sa-text);
+}
+
+.auth-copy,
+.auth-copy a,
+.auth-page .form-label {
+  color: var(--sa-muted);
+}
+
+.auth-copy a {
+  font-weight: 600;
+  text-decoration-color: currentColor;
 }
