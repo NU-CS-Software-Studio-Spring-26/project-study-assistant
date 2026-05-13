@@ -12,9 +12,15 @@ class StudyGroupMessagesController < ApplicationController
     message.user = current_user
 
     if message.save
-      redirect_to study_group_path(study_group), notice: "Message sent."
+      respond_to do |format|
+        format.turbo_stream { head :ok }
+        format.html { redirect_to study_group_path(study_group) }
+      end
     else
-      redirect_to study_group_path(study_group), alert: message.errors.full_messages.to_sentence
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("study_group_#{study_group.id}_messages", partial: "study_group_messages/error", locals: { errors: message.errors.full_messages }) }
+        format.html { redirect_to study_group_path(study_group), alert: message.errors.full_messages.to_sentence }
+      end
     end
   end
 

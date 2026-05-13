@@ -86,6 +86,7 @@
           class="mb-3"
           style="max-height: 380px; overflow-y: auto;"
           data-controller="scroll-to-bottom"
+          data-current-user-id="<%= current_user.id %>"
         >
           <% if @messages.any? %>
             <%= render partial: "study_group_messages/study_group_message", collection: @messages, as: :message %>
