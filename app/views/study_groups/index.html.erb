@@ -10,8 +10,8 @@
 
 <%= form_with url: study_groups_path, method: :get, class: "row g-2 align-items-end mb-3" do |form| %>
   <div class="col-12 col-md-8 col-lg-6">
-    <%= form.label :query, "Search by title or tags", class: "form-label" %>
-    <%= form.search_field :query, value: @query, class: "form-control", placeholder: "e.g. calculus, exam prep" %>
+    <%= form.label :query, "Search by title, tags, or study style", class: "form-label" %>
+    <%= form.search_field :query, value: @query, class: "form-control", placeholder: "e.g. calculus, online, quiet" %>
   </div>
   <div class="col-12 col-md-auto">
     <%= form.submit "Search", class: "btn btn-outline-primary" %>

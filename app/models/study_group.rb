@@ -24,7 +24,7 @@ class StudyGroup < ApplicationRecord
 
     term = "%#{sanitize_sql_like(query.strip)}%"
     where(
-      "study_groups.name ILIKE :term OR EXISTS (SELECT 1 FROM unnest(study_groups.tags) AS tag WHERE tag ILIKE :term)",
+      "study_groups.name ILIKE :term OR study_groups.location_mode ILIKE :term OR study_groups.communication_style ILIKE :term OR EXISTS (SELECT 1 FROM unnest(study_groups.tags) AS tag WHERE tag ILIKE :term)",
       term: term
     )
   end
