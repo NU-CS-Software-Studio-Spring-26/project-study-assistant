@@ -43,6 +43,8 @@
       </div>
     </nav>
 
+    <h1 class="visually-hidden"><%= content_for(:page_h1) || content_for(:title) || "Study Assistant" %></h1>
+
     <main class="container my-4 flex-grow-1" role="main">
       <% flash.each do |type, message| %>
         <% alert_class = type.to_s == "notice" ? "success" : "danger" %>
