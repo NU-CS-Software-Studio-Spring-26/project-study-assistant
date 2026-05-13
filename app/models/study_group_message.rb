@@ -2,7 +2,7 @@ class StudyGroupMessage < ApplicationRecord
   belongs_to :study_group
   belongs_to :user
 
-  validates :content, presence: true, length: { maximum: 1_000 }
+  validates :content, presence: true, length: { maximum: 256 }
   validate :user_must_be_group_member
 
   after_create_commit :broadcast_message

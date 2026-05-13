@@ -82,7 +82,17 @@
             </div>
             <div class="col-md-6">
               <%= form.label :content, "Message", class: "form-label" %>
-              <%= form.text_field :content, class: "form-control", placeholder: "Share updates, plans, or links" %>
+              <div class="position-relative" data-controller="character-counter" data-character-counter-max-length-value="256">
+                <%= form.text_field :content,
+                  class: "form-control pe-5",
+                  placeholder: "Share updates, plans, or links",
+                  maxlength: 256,
+                  data: {
+                    character_counter_target: "input",
+                    action: "input->character-counter#update"
+                  } %>
+                <span class="position-absolute bottom-0 end-0 small text-muted pe-2 pb-1" data-character-counter-target="counter"></span>
+              </div>
             </div>
             <div class="col-md-2 d-grid">
               <%= form.submit "Send", class: "btn btn-primary" %>
