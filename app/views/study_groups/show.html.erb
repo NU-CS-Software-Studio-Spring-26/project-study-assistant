@@ -67,7 +67,12 @@
 
         <%= turbo_stream_from "study_group_#{@study_group.id}_messages" %>
 
-        <div id="study_group_<%= @study_group.id %>_messages" class="mb-3" style="max-height: 380px; overflow-y: auto;">
+        <div
+          id="study_group_<%= @study_group.id %>_messages"
+          class="mb-3"
+          style="max-height: 380px; overflow-y: auto;"
+          data-controller="scroll-to-bottom"
+        >
           <% if @messages.any? %>
             <%= render partial: "study_group_messages/study_group_message", collection: @messages, as: :message %>
           <% else %>
