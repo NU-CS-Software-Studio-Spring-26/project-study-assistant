@@ -2,7 +2,6 @@
   <% if user.errors.any? %>
     <div class="alert alert-danger">
       <strong><%= pluralize(user.errors.count, "error") %> prohibited this account from being saved:</strong>
-
       <ul>
         <% user.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -22,7 +21,18 @@
   </div>
 
   <div class="mb-3">
-    <%= form.label :ical_url, "Canvas iCal URL", class: "form-label" %>
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <%= form.label :ical_url, "Canvas iCal URL", class: "form-label mb-0" %>
+      <span tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="right"
+        data-bs-title="How to find your Canvas iCal URL"
+        data-bs-content="1. Go to canvas.northwestern.edu and click Calendar. 2. Scroll to the bottom right and click 'Calendar Feed'. 3. Copy the URL and paste it here."
+        style="cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle text-primary" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg>
+      </span>
+    </div>
     <%= form.text_field :ical_url, class: "form-control", placeholder: "Paste your Canvas iCal URL here" %>
   </div>
 
@@ -41,3 +51,12 @@
     <%= link_to "Cancel", current_user ? user_path(current_user) : login_path, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.forEach(function(el) {
+      new bootstrap.Popover(el);
+    });
+  });
+</script>
