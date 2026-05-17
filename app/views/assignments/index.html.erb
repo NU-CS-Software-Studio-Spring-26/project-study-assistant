@@ -15,7 +15,7 @@
     w.style.opacity = '0';
     setTimeout(() => w.style.display = 'none', 1000);
   }
-  setTimeout(dismissWarning, 5000);
+  setTimeout(dismissWarning, 8000);
 </script>
 
 <div style="display:flex; gap:1.25rem; align-items:flex-start;">
@@ -75,7 +75,11 @@
     <%# Urgency thresholds %>
     <div style="margin-bottom:1rem;">
       <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.4rem;">Urgency Thresholds</label>
-      <% [["#E24B4A","Red","thresh-red","thresh-red-unit","24","hours"],["#EF9F27","Amber","thresh-amber","thresh-amber-unit","48","hours"],["#639922","Green","thresh-green","thresh-green-unit","7","days"]].each do |color, label, id, uid, default_val, default_unit| %>
+      <% [
+        ["#E24B4A","Red","thresh-red","thresh-red-unit", params[:thresh_red] || "24", params[:thresh_red_unit] || "hours"],
+        ["#EF9F27","Amber","thresh-amber","thresh-amber-unit", params[:thresh_amber] || "48", params[:thresh_amber_unit] || "hours"],
+        ["#639922","Green","thresh-green","thresh-green-unit", params[:thresh_green] || "7", params[:thresh_green_unit] || "days"]
+      ].each do |color, label, id, uid, default_val, default_unit| %>
         <div style="display:flex; align-items:center; gap:4px; margin-bottom:5px;">
           <span style="width:8px; height:8px; border-radius:50%; background:<%= color %>; flex-shrink:0;"></span>
           <span style="font-size:0.7rem; color:var(--sa-muted); width:36px;"><%= label %> &lt;</span>
@@ -88,6 +92,14 @@
         </div>
       <% end %>
     </div>
+
+    <%# Hidden inputs to persist threshold values in URL %>
+    <input type="hidden" id="thresh-red-hidden" name="thresh_red" value="<%= params[:thresh_red] || 24 %>">
+    <input type="hidden" id="thresh-red-unit-hidden" name="thresh_red_unit" value="<%= params[:thresh_red_unit] || 'hours' %>">
+    <input type="hidden" id="thresh-amber-hidden" name="thresh_amber" value="<%= params[:thresh_amber] || 48 %>">
+    <input type="hidden" id="thresh-amber-unit-hidden" name="thresh_amber_unit" value="<%= params[:thresh_amber_unit] || 'hours' %>">
+    <input type="hidden" id="thresh-green-hidden" name="thresh_green" value="<%= params[:thresh_green] || 7 %>">
+    <input type="hidden" id="thresh-green-unit-hidden" name="thresh_green_unit" value="<%= params[:thresh_green_unit] || 'days' %>">
 
     <%# Toggles %>
     <div style="margin-bottom:1rem; display:flex; flex-direction:column; gap:5px;">
@@ -253,6 +265,12 @@ function saveThresholds() {
     green: +document.getElementById('thresh-green').value, greenUnit: document.getElementById('thresh-green-unit').value,
   };
   localStorage.setItem(THRESH_KEY, JSON.stringify(t));
+  document.getElementById('thresh-red-hidden').value = t.red;
+  document.getElementById('thresh-red-unit-hidden').value = t.redUnit;
+  document.getElementById('thresh-amber-hidden').value = t.amber;
+  document.getElementById('thresh-amber-unit-hidden').value = t.amberUnit;
+  document.getElementById('thresh-green-hidden').value = t.green;
+  document.getElementById('thresh-green-unit-hidden').value = t.greenUnit;
   applyUrgencyColors();
 }
 function toHours(val, unit) { return unit === 'days' ? val * 24 : val; }
@@ -277,12 +295,12 @@ function applyUrgencyColors() {
 }
 function restoreThresholds() {
   const t = loadThresholds();
-  if (t.red) document.getElementById('thresh-red').value = t.red;
-  if (t.redUnit) document.getElementById('thresh-red-unit').value = t.redUnit;
-  if (t.amber) document.getElementById('thresh-amber').value = t.amber;
-  if (t.amberUnit) document.getElementById('thresh-amber-unit').value = t.amberUnit;
-  if (t.green) document.getElementById('thresh-green').value = t.green;
-  if (t.greenUnit) document.getElementById('thresh-green-unit').value = t.greenUnit;
+  if (t.red) { document.getElementById('thresh-red').value = t.red; document.getElementById('thresh-red-hidden').value = t.red; }
+  if (t.redUnit) { document.getElementById('thresh-red-unit').value = t.redUnit; document.getElementById('thresh-red-unit-hidden').value = t.redUnit; }
+  if (t.amber) { document.getElementById('thresh-amber').value = t.amber; document.getElementById('thresh-amber-hidden').value = t.amber; }
+  if (t.amberUnit) { document.getElementById('thresh-amber-unit').value = t.amberUnit; document.getElementById('thresh-amber-unit-hidden').value = t.amberUnit; }
+  if (t.green) { document.getElementById('thresh-green').value = t.green; document.getElementById('thresh-green-hidden').value = t.green; }
+  if (t.greenUnit) { document.getElementById('thresh-green-unit').value = t.greenUnit; document.getElementById('thresh-green-unit-hidden').value = t.greenUnit; }
 }
 ['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
   document.getElementById(id)?.addEventListener('change', saveThresholds);
