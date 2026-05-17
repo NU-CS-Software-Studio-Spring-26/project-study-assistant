@@ -20,7 +20,7 @@ class UsersController < ApplicationController
       if @user.save
         session[:user_id] = @user.id
         IcalSyncService.new(@user).sync if @user.ical_url.present?
-        format.html { redirect_to dashboard_path, notice: "Account created. Welcome to Study Assistant." }
+        format.html { redirect_to dashboard_path }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new, status: :unprocessable_entity }

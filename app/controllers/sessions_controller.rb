@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email].to_s.strip.downcase)
     if user&.authenticate(params[:password])
       session[:user_id] = user.id
-      redirect_to assignments_path, notice: "Welcome back, #{user.name}!"
+      redirect_to assignments_path
     else
       flash.now[:alert] = "Invalid email or password."
       render :new, status: :unprocessable_entity
@@ -16,6 +16,6 @@ class SessionsController < ApplicationController
 
   def destroy
     reset_session
-    redirect_to root_path, notice: "Logged out."
+    redirect_to root_path
   end
 end

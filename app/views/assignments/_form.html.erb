@@ -29,11 +29,6 @@
     <% end %>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :estimated_hours, class: "form-label" %>
-    <%= form.number_field :estimated_hours, class: "form-control", min: 0, step: 1 %>
-  </div>
-
   <div class="form-check mb-3">
     <%= form.checkbox :synced_to_calendar, class: "form-check-input" %>
     <%= form.label :synced_to_calendar, class: "form-check-label" %>

@@ -1,269 +1,293 @@
 <% content_for :title, "Assignments" %>
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-  <div>
-    <h1 style="font-size:1.3rem; font-weight:700; margin:0;">Assignments</h1>
-    <p style="font-size:0.78rem; color:var(--sa-muted); margin:0.15rem 0 0;">Track deadlines by course and due time.</p>
+<%# Canvas time warning banner %>
+<div id="canvas-warning" style="background:#FEF3C7; border:1px solid #F59E0B; border-radius:8px; padding:0.6rem 1rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; gap:0.6rem; font-size:0.78rem; color:#92400E; transition:opacity 1s ease;">
+  <div style="display:flex; align-items:center; gap:0.6rem;">
+    <span style="font-size:1rem;">⚠️</span>
+    <span><strong>Heads up:</strong> Due times imported from Canvas may not be exact. Always double-check on Canvas to confirm your actual deadline.</span>
   </div>
-  <%= link_to "+ New Assignment", new_assignment_path, style: "font-size:0.8rem; font-weight:500; padding:6px 14px; border-radius:7px; background:var(--sa-accent); color:#fff; text-decoration:none; white-space:nowrap;" %>
+  <button onclick="dismissWarning()" style="background:none; border:none; cursor:pointer; color:#92400E; font-size:1rem; padding:0;">✕</button>
 </div>
 
-<%# ── Filter bar ── %>
-<div style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:10px; padding:0.6rem 1rem; margin-bottom:1rem; display:flex; flex-wrap:wrap; gap:0.6rem 1.25rem; align-items:center;">
+<script>
+  function dismissWarning() {
+    const w = document.getElementById('canvas-warning');
+    w.style.opacity = '0';
+    setTimeout(() => w.style.display = 'none', 1000);
+  }
+  setTimeout(dismissWarning, 5000);
+</script>
 
-  <%# Search %>
-  <%= form_with url: assignments_path, method: :get, id: "filter-form", style: "display:contents;" do |form| %>
-    <%= form.search_field :q, value: @query, placeholder: "Search…",
-        style: "font-size:0.78rem; padding:4px 9px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text); width:140px;" %>
-    <%= form.select :sort, [["Due soonest","due_asc"],["Due latest","due_desc"]], { selected: @sort },
-        style: "font-size:0.78rem; padding:4px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text);" %>
-    <%= form.select :group_by, [["Group: day","day"],["Group: week","week"],["Group: urgency","urgency"]], { selected: params[:group_by] || "day" },
-        style: "font-size:0.78rem; padding:4px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text);" %>
-  <% end %>
+<div style="display:flex; gap:1.25rem; align-items:flex-start;">
 
-  <div style="width:0.5px; height:28px; background:var(--sa-border);"></div>
+  <%# ── LEFT SIDEBAR FILTERS ── %>
+  <%= form_with url: assignments_path, method: :get, id: "filter-form" do |form| %>
+  <aside style="width:220px; flex-shrink:0; background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:12px; padding:1rem; position:sticky; top:1rem;">
 
-  <%# Show filter pills %>
-  <div style="display:flex; align-items:center; gap:5px;">
-    <span style="font-size:0.65rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--sa-muted);">Show</span>
-    <% [["All","all"],["Pending","pending"],["Done","done"]].each do |lbl, val| %>
-      <a href="<%= assignments_path(q: @query, sort: @sort, group_by: params[:group_by], hide_past_due: params[:hide_past_due], show: val) %>"
-         style="font-size:0.72rem; padding:3px 9px; border-radius:20px; border:0.5px solid var(--sa-border); text-decoration:none;
-                <%= (params[:show] || 'all') == val ? 'background:var(--sa-accent); color:#fff; border-color:var(--sa-accent);' : 'color:var(--sa-muted);' %>">
-        <%= lbl %>
-      </a>
-    <% end %>
-  </div>
+    <div style="font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--sa-muted); margin-bottom:0.75rem;">Filters</div>
 
-  <div style="width:0.5px; height:28px; background:var(--sa-border);"></div>
+    <%# Search %>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.3rem;">Search</label>
+      <%= form.search_field :q, value: @query, placeholder: "Search assignments…",
+          style: "width:100%; font-size:0.78rem; padding:5px 9px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text); box-sizing:border-box;" %>
+    </div>
 
-  <%# Urgency thresholds %>
-  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-    <span style="font-size:0.65rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--sa-muted);">Urgency</span>
-    <span style="display:flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--sa-muted);">
-      <span style="width:8px; height:8px; border-radius:50%; background:#E24B4A; display:inline-block;"></span>
-      Red &lt;
-      <input type="number" id="thresh-red" value="24" min="1"
-             style="width:40px; font-size:0.72rem; padding:2px 5px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
-      <select id="thresh-red-unit" style="font-size:0.72rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
-        <option value="hours">hrs</option><option value="days">days</option>
+    <%# Course filter %>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.3rem;">Course</label>
+      <% courses = current_user.assignments.pluck(:course_name).uniq.compact.sort %>
+      <select name="course" style="width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text); box-sizing:border-box;">
+        <option value="">All courses</option>
+        <% courses.each do |c| %>
+          <option value="<%= c %>" <%= params[:course] == c ? "selected" : "" %>><%= c.gsub(/^[0-9A-Z_]+SP_/, '').gsub(/_SEC\d+$/, '').gsub('_', ' ') %></option>
+        <% end %>
       </select>
-    </span>
-    <span style="display:flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--sa-muted);">
-      <span style="width:8px; height:8px; border-radius:50%; background:#EF9F27; display:inline-block;"></span>
-      Amber &lt;
-      <input type="number" id="thresh-amber" value="48" min="1"
-             style="width:40px; font-size:0.72rem; padding:2px 5px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
-      <select id="thresh-amber-unit" style="font-size:0.72rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
-        <option value="hours">hrs</option><option value="days">days</option>
-      </select>
-    </span>
-    <span style="display:flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--sa-muted);">
-      <span style="width:8px; height:8px; border-radius:50%; background:#639922; display:inline-block;"></span>
-      Green &lt;
-      <input type="number" id="thresh-green" value="7" min="1"
-             style="width:40px; font-size:0.72rem; padding:2px 5px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
-      <select id="thresh-green-unit" style="font-size:0.72rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text); font-weight:700;">
-        <option value="hours">hrs</option><option value="days" selected>days</option>
-      </select>
-    </span>
-  </div>
+    </div>
 
-  <div style="width:0.5px; height:28px; background:var(--sa-border);"></div>
+    <%# Sort %>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.3rem;">Sort by</label>
+      <%= form.select :sort, [["Due soonest","due_asc"],["Due latest","due_desc"]], { selected: @sort },
+          style: "width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text); box-sizing:border-box;" %>
+    </div>
 
-  <%# Hide toggles %>
-  <div style="display:flex; align-items:center; gap:8px; font-size:0.72rem; color:var(--sa-muted);">
-    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
-      <input type="checkbox" id="hide-past-due" <%= params[:hide_past_due] == "1" ? "checked" : "" %>
-             onchange="document.getElementById('filter-form').submit();"
-             name="hide_past_due" value="1" form="filter-form">
-      Hide past-due
-    </label>
-    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
-      <input type="checkbox" id="hide-unconfirmed" onchange="toggleUnconfirmed(this.checked)">
-      Hide unconfirmed
-    </label>
-  </div>
+    <%# Group by %>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.3rem;">Group by</label>
+      <%= form.select :group_by, [["Day","day"],["Week","week"],["Course","course"],["Urgency","urgency"]], { selected: params[:group_by] || "day" },
+          style: "width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid var(--sa-border); border-radius:6px; background:var(--sa-bg); color:var(--sa-text); box-sizing:border-box;" %>
+    </div>
 
-  <button onclick="document.getElementById('filter-form').submit();"
-          style="font-size:0.78rem; padding:4px 12px; border-radius:6px; border:0.5px solid var(--sa-border); background:var(--sa-bg); color:var(--sa-text); cursor:pointer; margin-left:auto;">
-    Apply
-  </button>
-</div>
-
-<%# ── Assignment list ── %>
-<% show_filter = params[:show] || "all" %>
-<% group_by = params[:group_by] || "day" %>
-
-<%
-  filtered = @assignments.to_a
-  filtered = filtered.reject(&:done) if show_filter == "pending"
-  filtered = filtered.select(&:done) if show_filter == "done"
-
-  if group_by == "week"
-    groups = filtered.group_by { |a| a.due_date ? a.due_date.beginning_of_week.strftime("%b %-d") : "No date" }
-    group_labels = groups.keys
-  elsif group_by == "urgency"
-    groups = { "Overdue" => [], "Due today" => [], "Due this week" => [], "Upcoming" => [], "No date" => [] }
-    filtered.each do |a|
-      if a.due_date.nil?
-        groups["No date"] << a
-      elsif a.due_date < Time.current
-        groups["Overdue"] << a
-      elsif a.due_date < Time.current.end_of_day
-        groups["Due today"] << a
-      elsif a.due_date < Time.current + 7.days
-        groups["Due this week"] << a
-      else
-        groups["Upcoming"] << a
-      end
-    end
-    group_labels = groups.keys
-  else
-    groups = filtered.group_by { |a| a.due_date ? a.due_date.strftime("%a, %b %-d") : "No date" }
-    group_labels = groups.keys
-  end
-%>
-
-<% if filtered.empty? %>
-  <div style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:10px; padding:2rem; text-align:center; color:var(--sa-muted); font-size:0.875rem;">
-    No assignments found. <%= link_to "Create your first", new_assignment_path, style: "color:var(--sa-text); font-weight:500;" %>.
-  </div>
-<% else %>
-  <% group_labels.each do |label| %>
-    <% group = groups[label] %>
-    <% next if group.nil? || group.empty? %>
-    <div style="margin-bottom:1.1rem;">
-      <div style="font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--sa-muted); margin-bottom:0.35rem; padding-left:2px;"><%= label %></div>
-      <div style="display:flex; flex-direction:column; gap:3px;">
-        <% group.each do |assignment| %>
-          <%
-            urgency_color = if assignment.due_date.nil?
-              "#B4B2A9"
-            else
-              hours_until = (assignment.due_date - Time.current) / 3600.0
-              if hours_until < 0
-                "#E24B4A"
-              else
-                # JS will update these via data attributes, but server-side defaults:
-                "#639922"
-              end
-            end
-          %>
-          <div class="a-card <%= assignment.done ? 'is-done' : '' %>"
-               data-due="<%= assignment.due_date&.iso8601 %>"
-               style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:8px; padding:0.5rem 0.85rem; display:flex; align-items:center; gap:0.7rem; transition:opacity 0.2s;">
-
-            <div class="urgency-bar" style="width:3px; height:32px; border-radius:2px; background:<%= urgency_color %>; flex-shrink:0;"></div>
-
-            <%# Checkbox %>
-            <%= button_to toggle_done_assignment_path(assignment), method: :patch,
-                form: { style: "display:contents;" },
-                style: "width:16px; height:16px; border-radius:4px; border:1.5px solid var(--sa-border); flex-shrink:0; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; background:#{assignment.done ? '#639922' : 'var(--sa-surface)'}; border-color:#{assignment.done ? '#639922' : 'var(--sa-border)'};" do %>
-              <% if assignment.done %>
-                <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><polyline points="1,3.5 3.5,6 8,1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-              <% end %>
-            <% end %>
-
-            <% if assignment.due_date %>
-              <div style="text-align:center; min-width:34px; flex-shrink:0;">
-                <div style="font-size:1.05rem; font-weight:600; line-height:1; color:var(--sa-text);"><%= assignment.due_date.strftime("%-d") %></div>
-                <div style="font-size:0.6rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--sa-muted);"><%= assignment.due_date.strftime("%b") %></div>
-              </div>
-              <div style="width:0.5px; height:26px; background:var(--sa-border); flex-shrink:0;"></div>
-            <% end %>
-
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:0.83rem; font-weight:500; color:var(--sa-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-                          <%= assignment.done ? 'text-decoration:line-through; opacity:0.5;' : '' %>">
-                <%= assignment.title.gsub(/\[.*?\]/, '').strip %>
-              </div>
-              <div style="font-size:0.68rem; color:var(--sa-muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                <%= assignment.course_name.gsub(/^[0-9A-Z_]+SP_/, '').gsub(/_SEC\d+$/, '').gsub('_', ' ') %>
-              </div>
-            </div>
-
-            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;" class="<%= assignment.done ? 'unconfirmed-badge' : '' %>">
-              <% if assignment.due_date %>
-                <div style="font-size:0.68rem; color:var(--sa-muted);"><%= assignment.due_date.strftime("%I:%M %p").sub(/^0/, '') %></div>
-              <% end %>
-              <% if assignment.imported_from_canvas? && !assignment.due_time_confirmed? %>
-                <span class="unconfirmed-badge" style="font-size:0.6rem; font-weight:500; padding:2px 6px; border-radius:3px; background:#FAEEDA; color:#854F0B;">Unconfirmed</span>
-              <% end %>
-              <%= link_to "View", assignment, style: "font-size:0.68rem; padding:2px 9px; border-radius:5px; border:0.5px solid var(--sa-border); background:transparent; color:var(--sa-muted); text-decoration:none;" %>
-            </div>
-          </div>
+    <%# Show %>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.3rem;">Show</label>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <% [["All","all"],["Pending","pending"],["Done","done"]].each do |lbl, val| %>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.78rem; color:var(--sa-text);">
+            <input type="radio" name="show" value="<%= val %>" <%= (params[:show] || 'all') == val ? "checked" : "" %>>
+            <%= lbl %>
+          </label>
         <% end %>
       </div>
     </div>
+
+    <%# Urgency thresholds %>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.7rem; font-weight:600; color:var(--sa-muted); display:block; margin-bottom:0.4rem;">Urgency Thresholds</label>
+      <% [["#E24B4A","Red","thresh-red","thresh-red-unit","24","hours"],["#EF9F27","Amber","thresh-amber","thresh-amber-unit","48","hours"],["#639922","Green","thresh-green","thresh-green-unit","7","days"]].each do |color, label, id, uid, default_val, default_unit| %>
+        <div style="display:flex; align-items:center; gap:4px; margin-bottom:5px;">
+          <span style="width:8px; height:8px; border-radius:50%; background:<%= color %>; flex-shrink:0;"></span>
+          <span style="font-size:0.7rem; color:var(--sa-muted); width:36px;"><%= label %> &lt;</span>
+          <input type="number" id="<%= id %>" value="<%= default_val %>" min="1"
+                 style="width:38px; font-size:0.7rem; padding:2px 4px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text);">
+          <select id="<%= uid %>" style="font-size:0.7rem; padding:2px 3px; border:0.5px solid var(--sa-border); border-radius:5px; background:var(--sa-bg); color:var(--sa-text);">
+            <option value="hours" <%= default_unit == "hours" ? "selected" : "" %>>hrs</option>
+            <option value="days" <%= default_unit == "days" ? "selected" : "" %>>days</option>
+          </select>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Toggles %>
+    <div style="margin-bottom:1rem; display:flex; flex-direction:column; gap:5px;">
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.75rem; color:var(--sa-muted);">
+        <input type="checkbox" id="hide-past-due" name="hide_past_due" value="1" <%= params[:hide_past_due] == "1" ? "checked" : "" %>
+               onchange="document.getElementById('filter-form').submit();">
+        Hide past-due
+      </label>
+    </div>
+
+    <button type="submit"
+            style="width:100%; font-size:0.78rem; padding:6px 12px; border-radius:6px; border:none; background:var(--sa-accent); color:#fff; cursor:pointer; font-weight:600;">
+      Apply Filters
+    </button>
+
+    <% if params.to_unsafe_h.except("controller", "action").any? %>
+      <%= link_to "Clear all", assignments_path, style: "display:block; text-align:center; font-size:0.72rem; color:var(--sa-muted); margin-top:0.5rem; text-decoration:none;" %>
+    <% end %>
+
+  </aside>
   <% end %>
-<% end %>
+
+  <%# ── MAIN CONTENT ── %>
+  <div style="flex:1; min-width:0;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <div>
+        <h1 style="font-size:1.3rem; font-weight:700; margin:0;">Assignments</h1>
+        <p style="font-size:0.78rem; color:var(--sa-muted); margin:0.15rem 0 0;">Track deadlines by course and due time.</p>
+      </div>
+      <%= link_to "+ New Assignment", new_assignment_path, style: "font-size:0.8rem; font-weight:500; padding:6px 14px; border-radius:7px; background:var(--sa-accent); color:#fff; text-decoration:none; white-space:nowrap;" %>
+    </div>
+
+    <% show_filter = params[:show] || "all" %>
+    <% group_by = params[:group_by] || "day" %>
+
+    <%
+      filtered = @assignments.to_a
+      filtered = filtered.reject(&:done) if show_filter == "pending"
+      filtered = filtered.select(&:done) if show_filter == "done"
+
+      if group_by == "week"
+        groups = filtered.group_by { |a| a.due_date ? a.due_date.beginning_of_week.strftime("%b %-d") : "No date" }
+      elsif group_by == "urgency"
+        groups = { "Overdue" => [], "Due today" => [], "Due this week" => [], "Upcoming" => [], "No date" => [] }
+        filtered.each do |a|
+          if a.due_date.nil? then groups["No date"] << a
+          elsif a.due_date < Time.current then groups["Overdue"] << a
+          elsif a.due_date < Time.current.end_of_day then groups["Due today"] << a
+          elsif a.due_date < Time.current + 7.days then groups["Due this week"] << a
+          else groups["Upcoming"] << a
+          end
+        end
+      elsif group_by == "course"
+        groups = filtered.group_by { |a| a.course_name.gsub(/^[0-9A-Z_]+SP_/, '').gsub(/_SEC\d+$/, '').gsub('_', ' ') }
+      else
+        groups = filtered.group_by { |a| a.due_date ? a.due_date.strftime("%a, %b %-d") : "No date" }
+      end
+      group_labels = groups.keys
+    %>
+
+    <% if filtered.empty? %>
+      <div style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:10px; padding:2rem; text-align:center; color:var(--sa-muted); font-size:0.875rem;">
+        No assignments found. <%= link_to "Create your first", new_assignment_path, style: "color:var(--sa-text); font-weight:500;" %>.
+      </div>
+    <% else %>
+      <% group_labels.each do |label| %>
+        <% group = groups[label] %>
+        <% next if group.nil? || group.empty? %>
+        <div style="margin-bottom:1.1rem;">
+          <div style="font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--sa-muted); margin-bottom:0.35rem; padding-left:2px;"><%= label %></div>
+          <div style="display:flex; flex-direction:column; gap:3px;">
+            <% group.each do |assignment| %>
+              <% urgency_color = assignment.due_date.nil? ? "#B4B2A9" : "#639922" %>
+              <div class="a-card <%= assignment.done ? 'is-done' : '' %>"
+                   data-due="<%= assignment.due_date&.iso8601 %>"
+                   style="background:var(--sa-surface); border:0.5px solid var(--sa-border); border-radius:8px; padding:0.5rem 0.85rem; display:flex; align-items:center; gap:0.7rem; transition:opacity 0.2s;">
+
+                <div class="urgency-bar" style="width:3px; height:32px; border-radius:2px; background:<%= urgency_color %>; flex-shrink:0;"></div>
+
+                <%= button_to toggle_done_assignment_path(assignment), method: :patch,
+                    form: { style: "display:contents;" },
+                    style: "width:16px; height:16px; border-radius:4px; border:1.5px solid var(--sa-border); flex-shrink:0; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; background:#{assignment.done ? '#639922' : 'var(--sa-surface)'}; border-color:#{assignment.done ? '#639922' : 'var(--sa-border)'};" do %>
+                  <% if assignment.done %>
+                    <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><polyline points="1,3.5 3.5,6 8,1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <% end %>
+                <% end %>
+
+                <% if assignment.due_date %>
+                  <div style="text-align:center; min-width:34px; flex-shrink:0;">
+                    <div style="font-size:1.05rem; font-weight:600; line-height:1; color:var(--sa-text);"><%= assignment.due_date.strftime("%-d") %></div>
+                    <div style="font-size:0.6rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--sa-muted);"><%= assignment.due_date.strftime("%b") %></div>
+                  </div>
+                  <div style="width:0.5px; height:26px; background:var(--sa-border); flex-shrink:0;"></div>
+                <% end %>
+
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:0.83rem; font-weight:500; color:var(--sa-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+                              <%= assignment.done ? 'text-decoration:line-through; opacity:0.5;' : '' %>">
+                    <%= assignment.title.gsub(/\[.*?\]/, '').strip %>
+                  </div>
+                  <div style="font-size:0.68rem; color:var(--sa-muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <%= assignment.course_name.gsub(/^[0-9A-Z_]+SP_/, '').gsub(/_SEC\d+$/, '').gsub('_', ' ') %>
+                  </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                  <% if assignment.due_date %>
+                    <div style="font-size:0.68rem; color:var(--sa-muted);"><%= assignment.due_date.strftime("%I:%M %p").sub(/^0/, '') %></div>
+                  <% end %>
+                  <button onclick="openEditModal(<%= assignment.id %>)"
+                          style="font-size:0.68rem; padding:2px 9px; border-radius:5px; border:0.5px solid var(--sa-border); background:transparent; color:var(--sa-muted); cursor:pointer;">
+                    Edit
+                  </button>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<%# ── EDIT MODAL ── %>
+<div id="edit-modal-overlay"
+     onclick="if(event.target===this)closeEditModal()"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:var(--sa-surface); border-radius:12px; padding:1.5rem; width:100%; max-width:480px; position:relative; max-height:90vh; overflow-y:auto;">
+    <button onclick="closeEditModal()"
+            style="position:absolute; top:0.75rem; right:0.75rem; background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--sa-muted);">✕</button>
+    <h2 style="font-size:1rem; font-weight:700; margin:0 0 1rem;">Edit Assignment</h2>
+    <div id="edit-modal-content">Loading…</div>
+  </div>
+</div>
 
 <script>
-const THRESH_KEY = 'sa_thresholds';
-
-function loadThresholds() {
-  try { return JSON.parse(localStorage.getItem(THRESH_KEY)) || {}; } catch { return {}; }
+function openEditModal(id) {
+  const overlay = document.getElementById('edit-modal-overlay');
+  overlay.style.display = 'flex';
+  document.getElementById('edit-modal-content').innerHTML = 'Loading…';
+  fetch('/assignments/' + id + '/edit', { headers: { 'Accept': 'text/html' } })
+    .then(r => r.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const form = doc.querySelector('form');
+      if (form) {
+        document.getElementById('edit-modal-content').innerHTML = form.outerHTML;
+      }
+    });
 }
+function closeEditModal() {
+  document.getElementById('edit-modal-overlay').style.display = 'none';
+}
+
+const THRESH_KEY = 'sa_thresholds';
+function loadThresholds() { try { return JSON.parse(localStorage.getItem(THRESH_KEY)) || {}; } catch { return {}; } }
 function saveThresholds() {
   const t = {
-    red: +document.getElementById('thresh-red').value,
-    redUnit: document.getElementById('thresh-red-unit').value,
-    amber: +document.getElementById('thresh-amber').value,
-    amberUnit: document.getElementById('thresh-amber-unit').value,
-    green: +document.getElementById('thresh-green').value,
-    greenUnit: document.getElementById('thresh-green-unit').value,
+    red: +document.getElementById('thresh-red').value, redUnit: document.getElementById('thresh-red-unit').value,
+    amber: +document.getElementById('thresh-amber').value, amberUnit: document.getElementById('thresh-amber-unit').value,
+    green: +document.getElementById('thresh-green').value, greenUnit: document.getElementById('thresh-green-unit').value,
   };
   localStorage.setItem(THRESH_KEY, JSON.stringify(t));
   applyUrgencyColors();
 }
 function toHours(val, unit) { return unit === 'days' ? val * 24 : val; }
-
 function applyUrgencyColors() {
   const t = loadThresholds();
-  const redH   = toHours(t.red   || 24,  t.redUnit   || 'hours');
-  const amberH = toHours(t.amber || 48,  t.amberUnit || 'hours');
-  const greenH = toHours(t.green || 7,   t.greenUnit || 'days');
+  const redH = toHours(t.red || 24, t.redUnit || 'hours');
+  const amberH = toHours(t.amber || 48, t.amberUnit || 'hours');
+  const greenH = toHours(t.green || 7, t.greenUnit || 'days');
   const now = Date.now();
-
   document.querySelectorAll('.a-card').forEach(card => {
     const due = card.dataset.due;
     const bar = card.querySelector('.urgency-bar');
     if (!bar) return;
     if (!due) { bar.style.background = '#B4B2A9'; return; }
     const hoursUntil = (new Date(due) - now) / 3600000;
-    if (hoursUntil < 0)       bar.style.background = '#E24B4A';
-    else if (hoursUntil < redH)   bar.style.background = '#E24B4A';
+    if (hoursUntil < 0) bar.style.background = '#E24B4A';
+    else if (hoursUntil < redH) bar.style.background = '#E24B4A';
     else if (hoursUntil < amberH) bar.style.background = '#EF9F27';
     else if (hoursUntil < greenH) bar.style.background = '#639922';
-    else                          bar.style.background = '#B4B2A9';
+    else bar.style.background = '#B4B2A9';
   });
 }
-
 function restoreThresholds() {
   const t = loadThresholds();
-  if (t.red)        document.getElementById('thresh-red').value       = t.red;
-  if (t.redUnit)    document.getElementById('thresh-red-unit').value   = t.redUnit;
-  if (t.amber)      document.getElementById('thresh-amber').value     = t.amber;
-  if (t.amberUnit)  document.getElementById('thresh-amber-unit').value = t.amberUnit;
-  if (t.green)      document.getElementById('thresh-green').value     = t.green;
-  if (t.greenUnit)  document.getElementById('thresh-green-unit').value = t.greenUnit;
+  if (t.red) document.getElementById('thresh-red').value = t.red;
+  if (t.redUnit) document.getElementById('thresh-red-unit').value = t.redUnit;
+  if (t.amber) document.getElementById('thresh-amber').value = t.amber;
+  if (t.amberUnit) document.getElementById('thresh-amber-unit').value = t.amberUnit;
+  if (t.green) document.getElementById('thresh-green').value = t.green;
+  if (t.greenUnit) document.getElementById('thresh-green-unit').value = t.greenUnit;
 }
-
-function toggleUnconfirmed(hide) {
-  document.querySelectorAll('.unconfirmed-badge').forEach(el => {
-    el.style.display = hide ? 'none' : '';
-  });
-}
-
 ['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
   document.getElementById(id)?.addEventListener('change', saveThresholds);
 });
-
 restoreThresholds();
 applyUrgencyColors();
-
-document.querySelectorAll('.is-done').forEach(card => {
-  card.style.opacity = '0.5';
-});
+document.querySelectorAll('.is-done').forEach(card => { card.style.opacity = '0.5'; });
 </script>
