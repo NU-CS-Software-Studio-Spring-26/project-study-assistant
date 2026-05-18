@@ -6,6 +6,9 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Load environment variables from .env file
+Dotenv.load(File.expand_path("../.env", __dir__)) if defined?(Dotenv)
+
 module Downloads
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
