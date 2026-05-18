@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <title><%= content_for(:title) || "Study Assistant" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,21 +8,20 @@
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= yield :head %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </head>
 
-  <body class="d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" aria-label="Main navigation">
+  <body class="d-flex flex-column min-vh-100 <%= content_for?(:body_class) ? yield(:body_class) : '' %>">
+
+    <% unless content_for?(:hide_nav) %>
+    <nav class="navbar navbar-expand-lg">
       <div class="container">
         <a class="navbar-brand" href="/">Study Assistant</a>
         <div class="navbar-nav me-auto">
@@ -34,7 +33,7 @@
         <div class="navbar-nav">
           <% if current_user %>
             <%= link_to "Account", user_path(current_user), class: "nav-link" %>
-            <%= link_to "Logout", logout_path, data: { turbo_method: :delete }, class: "nav-link" %>
+            <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-outline-light btn-sm ms-lg-2" %>
           <% else %>
             <%= link_to "Login", login_path, class: "nav-link" %>
             <%= link_to "Sign Up", new_user_path, class: "btn btn-primary btn-sm ms-lg-2" %>
@@ -42,10 +41,9 @@
         </div>
       </div>
     </nav>
+    <% end %>
 
-    <h1 class="visually-hidden"><%= content_for(:page_h1) || content_for(:title) || "Study Assistant" %></h1>
-
-    <main class="container my-4 flex-grow-1" role="main">
+    <main class="<%= content_for?(:full_page) ? '' : 'container my-4' %> flex-grow-1">
       <% flash.each do |type, message| %>
         <% alert_class = type.to_s == "notice" ? "success" : "danger" %>
         <div class="alert alert-<%= alert_class %> alert-dismissible fade show" role="alert">
@@ -53,11 +51,10 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       <% end %>
-
       <%= yield %>
     </main>
 
-    <footer class="border-top py-3 text-center text-dark small" role="contentinfo">
+    <footer class="border-top py-3 text-center small">
       Study Assistant
     </footer>
   </body>

@@ -5,7 +5,7 @@ class AssignmentsController < ApplicationController
   def index
     @query = params[:q].to_s.strip
     @sort = params[:sort].presence || "due_asc"
-    @hide_past_due = params[:hide_past_due] == "1"
+    @hide_past_due = params.key?(:hide_past_due) ? params[:hide_past_due] == "1" : true
     @assignments = current_user.assignments
 
     if @query.present?
