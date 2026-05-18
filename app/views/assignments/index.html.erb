@@ -177,9 +177,12 @@
           <div style="font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#7A7060; margin-bottom:0.35rem; padding-left:2px;"><%= label %></div>
           <div style="display:flex; flex-direction:column; gap:3px;">
             <% group.each do |assignment| %>
+
+           
+
               <div class="a-card <%= assignment.done ? 'is-done' : '' %>"
                    data-due="<%= assignment.due_date&.iso8601 %>"
-                   style="border:0.5px solid #EDE4D0; border-radius:8px; overflow:hidden; transition:all 0.2s;">
+                   style="border:0.5px solid #EDE4D0; border-radius:8px; overflow:hidden;">
                 <div class="urgency-bar" style="width:100%; padding:0.5rem 0.85rem; display:flex; align-items:center; gap:0.7rem; background:#FFFFFF;">
 
                   <button type="button"
@@ -274,17 +277,19 @@ function applyUrgencyColors() {
     if (!inner) return;
 
     let color = '#B4B2A9';
+    let bg = '#FFFFFF';
     if (due) {
       const hoursUntil = (new Date(due) - now) / 3600000;
-      if (hoursUntil < 0)             color = '#E24B4A';
-      else if (hoursUntil < redH)     color = '#E24B4A';
-      else if (hoursUntil < amberH)   color = '#EF9F27';
-      else if (hoursUntil < greenH)   color = '#639922';
-      else                            color = '#B4B2A9';
+      if (hoursUntil < 0)            { color = '#E24B4A'; bg = '#FFF0F0'; }
+      else if (hoursUntil < redH)    { color = '#E24B4A'; bg = '#FFF0F0'; }
+      else if (hoursUntil < amberH)  { color = '#EF9F27'; bg = '#FFFBF0'; }
+      else if (hoursUntil < greenH)  { color = '#639922'; bg = '#F4FAF0'; }
+      else                           { color = '#B4B2A9'; bg = '#FFFFFF'; }
     }
 
     inner.style.borderLeft = `4px solid ${color}`;
-    inner.style.background = '#FFFFFF';
+    inner.style.background = bg;
+    card.style.borderColor = color;
   });
 }
 
@@ -311,7 +316,8 @@ function toggleDone(btn, url, isDone) {
     card.classList.add('is-done');
     card.style.opacity = '0.5';
     if (title) title.style.textDecoration = 'line-through';
-    if (bar) bar.style.background = '#B4B2A9';
+    if (bar) { bar.style.background = '#FFFFFF'; bar.style.borderLeft = '4px solid #B4B2A9'; }
+      card.style.borderColor = '#EDE4D0';
   } else {
     btn.style.background = '#FFFFFF';
     btn.style.borderColor = '#EDE4D0';
@@ -319,10 +325,12 @@ function toggleDone(btn, url, isDone) {
     card.classList.remove('is-done');
     card.style.opacity = '1';
     if (title) title.style.textDecoration = 'none';
+      applyUrgencyColors();
   }
 
   btn.dataset.done = newDone ? 'true' : 'false';
 
+  // KEEP THIS! This is what saves the checkmark to your database.
   const csrf = document.querySelector('meta[name="csrf-token"]').content;
   fetch(url, {
     method: 'PATCH',
@@ -336,16 +344,42 @@ function toggleDone(btn, url, isDone) {
   });
 }
 
-['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
-  document.getElementById(id)?.addEventListener('change', saveThresholds);
-});
+// --- NEW INITIALIZATION BLOCK ---
+// This safely wraps all your startup code so Rails Turbo can run it on every page load.
 
-restoreThresholds();
-applyUrgencyColors();
+function initializeAssignmentsUI() {
+  ['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.removeEventListener('change', saveThresholds);
+      el.addEventListener('change', saveThresholds);
+    }
+  });
 
-document.querySelectorAll('.is-done').forEach(card => {
-  card.style.opacity = '0.5';
-  const title = card.querySelector('.a-title');
-  if (title) title.style.textDecoration = 'line-through';
-});
+  restoreThresholds();
+  applyUrgencyColors();
+
+  setTimeout(() => {
+    document.querySelectorAll('.a-card').forEach(card => {
+      card.style.transition = 'all 0.2s';
+    });
+    document.querySelectorAll('.urgency-bar').forEach(bar => {
+      bar.style.transition = 'background 0.3s';
+    });
+  }, 50);
+
+  document.querySelectorAll('.is-done').forEach(card => {
+    card.style.opacity = '0.5';
+    const title = card.querySelector('.a-title');
+    if (title) title.style.textDecoration = 'line-through';
+  });
+}
+
+// Run immediately for the first page load
+initializeAssignmentsUI();
+
+// Tell Rails Turbo/Turbolinks to run this every time "Apply Filters" refreshes the page
+document.addEventListener("turbo:load", initializeAssignmentsUI);
+document.addEventListener("turbolinks:load", initializeAssignmentsUI);
+
 </script>
