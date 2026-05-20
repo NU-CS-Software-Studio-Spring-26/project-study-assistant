@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   post "/login",   to: "sessions#create"
   delete "/logout", to: "sessions#destroy", as: "logout"
   get "/dashboard", to: "assignments#index", as: "dashboard"
+  get "/privacy", to: "pages#privacy", as: "privacy"
 
   get "up" => "rails/health#show", as: :rails_health_check
 

@@ -55,7 +55,13 @@
     </main>
 
     <footer class="border-top py-3 text-center small">
-      Study Assistant
+      <% if current_page?(root_path) %>
+        <div class="container">
+          <%= link_to "Privacy", privacy_path, class: "text-decoration-none" %>
+        </div>
+      <% else %>
+        Study Assistant
+      <% end %>
     </footer>
   </body>
 </html>
