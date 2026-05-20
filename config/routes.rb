@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   delete "/logout", to: "sessions#destroy", as: "logout"
   get "/dashboard", to: "assignments#index", as: "dashboard"
   get "/privacy", to: "pages#privacy", as: "privacy"
+  get "/about", to: "pages#about", as: "about"
 
   get "up" => "rails/health#show", as: :rails_health_check
 
