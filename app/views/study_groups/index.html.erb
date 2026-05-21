@@ -1,81 +1,123 @@
 <% content_for :title, "Groups" %>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+
+<!-- Header Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h1 class="h2 mb-1">Study Groups</h1>
-    <p class="text-muted mb-0">Find a group that matches your study style.</p>
+    <h1 class="study-title mb-0">Study Groups</h1>
+    <p class="study-subtitle">Find a group that matches your study style.</p>
   </div>
-  <%= link_to "New Study Group", new_study_group_path, class: "btn btn-primary" %>
+  <%= link_to "New Study Group", new_study_group_path, class: "custom-orange-btn text-decoration-none d-inline-flex align-items-center justify-content-center" %>
 </div>
 
-<%= form_with url: study_groups_path, method: :get, class: "row g-2 align-items-end mb-3" do |form| %>
+<!-- Search Form Section -->
+<%= form_with url: study_groups_path, method: :get, class: "row g-2 align-items-end mb-5" do |form| %>
   <div class="col-12 col-md-8 col-lg-6">
-    <%= form.label :query, "Search by title, tags, or study style", class: "form-label" %>
-    <%= form.search_field :query, value: @query, class: "form-control", placeholder: "e.g. calculus, online, quiet" %>
+    <%= form.label :query, "Search by title, tags, or study style", class: "form-label search-label" %>
+    <%= form.search_field :query, value: @query, class: "form-control custom-search-input", placeholder: "e.g. calculus, online, quiet" %>
   </div>
   <div class="col-12 col-md-auto">
-    <%= form.submit "Search", class: "btn btn-outline-primary" %>
+    <%= form.submit "Search", class: "custom-orange-btn" %>
   </div>
   <% if @query.present? %>
     <div class="col-12 col-md-auto">
-      <%= link_to "Clear", study_groups_path, class: "btn btn-link px-0" %>
+      <%= link_to "Clear", study_groups_path, class: "btn btn-link link-secondary px-0 study-subtitle" %>
     </div>
   <% end %>
 <% end %>
 
+<!-- Empty State -->
 <% if @study_groups.empty? %>
-  <% if @query.present? %>
-    <div class="alert alert-info">No groups matched "<%= @query %>".</div>
-  <% else %>
-    <div class="alert alert-info">No groups yet. Create the first one.</div>
-  <% end %>
+  <div class="alert alert-light border text-center p-5 study-subtitle">
+    <% if @query.present? %>
+      No groups matched "<%= @query %>".
+    <% else %>
+      No groups yet. Create the first one!
+    <% end %>
+  </div>
 <% end %>
 
-<div class="d-grid gap-3">
+<!-- Groups List -->
+<div class="d-flex flex-column">
   <% @study_groups.each do |group| %>
     <% current_user_is_member = group.members.include?(current_user) %>
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start gap-3">
-          <div>
-            <h2 class="h5 mb-1">
-              <%= link_to group.name, study_group_path(group), class: "text-decoration-none" %>
-            </h2>
-            <div class="text-muted mb-2">Created by <%= group.creator.name %></div>
-            <div class="mb-2"><strong>Starts:</strong> <%= group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></div>
-            <div class="mb-2"><strong>Ends:</strong> <%= group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></div>
-            <%= render "description", group: group %>
-            
-            <div class="d-flex flex-wrap gap-2 mb-2">
-            <% group.all_tags.each_with_index do |tag, index| %>
-            <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
-            
-            <% bg_color = custom_colors[index % custom_colors.length] %>
-              
-              <span class="badge" 
-                    style="background-color: <%= bg_color %>; color: #333; border: 1px solid rgba(0,0,0,0.1);">
-                <%= tag %>
-              </span>
-            <% end %>
-          </div>
-            <div><strong>Members:</strong> <%= group.members.size %></div>
-          </div>
+    
+    <div class="group-card">
+      <!-- Banner Image using your custom wrapper -->
+      <div class="group-banner-wrapper">
+  <% default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" %>
+  
+  <%# .presence checks if the column is filled. If empty, it uses the default banner %>
+  <img src="<%= group.banner_url || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
 
-          <div class="text-end" style="min-width: 210px;">
+
+  <div class="group-description">
+  <%= render "description", group: group %>
+</div>
+
+
+
+</div>
+
+      <div class="group-card-body">
+        <div class="row g-3">
+          <!-- Left side content -->
+          <div class="col-12 col-md-8">
+            <h2 class="group-name">
+              <%= link_to group.name, study_group_path(group) %>
+            </h2>
+            
+            <div class="study-subtitle mb-3">
+              </span>Created by <strong><%= group.creator.name %></strong>
+            </div>
+            
+            <div class="group-description">
+              <%= render "description", group: group %>
+            </div>
+            
+            <!-- Tags Layout -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <% group.all_tags.each_with_index do |tag, index| %>
+                <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
+                <% bg_color = custom_colors[index % custom_colors.length] %>
+                <span class="badge" style="background-color: <%= bg_color %>; color: #333; border: 1px solid rgba(0,0,0,0.1); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+                  #<%= tag %>
+                </span>
+              <% end %>
+            </div>
+
+            <div class="meta-row">
+             <span class="orange-dot"></span> <%= pluralize(group.members.size, "Member") %>
+            </div>
+          </div>
+          <!-- Right side Actions -->
+          <div class="col-12 col-md-4 text-md-end d-flex flex-column justify-content-between align-items-md-end">
             <div class="mb-2">
               <% if current_user_is_member %>
-                <%= link_to "Enter Group", study_group_path(group), class: "btn btn-sm btn-primary" %>
-              <% else %>
+                <%= link_to "Enter Group", study_group_path(group), class: "custom-orange-btn text-decoration-none d-inline-block" %>
+                <% else %>
                 <span class="badge text-bg-secondary">Join to enter</span>
               <% end %>
             </div>
-            <% if current_user_is_member %>
-              <% if group.creator == current_user %>
-                <div class="text-muted small">You created this group.</div>
-              <% else %>
+
+
+            <div class="study-subtitle d-flex align-items-center gap-2" style="font-size: 1rem; color: #4a4a4a;">
+            <%= image_tag "/clock.png", 
+                alt: "Clock Icon", 
+                style: "width: 25px; height: 25px; image-rendering: pixelated;" %>
+            <span>
+            <%= group.start_time.strftime("%A, %B %d") %> – <%= group.end_time.strftime("%A, %B %d") %>
+          </span>
+        </div>
+            
+            <div>
+              <% if current_user_is_member %>
+                <% if group.creator == current_user %>
+                  <div class="text-muted small study-subtitle">You created this group.</div>
+                <% else %>
                 <%= button_to "Leave Group", leave_study_group_path(group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{group.name}?" } } %>
               <% end %>
-            <% else %>
+              <% else %>
               <%= form_with url: join_study_group_path(group), method: :post, class: "d-grid gap-2" do |join_form| %>
                 <% if group.password_protected? %>
                   <%= password_field_tag :join_password, nil, class: "form-control form-control-sm", placeholder: "Password" %>
@@ -89,8 +131,10 @@
                   <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
                 </div>
               <% end %>
-            <% end %>
+              <% end %>
+            </div>
           </div>
+
         </div>
       </div>
     </div>

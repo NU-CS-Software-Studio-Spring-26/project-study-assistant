@@ -1,6 +1,6 @@
 <%= form_with model: study_group do |form| %>
   <% if study_group.errors.any? %>
-    <div class="alert alert-danger">
+    <div class="alert alert-danger border study-subtitle">
       <strong>Could not save group:</strong>
       <ul class="mb-0 mt-2">
         <% study_group.errors.full_messages.each do |message| %>
@@ -11,56 +11,82 @@
   <% end %>
 
   <div class="mb-3">
-    <%= form.label :name, "Group Name", class: "form-label" %>
-    <%= form.text_field :name, class: "form-control", placeholder: "BIO 101 Midterm Sprint" %>
+    <%= form.label :name, "Group Name", class: "form-label search-label" %>
+    <%= form.text_field :name, class: "form-control custom-search-input", placeholder: "BIO 101 Midterm Sprint" %>
   </div>
 
-  <p class="text-muted">Saving as <strong><%= current_user.name %></strong></p>
+  <p class="study-subtitle mb-3">Saving as <strong style="color: #4a3e3d;"><%= current_user.name %></strong></p>
 
   <div class="row g-3">
     <div class="col-md-6">
-      <%= form.label :start_time, "Start Time", class: "form-label" %>
-      <%= form.datetime_local_field :start_time, class: "form-control" %>
+      <%= form.label :start_time, "Start Time", class: "form-label search-label" %>
+      <%= form.datetime_local_field :start_time, class: "form-control custom-search-input" %>
     </div>
 
     <div class="col-md-6">
-      <%= form.label :end_time, "End Time", class: "form-label" %>
-      <%= form.datetime_local_field :end_time, class: "form-control" %>
+      <%= form.label :end_time, "End Time", class: "form-label search-label" %>
+      <%= form.datetime_local_field :end_time, class: "form-control custom-search-input" %>
     </div>
   </div>
 
   <div class="row g-3 mt-1">
     <div class="col-md-6">
-      <%= form.label :location_mode, "Online Or In Person", class: "form-label" %>
-      <%= form.select :location_mode, StudyGroup::LOCATION_MODES, { prompt: "Choose one" }, class: "form-select" %>
+      <%= form.label :location_mode, "Online Or In Person", class: "form-label search-label" %>
+      <%= form.select :location_mode, StudyGroup::LOCATION_MODES, { prompt: "Choose one" }, class: "form-select custom-search-input" %>
     </div>
 
     <div class="col-md-6">
-      <%= form.label :communication_style, "Group Style", class: "form-label" %>
-      <%= form.select :communication_style, StudyGroup::COMMUNICATION_STYLES, { prompt: "Choose one" }, class: "form-select" %>
+      <%= form.label :communication_style, "Group Style", class: "form-label search-label" %>
+      <%= form.select :communication_style, StudyGroup::COMMUNICATION_STYLES, { prompt: "Choose one" }, class: "form-select custom-search-input" %>
     </div>
   </div>
 
   <div class="mb-3 mt-3">
-    <%= label_tag :custom_tags, "Custom Tags", class: "form-label" %>
-    <%= text_field_tag :custom_tags, study_group.tags.to_a.join(", "), class: "form-control", placeholder: "homework, library, calculus" %>
+    <%= label_tag :custom_tags, "Custom Tags", class: "form-label search-label" %>
+    <%= text_field_tag :custom_tags, study_group.tags.to_a.join(", "), class: "form-control custom-search-input", placeholder: "homework, library, calculus" %>
   </div>
 
   <div class="mb-3">
-    <%= form.label :join_password, "Join Password", class: "form-label" %>
-    <%= form.password_field :join_password, value: study_group.join_password, class: "form-control", placeholder: "Leave blank for open group" %>
+    <%= form.label :join_password, "Join Password", class: "form-label search-label" %>
+    <%= form.password_field :join_password, value: study_group.join_password, class: "form-control custom-search-input", placeholder: "Leave blank for open group" %>
   </div>
 
-  <div class="mb-3">
-  <%= form.label :description, "Group Description", class: "form-label" %>
-  <%= form.text_area :description, 
-      class: "form-control", 
-      placeholder: "Write what you want out of a study group...", 
-      rows: 5 %>
+  <!-- Choose Group Banner Section -->
+  <div class="mb-4 mt-4">
+    <label class="form-label search-label d-block mb-2">Choose a Group Banner Style</label>
+    <div class="row g-2">
+      <% presets = [
+           { name: "Water Lilies", url: "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" },
+           { name: "Howls Moving Castle", url: "https://i.redd.it/8r788se4ay661.jpg" },
+           { name: "Ariety", url: "https://wallpapercave.com/wp/wp7147395.png" }
+         ] %>
+
+      <% presets.each do |preset| %>
+        <div class="col-4">
+          <label class="d-block text-center" style="cursor: pointer;">
+            <%= form.radio_button :banner_url, preset[:url], 
+                  class: "d-block mx-auto mb-2", 
+                  checked: (study_group.banner_url == preset[:url] || (study_group.new_record? && preset == presets.first)) %>
+            <div class="border rounded overflow-hidden mb-1" style="height: 65px; border-style: dashed !important;">
+              <img src="<%= preset[:url] %>" class="w-100 h-100" style="object-fit: cover;" alt="<%= preset[:name] %>">
+            </div>
+            <span class="study-subtitle" style="font-size: 0.75rem;"><%= preset[:name] %></span>
+          </label>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :description, "Group Description", class: "form-label search-label" %>
+    <%= form.text_area :description, 
+        class: "form-control custom-search-input", 
+        placeholder: "Write what you want out of a study group...", 
+        rows: 5 %>
   </div>
 
   <div class="d-flex gap-2">
-    <%= form.submit class: "btn btn-primary" %>
-    <%= link_to "Cancel", study_groups_path, class: "btn btn-outline-secondary" %>
+    <%= form.submit class: "custom-orange-btn" %>
+    <%= link_to "Cancel", study_groups_path, class: "btn btn-outline-secondary study-subtitle d-inline-flex align-items-center px-3", style: "border-radius: 8px;" %>
   </div>
 <% end %>

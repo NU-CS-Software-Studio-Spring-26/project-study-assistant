@@ -1,124 +1,111 @@
-<% content_for :title, @study_group.name %>
+<div class="row g-4 mt-2">
+  <div class="col-lg-3">
+    <div class="d-flex flex-column gap-2 mb-4 align-items-start">
+      <%= link_to "Back to Groups", study_groups_path, class: "btn btn-custom-outline px-4 py-2" %>
+      
+      <% if @study_group.creator == current_user %>
+        <%= link_to "Edit Group", edit_study_group_path(@study_group), class: "btn btn-custom-outline px-4 py-2" %>
+        <%= button_to "Delete Group", @study_group, method: :delete, class: "btn btn-custom-danger px-4 py-2", form: { data: { turbo_confirm: "Delete this study group?" } } %>
+      <% else %>
+        <%= button_to "Leave Group", leave_study_group_path(@study_group), method: :delete, class: "btn btn-custom-danger px-4 py-2", form: { data: { turbo_confirm: "Leave #{@study_group.name}?" } } %>
+      <% end %>
+    </div>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0"><%= @study_group.name %></h1>
-  <div class="d-flex gap-2">
-    <% if @study_group.creator == current_user %>
-      <%= link_to "Edit", edit_study_group_path(@study_group), class: "btn btn-outline-primary btn-sm" %>
-      <%= button_to "Delete", @study_group, method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Delete this study group?" } } %>
-    <% else %>
-      <%= button_to "Leave Group", leave_study_group_path(@study_group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{@study_group.name}?" } } %>
-    <% end %>
-    <%= link_to "Back To Groups", study_groups_path, class: "btn btn-outline-secondary btn-sm" %>
-  </div>
-</div>
-
-<div class="row g-4">
-  <div class="col-lg-4">
-    <div class="card shadow-sm">
+    <div class="card custom-card p-3 mb-4">
       <div class="card-body">
-        <h2 class="h5">Group Details</h2>
-        <p class="mb-1"><strong>Created by:</strong> <%= @study_group.creator.name %></p>
-        <p class="mb-1"><strong>Starts:</strong> <%= @study_group.start_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
-        <p class="mb-1"><strong>Ends:</strong> <%= @study_group.end_time.strftime("%a, %b %-d at %-I:%M %p") %></p>
-        <p class="mb-2"><strong>Members:</strong> <%= @study_group.members.size %></p>
-        <%= render "description", group: @study_group %>
-
-
-        
-        <%= link_to "Reserve a room", "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", 
-        class: "btn btn-outline-primary btn-sm", 
-        target: "_blank", 
-        rel: "noopener" %>
+        <h1 class="display-6 fw-normal mb-1 text-uppercase text-tracking" style="font-family: monospace; font-weight: 700;">
+          <%= @study_group.name %>
+        </h1>
+        <p class="text-muted small mb-4">
+          <strong>Created by:</strong> <%= @study_group.creator.name %>
         </p>
-
-
-        <div class="d-flex flex-wrap gap-2 mb-2">
-        <% @study_group.all_tags.each_with_index do |tag, index| %>
-        <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
         
-        <% bg_color = custom_colors[index % custom_colors.length] %>
-          
-          <span class="badge" 
-                style="background-color: <%= bg_color %>; color: #333; border: 1px solid rgba(0,0,0,0.1);">
-            <%= tag %>
-          </span>
-        <% end %>
-      </div>
+        <%# Hidden or minimized elements if they aren't explicitly visible in screenshot profile %>
+        <div class="d-none">
+          <p><strong>Starts:</strong> <%= @study_group.start_time.strftime("%a, %b %-d") %></p>
+          <%= render "description", group: @study_group %>
+        </div>
 
-        <h3 class="h6">Members</h3>
-        <% if @study_group.members.any? %>
-          <ul class="list-group mb-3">
-            <% @study_group.members.each do |member| %>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <span><%= member.name %></span>
-                  <% if member == @study_group.creator %>
-                    <span class="badge text-bg-secondary ms-2">Creator</span>
-                  <% end %>
-                </div>
-                <% if @study_group.creator == current_user && member != @study_group.creator %>
-                  <%= button_to "Kick",
-                    kick_study_group_path(@study_group, user_id: member.id),
-                    method: :delete,
-                    class: "btn btn-outline-danger btn-sm",
-                    form: { class: "d-inline", data: { turbo_confirm: "Kick #{member.name} from this group?" } } %>
+        <h2 class="h6 text-muted mb-2">Members ( <%= @study_group.members.size %> )</h2>
+        <div class="list-group list-group-flush border-top">
+          <% @study_group.members.each do |member| %>
+            <div class="list-group-item px-0 py-2 bg-transparent d-flex justify-content-between align-items-center border-bottom">
+              <div class="text-truncate">
+                <span class="small fw-medium"><%= member.name %></span>
+                <% if member == @study_group.creator %>
+                  <span class="badge bg-danger-subtle text-danger ms-1 small" style="font-size: 0.7rem;">creator</span>
                 <% end %>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="text-muted">No members yet.</p>
-        <% end %>
+              </div>
+              
+              <% if @study_group.creator == current_user && member != @study_group.creator %>
+                <%= button_to "Kick", kick_study_group_path(@study_group, user_id: member.id), method: :delete, class: "btn btn-link text-danger btn-sm p-0 text-decoration-none", form: { data: { turbo_confirm: "Kick #{member.name}?" } } %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
+
+    <%= link_to "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", class: "btn btn-reserve w-100 justify-content-center align-items-center shadow-sm", target: "_blank", rel: "noopener" do %>
+      <span>⭐ reserve a room</span>
+    <% end %>
   </div>
 
-  <div class="col-lg-8">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="h5 mb-3">Group Chat</h2>
+  <div class="col-lg-9">
+    <% if @study_group.respond_to?(:banner_url) && @study_group.banner_url.present? %>
+      <div class="mb-4 rounded-4 overflow-hidden shadow-sm" style="height: 180px;">
+        <img src="<%= @study_group.banner_url %>" class="w-100 h-100" style="object-fit: cover;" alt="Group Banner">
+      </div>
+    <% else %>
+      <div class="mb-4 rounded-4 overflow-hidden shadow-sm" style="height: 180px; background: linear-gradient(135deg, #e3eedc, #bfcda9);"></div>
+    <% end %>
 
+    <div class="card custom-card p-4">
+      <div class="card-body p-0">
+        
         <%= turbo_stream_from "study_group_#{@study_group.id}_messages" %>
 
         <div
           id="study_group_<%= @study_group.id %>_messages"
-          class="mb-3"
-          style="max-height: 380px; overflow-y: auto;"
+          class="mb-4 overflow-y-auto break-word pe-2"
+          style="max-height: 450px; min-height: 300px;"
           data-controller="scroll-to-bottom"
           data-current-user-id="<%= current_user.id %>"
         >
           <% if @messages.any? %>
             <%= render partial: "study_group_messages/study_group_message", collection: @messages, as: :message %>
           <% else %>
-            <div class="alert alert-info">No messages yet.</div>
+            <div class="text-center text-muted my-5 py-5">No messages yet. Start the conversation below!</div>
           <% end %>
         </div>
 
         <%= form_with model: [@study_group, @study_group_message], url: study_group_study_group_messages_path(@study_group) do |form| %>
-          <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-              <div class="small text-muted mb-2">Posting as <strong><%= current_user.name %></strong></div>
+          <div class="row align-items-end g-3 pt-3 border-top">
+            <div class="col-md-3">
+              <div class="text-muted small mb-0">Posting as <span class="fw-bold text-dark"><%= current_user.name %></span></div>
             </div>
-            <div class="col-md-6">
-              <%= form.label :content, "Message", class: "form-label" %>
+            
+            <div class="col-md-7">
+              <%= form.label :content, "MESSAGE", class: "form-label text-muted fw-bold d-block mb-1", style: "font-size: 0.75rem; tracking: 1px;" %>
               <div class="position-relative" data-controller="character-counter" data-character-counter-max-length-value="256">
                 <%= form.text_field :content,
-                  class: "form-control pe-5",
+                  class: "form-control border-1 p-2 pe-5 bg-light-subtle rounded-3",
                   placeholder: "Share updates, plans, or links",
                   maxlength: 256,
                   data: {
                     character_counter_target: "input",
                     action: "input->character-counter#update"
                   } %>
-                <span class="position-absolute bottom-0 end-0 small text-muted pe-2 pb-1" data-character-counter-target="counter"></span>
+                <span class="position-absolute end-0 top-50 translate-middle-y small text-muted pe-3" style="font-size: 0.8rem;" data-character-counter-target="counter">0/256</span>
               </div>
             </div>
+            
             <div class="col-md-2 d-grid">
-              <%= form.submit "Send", class: "btn btn-primary" %>
+              <%= form.submit "Send", class: "btn btn-send py-2 shadow-sm" %>
             </div>
           </div>
         <% end %>
+
       </div>
     </div>
   </div>

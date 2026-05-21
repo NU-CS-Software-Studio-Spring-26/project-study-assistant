@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Study Assistant" %></title>
+    <title><%= content_for(:title) || "TideTogether" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Study Assistant">
+    <meta name="application-name" content="TideTogether">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -23,7 +23,11 @@
     <% unless content_for?(:hide_nav) %>
     <nav class="navbar navbar-expand-lg">
       <div class="container">
-        <a class="navbar-brand" href="/">Study Assistant</a>
+        <a class="navbar-brand d-flex align-items-center gap-2 logo-brand" href="/">
+          <img src="/logo.svg" alt="TideTogether Logo" height="32">
+          <span class="fw-bold fs-4 text-dark">TideTogether</span>
+        </a>
+        
         <div class="navbar-nav me-auto">
           <% if current_user %>
             <%= link_to "Assignments", assignments_path, class: "nav-link" %>
@@ -55,13 +59,13 @@
     </main>
 
     <footer class="border-top py-3 text-center small">
-      <div class="container">
-        <div class="d-flex justify-content-center gap-3">
-          <%= link_to "Privacy", privacy_path, class: "text-decoration-none" %>
-          <%= link_to "About us", about_path, class: "text-decoration-none" %>
-          <%= link_to "Repo", "https://github.com/NU-CS-Software-Studio-Spring-26/project-study-assistant", target: "_blank", rel: "noopener", class: "text-decoration-none" %>
-        </div>
+    <div class="container">
+      <div class="d-flex justify-content-center gap-3">
+        <%= link_to "Privacy", privacy_path, class: "text-decoration-none" %>
+        <%= link_to "About us", about_path, class: "text-decoration-none" %>
+        <%= link_to "Repo", "https://github.com/NU-CS-Software-Studio-Spring-26/project-study-assistant", target: "_blank", rel: "noopener", class: "text-decoration-none" %>
       </div>
-    </footer>
+    </div>
+  </footer>
   </body>
 </html>

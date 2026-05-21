@@ -1,33 +1,61 @@
-<% content_for :hide_nav, true %>
-<% content_for :full_page, true %>
 
-<div class="login-page d-flex align-items-center justify-content-center">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
-  <div class="blob blob-4"></div>
+<% content_for :title, "Sign In" %>
+<% content_for :page_h1, "Sign In to Study Assistant" %>
 
-  <div class="login-card">
-    <div class="text-center mb-4">
-      <div style="font-family:'Kode Mono',monospace; font-size:1.5rem; font-weight:700; color:var(--sa-accent);">Study Assistant</div>
-      <h1 style="font-size:1.3rem; margin-top:0.5rem;">Good to see you again</h1>
-      <p style="font-size:0.85rem; color:var(--sa-muted); margin-top:0.25rem;">Make the most of your study time by tracking assignments and joining study groups.</p>
-    </div>
 
-    <%= form_with url: login_path, method: :post do |form| %>
-      <div class="mb-3">
-        <%= form.label :email, "Email", class: "form-label" %>
-        <%= form.email_field :email, class: "form-control", placeholder: "your@email.com", autocomplete: "email" %>
-      </div>
-      <div class="mb-4">
-        <%= form.label :password, "Password", class: "form-label" %>
-        <%= form.password_field :password, class: "form-control", autocomplete: "current-password" %>
-      </div>
-      <%= form.submit "Sign In", class: "btn btn-primary w-100", style: "padding:0.65rem;" %>
-    <% end %>
+<div class="auth-page row justify-content-center align-items-center py-5">
 
-    <div class="text-center mt-3" style="font-size:0.85rem; color:var(--sa-muted);">
-      New here? <%= link_to "Create an account", new_user_path, style: "color:var(--sa-accent); font-weight:500;" %>
-    </div>
-  </div>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+
+
+
+
+
+ <div class="col-md-5">
+
+
+ <div class="d-flex justify-content-center align-items-center my-4">
+ <h3 class="d-flex align-items-center m-0" style="gap: 0.05px; color: #FFF4E0;">
+   <img src="/logo.svg" alt="TideTogether Icon" style="width: 5rem; height: 5rem;">
+   <span>TideTogether</span>
+ </h3>
+</div>
+<h2 class="text-center mb-4" style="color: #504441 !important; font-weight: 700; font-size: 2.5rem; letter-spacing: -0.03em;">
+     Good to see you again
+   </h2>
+
+
+
+
+   <div class="card shadow-sm auth-card">
+   <div class="text-center m-4 mx-auto" style="color: #8c8582; font-size: 0.95rem; max-width: 90%; line-height: 1.5;">
+   Make the most of your study time by using our interactive assignment tracker and joining one of our study buddy groups.  
+ </div>
+  <div class="card-body p-4">
+
+
+       <%= form_with url: login_path, method: :post do |form| %>
+         <div class="mb-3">
+           <%= form.label :email, "Email", class: "form-label" %>
+           <%= form.email_field :email, class: "form-control", placeholder: "your@email.com" %>
+         </div>
+         <div class="mb-3">
+           <%= form.label :password, "Password", class: "form-label" %>
+           <%= form.password_field :password, class: "form-control", autocomplete: "current-password" %>
+         </div>
+         <div class="d-grid">
+           <%= form.submit "Sign In", class: "btn btn-primary w-100" %>
+         </div>
+       <% end %>
+
+
+       <hr>
+       <p class="text-center auth-copy mb-0">New here? <%= link_to "Create an account", new_user_path %></p>
+     </div>
+   </div>
+ </div>
 </div>

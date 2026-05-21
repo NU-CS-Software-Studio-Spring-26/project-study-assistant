@@ -1,25 +1,67 @@
-<div class="row justify-content-center mt-5">
-  <div class="col-md-8 text-center">
-    <h1 class="display-4 fw-bold mb-3">Study Assistant</h1>
-    <p class="lead mb-4">Stay on top of your coursework. Study Assistant syncs your Canvas calendar so you can see all your assignments in one place — organized, clear, and easy to manage.</p>
-    <div class="d-flex gap-3 justify-content-center">
-      <%= link_to "Get Started", new_user_path, class: "btn btn-primary btn-lg" %>
-      <%= link_to "Log In", login_path, class: "btn btn-outline-secondary btn-lg" %>
-    </div>
+<div class="landing-wrapper position-relative overflow-hidden">
+  
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="blob blob-5"></div>
 
-    <div class="row mt-5 text-start">
-      <div class="col-md-4">
-        <h3>📅 Canvas Sync</h3>
-        <p>Connect your Canvas iCal feed and your assignments import automatically.</p>
-      </div>
-      <div class="col-md-4">
-        <h3>📚 Study Groups</h3>
-        <p>Create or join study groups to collaborate with classmates.</p>
-      </div>
-      <div class="col-md-4">
-        <h3>✅ Track Progress</h3>
-        <p>Mark assignments as done and stay organized throughout the quarter.</p>
+  <section class="section-hero d-flex align-items-center min-vh-100 position-relative z-index-1">
+    <div class="container text-center">
+      <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-8 scroll-reveal">
+          <h1 class="section-title fw-bold mb-5">Stay on top of your cousework</h1>
+          <p class="hero-lead mb-5">TideTogether syncs your Canvas calendar so you can see all your assignments in one place -- organized, clear, and easy to manage.</p>
+          
+          <a href="#features-section" class="scroll-indicator-link d-inline-block text-decoration-none mt-5" aria-label="Scroll down to features">
+          <span class="scroll-text d-block mb-2">Learn More!</span>
+          <div class="arrow-container">
+            <div class="arrow-down"></div>
+          </div>
+        </a>
+
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <section class="section-features d-flex align-items-center min-vh-100 position-relative z-index-1">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-9 text-center scroll-reveal">
+          
+          <h2 class="section-title fw-bold mb-5">What do we offer?</h2>
+          
+          <div class="features-card p-4 p-md-5 text-start">
+            <div class="row g-5"> <div class="col-md-4">
+                <div class="d-flex gap-2 align-items-center mb-3">
+                  <img src="/calendar.svg" alt="Calendar Icon" width="28" height="28" class="flex-shrink-0">
+                  <h3 class="feature-heading m-0">Canvas Sync</h3>
+                </div>
+                <p class="feature-text">Connect your Canvas iCal feed and your assignments import automatically.</p>
+              </div>
+              
+              <div class="col-md-4">
+                <div class="d-flex gap-2 align-items-center mb-3">
+                  <img src="/book.svg" alt="Book Icon" width="28" height="28" class="flex-shrink-0">
+                  <h3 class="feature-heading m-0">Study Groups</h3>
+                </div>
+                <p class="feature-text">Create or join study groups to collaborate with classmates.</p>
+              </div>
+              
+              <div class="col-md-4">
+                <div class="d-flex gap-2 align-items-center mb-3">
+                  <img src="/check.svg" alt="Check Icon" width="28" height="28" class="flex-shrink-0">
+                  <h3 class="feature-heading m-0">Track Progress</h3>
+                </div>
+                <p class="feature-text">Mark assignments as done and stay organized throughout the quarter.</p>
+              </div>
+              
+            </div>
+          </div> 
+
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
