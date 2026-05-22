@@ -1,4 +1,4 @@
-<%= form_with model: study_group do |form| %>
+<%= form_with model: study_group, data: { controller: "study-group-time" } do |form| %>
   <% if study_group.errors.any? %>
     <div class="alert alert-danger border study-subtitle">
       <strong>Could not save group:</strong>
@@ -20,12 +20,22 @@
   <div class="row g-3">
     <div class="col-md-6">
       <%= form.label :start_time, "Start Time", class: "form-label search-label" %>
-      <%= form.datetime_local_field :start_time, class: "form-control custom-search-input" %>
+      <%= form.datetime_local_field :start_time,
+        class: "form-control custom-search-input",
+        data: {
+          study_group_time_target: "start",
+          action: "input->study-group-time#syncEnd change->study-group-time#syncEnd"
+        } %>
     </div>
 
     <div class="col-md-6">
       <%= form.label :end_time, "End Time", class: "form-label search-label" %>
-      <%= form.datetime_local_field :end_time, class: "form-control custom-search-input" %>
+      <%= form.datetime_local_field :end_time,
+        class: "form-control custom-search-input",
+        data: {
+          study_group_time_target: "end",
+          action: "input->study-group-time#markManual change->study-group-time#markManual"
+        } %>
     </div>
   </div>
 

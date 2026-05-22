@@ -1,4 +1,5 @@
 class StudyGroup < ApplicationRecord
+  MAX_ACTIVE_GROUPS = 128
   LOCATION_MODES = [ "Online", "In Person" ].freeze
   COMMUNICATION_STYLES = [ "Quiet", "Talkative", "Balanced" ].freeze
 
@@ -15,6 +16,7 @@ class StudyGroup < ApplicationRecord
   validates :end_time, presence: true
   validate :start_time_must_be_in_the_future
   validate :end_time_must_be_after_start_time
+  validate :active_group_limit, on: :create
   validates :location_mode, inclusion: { in: LOCATION_MODES }
   validates :communication_style, inclusion: { in: COMMUNICATION_STYLES }
   validates :join_password, length: { maximum: 128 }, allow_blank: true
@@ -56,5 +58,14 @@ class StudyGroup < ApplicationRecord
     return if end_time > start_time
 
     errors.add(:end_time, "must be after the start time")
+  end
+
+  def active_group_limit
+    return unless new_record?
+
+    active_count = StudyGroup.where("end_time >= ? OR end_time IS NULL", Time.current).count
+    if active_count >= MAX_ACTIVE_GROUPS
+      errors.add(:base, "Maximum number of active study groups (#{MAX_ACTIVE_GROUPS}) reached. Please try again later.")
+    end
   end
 end

@@ -1,7 +1,12 @@
 <div id="<%= dom_id(message) %>" class="border rounded p-2 mb-2" data-user-id="<%= message.user_id %>">
   <div class="d-flex justify-content-between align-items-center mb-1">
     <strong><%= message.user&.name || "Unknown" %></strong>
-    <span class="text-muted small"><%= message.created_at.strftime("%b %-d, %-I:%M %p") %></span>
+    <time
+      class="text-muted small"
+      datetime="<%= message.created_at.iso8601 %>"
+      data-controller="local-time"
+      data-local-time-iso-value="<%= message.created_at.iso8601 %>"
+    ><%= message.created_at.in_time_zone.strftime("%b %-d, %-I:%M %p") %></time>
   </div>
   <div><%= message.content %></div>
 </div>
