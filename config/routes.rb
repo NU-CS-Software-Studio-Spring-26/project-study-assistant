@@ -21,6 +21,10 @@ Rails.application.routes.draw do
   get "/privacy", to: "pages#privacy", as: "privacy"
   get "/about", to: "pages#about", as: "about"
 
+  get  "/auth/google_oauth2/callback", to: "sessions#google_callback"
+  post "/auth/google_oauth2/callback", to: "sessions#google_callback"
+  get  "/auth/failure", to: "sessions#auth_failure"
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "pages#home"

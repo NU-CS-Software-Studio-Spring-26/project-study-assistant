@@ -14,6 +14,27 @@ class SessionsController < ApplicationController
     end
   end
 
+  def google_callback
+    auth = request.env["omniauth.auth"]
+    email = auth.info.email.to_s.downcase
+
+    unless email.end_with?("@u.northwestern.edu") || email.end_with?("@northwestern.edu")
+      redirect_to login_path, alert: "Please use your Northwestern email to sign in."
+      return
+    end
+
+    user = User.from_google(auth)
+    session[:user_id] = user.id
+    redirect_to assignments_path
+  rescue => e
+    Rails.logger.error "Google OAuth error: #{e.message}"
+    redirect_to login_path, alert: "Google sign-in failed. Please try again."
+  end
+
+  def auth_failure
+    redirect_to login_path, alert: "Google sign-in was cancelled or failed."
+  end
+
   def destroy
     reset_session
     redirect_to root_path
