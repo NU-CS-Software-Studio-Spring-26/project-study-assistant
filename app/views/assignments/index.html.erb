@@ -309,7 +309,6 @@ function saveThresholds() {
     greenUnit: document.getElementById('thresh-green-unit').value,
   };
   localStorage.setItem(THRESH_KEY, JSON.stringify(t));
-  applyUrgencyColors();
 }
 function toHours(val, unit) { return unit === 'days' ? val * 24 : val; }
 
