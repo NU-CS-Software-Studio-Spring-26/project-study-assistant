@@ -134,7 +134,13 @@
         <h1 style="font-size:1.3rem; font-weight:700; margin:0;">Assignments</h1>
         <p style="font-size:0.78rem; color:#7A7060; margin:0.15rem 0 0;">Track deadlines by course and due time.</p>
       </div>
-      <%= link_to "+ New Assignment", new_assignment_path, style: "font-size:0.8rem; font-weight:500; padding:6px 14px; border-radius:7px; background:#F38046; color:#fff; text-decoration:none; white-space:nowrap;" %>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <%= link_to "+ New Assignment", new_assignment_path, style: "font-size:0.8rem; font-weight:500; padding:6px 14px; border-radius:7px; background:#F38046; color:#fff; text-decoration:none; white-space:nowrap;" %>
+        <button onclick="generateStudyPlan()"
+                style="font-size:0.8rem; font-weight:500; padding:6px 14px; border-radius:7px; background:#FFFFFF; color:#F38046; border:1px solid #F38046; cursor:pointer; white-space:nowrap;">
+          ✨ Study Plan
+        </button>
+      </div>
     </div>
 
     <% show_filter = params[:show] || "all" %>
@@ -177,9 +183,6 @@
           <div style="font-size:0.68rem; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#7A7060; margin-bottom:0.35rem; padding-left:2px;"><%= label %></div>
           <div style="display:flex; flex-direction:column; gap:3px;">
             <% group.each do |assignment| %>
-
-           
-
               <div class="a-card <%= assignment.done ? 'is-done' : '' %>"
                    data-due="<%= assignment.due_date&.iso8601 %>"
                    style="border:0.5px solid #EDE4D0; border-radius:8px; overflow:hidden;">
@@ -228,8 +231,8 @@
         </div>
       <% end %>
     <% end %>
-  </div>
-</div>
+
+
 
 <%# ── EDIT MODAL ── %>
 <div id="edit-modal-overlay"
@@ -243,7 +246,54 @@
   </div>
 </div>
 
+<%# Study Plan Modal %>
+<div id="study-plan-overlay"
+     onclick="if(event.target===this)closeStudyPlan()"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:#FFFFFF; border-radius:12px; padding:1.5rem; width:100%; max-width:520px; position:relative; max-height:90vh; overflow-y:auto;">
+    <button onclick="closeStudyPlan()"
+            style="position:absolute; top:0.75rem; right:0.75rem; background:none; border:none; font-size:1.2rem; cursor:pointer; color:#7A7060;">✕</button>
+    <h2 style="font-size:1rem; font-weight:700; margin:0 0 1rem;">✨ Your Study Plan</h2>
+    <div id="study-plan-content" style="font-size:0.85rem; line-height:1.6; color:#272A2D; white-space:pre-wrap;">Generating your plan…</div>
+  </div>
+</div>
+
 <script>
+function generateStudyPlan() {
+  document.getElementById('study-plan-overlay').style.display = 'flex';
+  document.getElementById('study-plan-content').textContent = 'Generating your plan…';
+  fetch('/study_plan')
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('study-plan-content').textContent = data.plan;
+    })
+    .catch(() => {
+      document.getElementById('study-plan-content').textContent = 'Could not generate a plan right now. Please try again later.';
+    });
+}
+function closeStudyPlan() {
+  document.getElementById('study-plan-overlay').style.display = 'none';
+}
+
+function openEditModal(id) {
+  const overlay = document.getElementById('edit-modal-overlay');
+  overlay.style.display = 'flex';
+  document.getElementById('edit-modal-content').innerHTML = 'Loading…';
+  fetch('/assignments/' + id + '/edit', { headers: { 'Accept': 'text/html' } })
+    .then(r => r.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const form = doc.querySelector('form');
+      if (form) {
+        document.getElementById('edit-modal-content').innerHTML = form.outerHTML;
+      }
+    });
+}
+function closeEditModal() {
+  document.getElementById('edit-modal-overlay').style.display = 'none';
+}
+
 const THRESH_KEY = 'sa_thresholds';
 
 function loadThresholds() {
@@ -317,7 +367,7 @@ function toggleDone(btn, url, isDone) {
     card.style.opacity = '0.5';
     if (title) title.style.textDecoration = 'line-through';
     if (bar) { bar.style.background = '#FFFFFF'; bar.style.borderLeft = '4px solid #B4B2A9'; }
-      card.style.borderColor = '#EDE4D0';
+    card.style.borderColor = '#EDE4D0';
   } else {
     btn.style.background = '#FFFFFF';
     btn.style.borderColor = '#EDE4D0';
@@ -325,12 +375,11 @@ function toggleDone(btn, url, isDone) {
     card.classList.remove('is-done');
     card.style.opacity = '1';
     if (title) title.style.textDecoration = 'none';
-      applyUrgencyColors();
+    applyUrgencyColors();
   }
 
   btn.dataset.done = newDone ? 'true' : 'false';
 
-  // KEEP THIS! This is what saves the checkmark to your database.
   const csrf = document.querySelector('meta[name="csrf-token"]').content;
   fetch(url, {
     method: 'PATCH',
@@ -343,9 +392,6 @@ function toggleDone(btn, url, isDone) {
     }
   });
 }
-
-// --- NEW INITIALIZATION BLOCK ---
-// This safely wraps all your startup code so Rails Turbo can run it on every page load.
 
 function initializeAssignmentsUI() {
   ['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
@@ -375,11 +421,7 @@ function initializeAssignmentsUI() {
   });
 }
 
-// Run immediately for the first page load
 initializeAssignmentsUI();
-
-// Tell Rails Turbo/Turbolinks to run this every time "Apply Filters" refreshes the page
 document.addEventListener("turbo:load", initializeAssignmentsUI);
 document.addEventListener("turbolinks:load", initializeAssignmentsUI);
-
 </script>

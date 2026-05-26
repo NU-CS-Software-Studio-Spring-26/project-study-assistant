@@ -17,12 +17,13 @@ class AssignmentsController < ApplicationController
     @assignments = @assignments.where("estimated_hours <= ?", params[:max_hours].to_i) if params[:max_hours].present?
     @assignments = @assignments.where("due_date >= ?", Time.current) if @hide_past_due
 
-    @assignments = case @sort
+    sorted = case @sort
       when "due_desc"   then @assignments.order(due_date: :desc)
       when "hours_asc"  then @assignments.order(estimated_hours: :asc)
       when "hours_desc" then @assignments.order(estimated_hours: :desc)
       else @assignments.order(due_date: :asc)
     end
+    @assignments = sorted
   end
 
   def show

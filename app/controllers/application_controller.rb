@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
 
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from Exception, with: :render_500 unless Rails.env.development?
 
   private
 
@@ -21,7 +22,14 @@ class ApplicationController < ActionController::Base
     redirect_to login_path, alert: "Please sign in to continue."
   end
 
+  def render_500(exception = nil)
+    Rails.logger.error exception&.message
+    render file: Rails.root.join("app/views/errors/internal_server_error.html.erb"),
+           status: :internal_server_error, layout: false
+  end
+
   def render_not_found
-    redirect_to root_path, alert: "The page you requested was not found."
+    render file: Rails.root.join("app/views/errors/not_found.html.erb"),
+           status: :not_found, layout: false
   end
 end
