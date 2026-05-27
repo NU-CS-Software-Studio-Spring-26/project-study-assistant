@@ -7,6 +7,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email].to_s.strip.downcase)
     if user&.authenticate(params[:password])
       session[:user_id] = user.id
+      IcalSyncService.new(user).sync if user.ical_url.present?
       redirect_to assignments_path
     else
       flash.now[:alert] = "Invalid email or password."
@@ -25,7 +26,13 @@ class SessionsController < ApplicationController
 
     user = User.from_google(auth)
     session[:user_id] = user.id
-    redirect_to assignments_path
+
+    if user.ical_url.blank?
+      redirect_to edit_user_path(user), alert: "Please add your Canvas iCal URL to sync your assignments."
+    else
+      IcalSyncService.new(user).sync
+      redirect_to assignments_path
+    end
   rescue => e
     Rails.logger.error "Google OAuth error: #{e.message}"
     redirect_to login_path, alert: "Google sign-in failed. Please try again."
