@@ -490,17 +490,49 @@ footer {
 .custom-orange-btn:hover {
   background-color: #d9663d;
 }
+.study-group-grid {
+  --study-group-scale: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, calc(24rem * var(--study-group-scale)));
+  gap: calc(1.5rem * var(--study-group-scale));
+  justify-content: start;
+}
+
+.study-grid-toolbar {
+  max-width: 520px;
+  margin-left: auto;
+}
+
+.study-group-size-slider {
+  width: min(320px, 100%);
+  accent-color: #f27b50;
+}
+
+@media (max-width: 767.98px) {
+  .study-group-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.study-group-grid > .col {
+  min-width: 0;
+}
+
+.study-group-grid .group-card {
+  width: 100%;
+  font-size: calc(0.95rem * var(--study-group-scale));
+}
 .group-card {
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   border: none;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 .group-banner-wrapper {
   position: relative;
-  height: 140px;
+  height: 7.75em;
   overflow: hidden;
 }
 .group-banner {
@@ -509,13 +541,14 @@ footer {
   object-fit: cover;
 }
 .group-card-body {
-  padding: 1.5rem 2rem;
+  padding: 1.15em 1.45em 1.2em;
 }
 .group-name {
   font-family: 'Share Tech Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 0.2rem;
+  font-size: 1em;
 }
 .group-name a {
   color: #4a4a4a;
@@ -524,11 +557,15 @@ footer {
 .group-name a:hover {
   color: #f27b50;
 }
+.study-group-grid .group-name {
+  line-height: 1.05;
+}
 .group-description {
   font-family: 'Outfit', sans-serif;
   color: #7d7d7d;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  font-size: 0.95em;
+  line-height: 1.45;
+  margin-bottom: 0.85em;
 }
 .orange-dot {
   width: 12px;
@@ -540,24 +577,78 @@ footer {
 }
 .meta-row {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 1rem;
+  font-size: 0.88em;
   color: #4a4a4a;
 }
 
 .group-time-row {
-  font-size: 0.9rem;
+  font-size: 0.68em;
+  line-height: 1.15;
+  color: #4a4a4a;
 }
 
 .group-time-icon {
-  width: 18px;
-  height: 18px;
+  width: 1em;
+  height: 1em;
   flex: 0 0 auto;
-  margin-top: 1px;
+  margin-top: 0;
 }
 
 .group-time-text {
   line-height: 1.2;
   white-space: nowrap;
+}
+
+.group-tag-badge {
+  color: #333;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.48em;
+  line-height: 1;
+  padding: 0.18em 0.34em;
+}
+
+.group-created-row {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 0.84em;
+  line-height: 1.1;
+}
+
+.group-owner-note {
+  white-space: nowrap;
+  font-size: 0.72em;
+  line-height: 1.1;
+}
+
+.study-group-grid .row.g-3 {
+  --bs-gutter-x: 0.7em;
+  --bs-gutter-y: 0.7em;
+}
+
+.study-group-grid .group-tags-row {
+  width: 100%;
+  margin-top: 0.15rem;
+}
+
+.study-group-grid .study-subtitle,
+.study-group-grid .text-muted.small,
+.study-group-grid .btn-sm,
+.study-group-grid .badge,
+.study-group-grid .custom-orange-btn {
+  font-size: 0.94em;
+}
+
+.study-group-grid .btn-sm,
+.study-group-grid .badge,
+.study-group-grid .custom-orange-btn {
+  padding: 0.28em 0.55em;
+}
+
+.study-group-grid .custom-orange-btn {
+  min-width: 0;
+  min-height: 0;
 }
 
 
