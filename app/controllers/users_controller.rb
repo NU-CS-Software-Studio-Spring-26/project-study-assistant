@@ -32,6 +32,7 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
+        IcalSyncService.new(@user).sync if @user.ical_url.present?
         format.html { redirect_to @user, notice: "User was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @user }
       else

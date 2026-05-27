@@ -1,14 +1,12 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-
-  # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
-
   helper_method :current_user
-
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
   rescue_from Exception, with: :render_500 unless Rails.env.development?
+
+  before_action :require_login
+  before_action :require_ical
 
   private
 
@@ -18,8 +16,18 @@ class ApplicationController < ActionController::Base
 
   def require_login
     return if current_user
-
+    return if controller_name == "sessions"
+    return if controller_name == "users" && action_name.in?(%w[new create])
     redirect_to login_path, alert: "Please sign in to continue."
+  end
+
+  def require_ical
+    return unless current_user
+    return if current_user.ical_url.present?
+    return if controller_name == "users" && action_name.in?(%w[edit update])
+    return if controller_name == "sessions" && action_name == "destroy"
+    return if controller_name == "pages"
+    redirect_to edit_user_path(current_user), alert: "Please add your Canvas iCal URL to continue."
   end
 
   def render_500(exception = nil)
