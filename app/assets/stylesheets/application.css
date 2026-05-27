@@ -680,9 +680,10 @@ footer {
 }
 
 .study-layout-preview {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.75rem;
+  height: auto;
   display: grid;
+  aspect-ratio: 1 / 1;
   gap: 0.12rem;
 }
 
@@ -695,7 +696,8 @@ footer {
 }
 
 .study-layout-preview-1 {
-  grid-template-rows: 1fr;
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr);
 }
 
 .study-layout-preview-1 span {
@@ -703,25 +705,21 @@ footer {
 }
 
 .study-layout-preview-2 {
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
 }
 
 .study-layout-preview-2 span {
-  height: 0.38rem;
+  height: 100%;
 }
 
 .study-layout-preview-3 {
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
 }
 
 .study-layout-preview-3 span {
-  height: 0.24rem;
-}
-
-.study-layout-caption {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.7rem;
-  line-height: 1;
+  height: 100%;
 }
 
 

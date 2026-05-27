@@ -25,16 +25,22 @@
         <div class="d-flex align-items-center gap-2 flex-wrap study-layout-picker">
           <span class="study-subtitle small text-muted study-layout-label" data-study-group-grid-target="label">3 per row</span>
           <button type="button" class="study-layout-button" aria-label="1 tile per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="1" data-action="click->study-group-grid#selectLayout">
-            <span class="study-layout-preview study-layout-preview-1" aria-hidden="true"><span></span></span>
-            <span class="study-layout-caption">3&times;1</span>
+            <span class="study-layout-preview study-layout-preview-1" aria-hidden="true">
+              <span></span>
+            </span>
           </button>
           <button type="button" class="study-layout-button" aria-label="2 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="2" data-action="click->study-group-grid#selectLayout">
-            <span class="study-layout-preview study-layout-preview-2" aria-hidden="true"><span></span><span></span></span>
-            <span class="study-layout-caption">3&times;2</span>
+            <span class="study-layout-preview study-layout-preview-2" aria-hidden="true">
+              <span></span><span></span>
+              <span></span><span></span>
+            </span>
           </button>
           <button type="button" class="study-layout-button" aria-label="3 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="3" data-action="click->study-group-grid#selectLayout">
-            <span class="study-layout-preview study-layout-preview-3" aria-hidden="true"><span></span><span></span><span></span></span>
-            <span class="study-layout-caption">3&times;3</span>
+            <span class="study-layout-preview study-layout-preview-3" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+            </span>
           </button>
           <% if @query.present? %>
             <%= link_to "Clear", study_groups_path, class: "btn btn-link link-secondary px-0 study-subtitle" %>
