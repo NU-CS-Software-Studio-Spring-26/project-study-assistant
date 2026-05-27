@@ -25,6 +25,16 @@
         </p>
         <%= render "description", group: @study_group %>
 
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <% @study_group.all_tags.each_with_index do |tag, index| %>
+            <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
+            <% bg_color = custom_colors[index % custom_colors.length] %>
+            <span class="badge" style="background-color: <%= bg_color %>; color: #333; border: 1px solid rgba(0,0,0,0.1); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+              #<%= tag %>
+            </span>
+          <% end %>
+        </div>
+
         <h2 class="h6 text-muted mb-2">Members ( <%= @study_group.members.size %> )</h2>
         <div class="list-group list-group-flush border-top">
           <% @study_group.members.each do |member| %>
