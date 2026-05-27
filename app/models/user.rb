@@ -11,7 +11,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :email, format: { with: /\A[^@]+@(u\.northwestern\.edu|northwestern\.edu)\z/, message: "must be a Northwestern email (@northwestern.edu or @u.northwestern.edu)" }, unless: :google_user?
   validates :password, presence: true, on: :create, unless: :google_user?
-  validates :ical_url, presence: { message: "is required — please paste your Canvas iCal URL" }, on: :create
+  validates :ical_url, presence: { message: "is required – please paste your Canvas iCal URL" }, on: :create, unless: :google_user?
 
   def google_user?
     provider == "google_oauth2"
