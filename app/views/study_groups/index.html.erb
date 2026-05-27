@@ -10,21 +10,39 @@
   <%= link_to "New Study Group", new_study_group_path, class: "custom-orange-btn text-decoration-none d-inline-flex align-items-center justify-content-center" %>
 </div>
 
-<!-- Search Form Section -->
-<%= form_with url: study_groups_path, method: :get, class: "row g-2 align-items-end mb-5" do |form| %>
-  <div class="col-12 col-md-8 col-lg-6">
-    <%= form.label :query, "Search by title, tags, or study style", class: "form-label search-label" %>
-    <%= form.search_field :query, value: @query, class: "form-control custom-search-input", placeholder: "e.g. calculus, online, quiet" %>
-  </div>
-  <div class="col-12 col-md-auto">
-    <%= form.submit "Search", class: "custom-orange-btn" %>
-  </div>
-  <% if @query.present? %>
-    <div class="col-12 col-md-auto">
-      <%= link_to "Clear", study_groups_path, class: "btn btn-link link-secondary px-0 study-subtitle" %>
+<div data-controller="study-group-grid" data-study-group-grid-columns-value="3" data-study-group-grid-storage-key-value="study-group-grid-columns">
+  <!-- Search Form Section -->
+  <%= form_with url: study_groups_path, method: :get, class: "row g-3 align-items-end mb-4" do |form| %>
+    <div class="col-12 col-lg-5">
+      <%= form.label :query, "Search by title, tags, or study style", class: "form-label search-label" %>
+      <%= form.search_field :query, value: @query, class: "form-control custom-search-input", placeholder: "e.g. calculus, online, quiet" %>
+    </div>
+    <div class="col-12 col-lg-7">
+      <div class="d-flex flex-wrap align-items-end gap-3 study-search-controls">
+        <div class="d-flex gap-2 flex-wrap align-items-end">
+          <%= form.submit "Search", class: "custom-orange-btn" %>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap study-layout-picker">
+          <span class="study-subtitle small text-muted study-layout-label" data-study-group-grid-target="label">3 per row</span>
+          <button type="button" class="study-layout-button" aria-label="1 tile per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="1" data-action="click->study-group-grid#selectLayout">
+            <span class="study-layout-preview study-layout-preview-1" aria-hidden="true"><span></span></span>
+            <span class="study-layout-caption">3&times;1</span>
+          </button>
+          <button type="button" class="study-layout-button" aria-label="2 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="2" data-action="click->study-group-grid#selectLayout">
+            <span class="study-layout-preview study-layout-preview-2" aria-hidden="true"><span></span><span></span></span>
+            <span class="study-layout-caption">3&times;2</span>
+          </button>
+          <button type="button" class="study-layout-button" aria-label="3 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="3" data-action="click->study-group-grid#selectLayout">
+            <span class="study-layout-preview study-layout-preview-3" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="study-layout-caption">3&times;3</span>
+          </button>
+          <% if @query.present? %>
+            <%= link_to "Clear", study_groups_path, class: "btn btn-link link-secondary px-0 study-subtitle" %>
+          <% end %>
+        </div>
+      </div>
     </div>
   <% end %>
-<% end %>
 
 <!-- Empty State -->
 <% if @study_groups.empty? %>
@@ -36,25 +54,6 @@
     <% end %>
   </div>
 <% end %>
-
-<div data-controller="study-group-grid" data-study-group-grid-scale-value="1" data-study-group-grid-storage-key-value="study-group-grid-scale">
-  <div class="d-flex justify-content-end align-items-center gap-3 mb-3 flex-wrap study-grid-toolbar">
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <span class="study-subtitle small">Tile size</span>
-      <span class="study-subtitle small text-muted" data-study-group-grid-target="label">100%</span>
-    </div>
-    <input
-      type="range"
-      min="0.75"
-      max="1.25"
-      step="0.01"
-      value="1"
-      class="form-range study-group-size-slider"
-      aria-label="Study group tile size"
-      data-study-group-grid-target="slider"
-      data-action="input->study-group-grid#select"
-    >
-  </div>
 
   <!-- Groups List -->
   <div class="study-group-grid" data-study-group-grid-target="grid">

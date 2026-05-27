@@ -491,21 +491,24 @@ footer {
   background-color: #d9663d;
 }
 .study-group-grid {
+  --study-group-columns: 3;
   --study-group-scale: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, calc(24rem * var(--study-group-scale)));
+  grid-template-columns: repeat(var(--study-group-columns), minmax(0, 1fr));
   gap: calc(1.5rem * var(--study-group-scale));
   justify-content: start;
 }
 
-.study-grid-toolbar {
-  max-width: 520px;
-  margin-left: auto;
+.study-search-controls {
+  width: 100%;
 }
 
-.study-group-size-slider {
-  width: min(320px, 100%);
-  accent-color: #f27b50;
+.study-layout-picker {
+  min-width: 0;
+}
+
+.study-layout-label {
+  min-width: 4.5rem;
 }
 
 @media (max-width: 767.98px) {
@@ -520,7 +523,7 @@ footer {
 
 .study-group-grid .group-card {
   width: 100%;
-  font-size: calc(0.95rem * var(--study-group-scale));
+  font-size: calc(1rem * var(--study-group-scale));
 }
 .group-card {
   background-color: #ffffff;
@@ -532,7 +535,7 @@ footer {
 }
 .group-banner-wrapper {
   position: relative;
-  height: 7.75em;
+  height: 8.5em;
   overflow: hidden;
 }
 .group-banner {
@@ -541,7 +544,7 @@ footer {
   object-fit: cover;
 }
 .group-card-body {
-  padding: 1.15em 1.45em 1.2em;
+  padding: 1.25em 1.55em 1.3em;
 }
 .group-name {
   font-family: 'Share Tech Mono', monospace;
@@ -563,26 +566,26 @@ footer {
 .group-description {
   font-family: 'Outfit', sans-serif;
   color: #7d7d7d;
-  font-size: 0.95em;
-  line-height: 1.45;
-  margin-bottom: 0.85em;
+  font-size: 0.92em;
+  line-height: 1.5;
+  margin-bottom: 0.95em;
 }
 .orange-dot {
-  width: 12px;
-  height: 12px;
+  width: 0.75em;
+  height: 0.75em;
   background-color: #f27b50;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 6px;
+  margin-right: 0.45em;
 }
 .meta-row {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.88em;
+  font-size: 0.92em;
   color: #4a4a4a;
 }
 
 .group-time-row {
-  font-size: 0.68em;
+  font-size: 0.72em;
   line-height: 1.15;
   color: #4a4a4a;
 }
@@ -603,9 +606,9 @@ footer {
   color: #333;
   border: 1px solid rgba(0, 0, 0, 0.1);
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.48em;
+  font-size: 0.5em;
   line-height: 1;
-  padding: 0.18em 0.34em;
+  padding: 0.2em 0.36em;
 }
 
 .group-created-row {
@@ -623,8 +626,8 @@ footer {
 }
 
 .study-group-grid .row.g-3 {
-  --bs-gutter-x: 0.7em;
-  --bs-gutter-y: 0.7em;
+  --bs-gutter-x: 0.8em;
+  --bs-gutter-y: 0.8em;
 }
 
 .study-group-grid .group-tags-row {
@@ -637,18 +640,88 @@ footer {
 .study-group-grid .btn-sm,
 .study-group-grid .badge,
 .study-group-grid .custom-orange-btn {
-  font-size: 0.94em;
+  font-size: 0.96em;
 }
 
 .study-group-grid .btn-sm,
 .study-group-grid .badge,
 .study-group-grid .custom-orange-btn {
-  padding: 0.28em 0.55em;
+  padding: 0.3em 0.58em;
 }
 
 .study-group-grid .custom-orange-btn {
   min-width: 0;
   min-height: 0;
+}
+
+.study-layout-button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 3.2rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #d7dce3;
+  border-radius: 10px;
+  background: #fff;
+  color: #5b5654;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.study-layout-button:hover {
+  border-color: #f27b50;
+  box-shadow: 0 4px 12px rgba(242, 123, 80, 0.12);
+}
+
+.study-layout-button.is-active {
+  border-color: #f27b50;
+  box-shadow: 0 0 0 3px rgba(242, 123, 80, 0.14);
+}
+
+.study-layout-preview {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.study-layout-preview span {
+  display: block;
+  width: 100%;
+  border-radius: 3px;
+  background: #f27b50;
+  opacity: 0.8;
+}
+
+.study-layout-preview-1 {
+  grid-template-rows: 1fr;
+}
+
+.study-layout-preview-1 span {
+  height: 100%;
+}
+
+.study-layout-preview-2 {
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.study-layout-preview-2 span {
+  height: 0.38rem;
+}
+
+.study-layout-preview-3 {
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.study-layout-preview-3 span {
+  height: 0.24rem;
+}
+
+.study-layout-caption {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 
