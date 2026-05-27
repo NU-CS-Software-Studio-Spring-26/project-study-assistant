@@ -38,31 +38,28 @@
 <% end %>
 
 <!-- Groups List -->
-<div class="d-flex flex-column">
+<div class="row row-cols-1 row-cols-md-2 g-4">
   <% @study_groups.each do |group| %>
     <% current_user_is_member = group.members.include?(current_user) %>
-    
-    <div class="group-card">
-      <!-- Banner Image using your custom wrapper -->
-      <div class="group-banner-wrapper">
+    <div class="col d-flex">
+      <div class="group-card h-100 w-100 d-flex flex-column">
+        <!-- Banner Image using your custom wrapper -->
+        <div class="group-banner-wrapper">
   <% default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" %>
   
   <%# .presence checks if the column is filled. If empty, it uses the default banner %>
   <img src="<%= group.banner_url || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
 
 
-  <div class="group-description">
-  <%= render "description", group: group %>
-</div>
-
-
-
-</div>
+        <div class="group-description">
+          <%= render "description", group: group %>
+        </div>
+      </div>
 
       <div class="group-card-body">
         <div class="row g-3">
           <!-- Left side content -->
-          <div class="col-12 col-md-8">
+          <div class="col-12 col-md-7">
             <h2 class="group-name">
               <%= link_to group.name, study_group_path(group) %>
             </h2>
@@ -91,7 +88,7 @@
             </div>
           </div>
           <!-- Right side Actions -->
-          <div class="col-12 col-md-4 text-md-end d-flex flex-column justify-content-between align-items-md-end">
+          <div class="col-12 col-md-5 text-md-end d-flex flex-column justify-content-between align-items-md-end">
             <div class="mb-2">
               <% if current_user_is_member %>
                 <%= link_to "Enter Group", study_group_path(group), class: "custom-orange-btn text-decoration-none d-inline-block" %>
@@ -101,14 +98,15 @@
             </div>
 
 
-            <div class="study-subtitle d-flex align-items-center gap-2" style="font-size: 1rem; color: #4a4a4a;">
-            <%= image_tag "/clock.png", 
-                alt: "Clock Icon", 
-                style: "width: 25px; height: 25px; image-rendering: pixelated;" %>
-            <span>
-            <%= study_group_schedule(group) %>
-          </span>
-        </div>
+            <div class="study-subtitle d-flex align-items-start gap-1 flex-nowrap group-time-row" style="color: #4a4a4a;">
+              <%= image_tag "/clock.png", 
+                  alt: "Clock Icon", 
+                  class: "group-time-icon", 
+                  style: "image-rendering: pixelated;" %>
+              <span class="group-time-text">
+                <%= study_group_schedule(group) %>
+              </span>
+            </div>
             
             <div>
               <% if current_user_is_member %>
@@ -137,6 +135,7 @@
 
         </div>
       </div>
+    </div>
     </div>
   <% end %>
 </div>

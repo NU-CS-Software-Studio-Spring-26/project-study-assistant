@@ -544,6 +544,22 @@ footer {
   color: #4a4a4a;
 }
 
+.group-time-row {
+  font-size: 0.9rem;
+}
+
+.group-time-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.group-time-text {
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 
  
 .clock{
