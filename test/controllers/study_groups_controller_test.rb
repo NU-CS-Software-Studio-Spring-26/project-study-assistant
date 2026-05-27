@@ -141,6 +141,45 @@ class StudyGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "Calculus Review", response.body
   end
 
+  test "should render same-day and multi-day study schedules" do
+    same_day_start = 2.days.from_now.change(hour: 14, min: 0)
+    same_day_end = same_day_start + 2.hours
+    multi_day_start = 3.days.from_now.change(hour: 18, min: 0)
+    multi_day_end = multi_day_start + 1.day + 2.hours
+    same_day_schedule = "#{same_day_start.strftime("%a, %b %-d")} · #{same_day_start.strftime("%-I:%M %p")}-#{same_day_end.strftime("%-I:%M %p")}"
+    multi_day_schedule = "#{multi_day_start.strftime("%a, %b %-d at %-I:%M %p")} - #{multi_day_end.strftime("%a, %b %-d at %-I:%M %p")}"
+
+    same_day_group = StudyGroup.create!(
+      name: "Same Day Session",
+      start_time: same_day_start,
+      end_time: same_day_end,
+      location_mode: "Online",
+      communication_style: "Quiet",
+      creator: @user,
+      join_password: "",
+      tags: []
+    )
+    same_day_group.group_memberships.create!(user: @user)
+
+    multi_day_group = StudyGroup.create!(
+      name: "Multi Day Session",
+      start_time: multi_day_start,
+      end_time: multi_day_end,
+      location_mode: "Online",
+      communication_style: "Quiet",
+      creator: @user,
+      join_password: "",
+      tags: []
+    )
+    multi_day_group.group_memberships.create!(user: @user)
+
+    get study_groups_url
+
+    assert_response :success
+    assert_match same_day_schedule, response.body
+    assert_match multi_day_schedule, response.body
+  end
+
   test "should join study group" do
     delete logout_url
     second_user = users(:two)

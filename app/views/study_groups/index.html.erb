@@ -106,7 +106,7 @@
                 alt: "Clock Icon", 
                 style: "width: 25px; height: 25px; image-rendering: pixelated;" %>
             <span>
-            <%= group.start_time.strftime("%A, %B %d") %> – <%= group.end_time.strftime("%A, %B %d") %>
+            <%= study_group_schedule(group) %>
           </span>
         </div>
             

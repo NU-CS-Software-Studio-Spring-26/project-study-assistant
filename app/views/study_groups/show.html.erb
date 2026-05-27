@@ -19,12 +19,11 @@
         <p class="text-muted small mb-4">
           <strong>Created by:</strong> <%= @study_group.creator.name %>
         </p>
-        
-        <%# Hidden or minimized elements if they aren't explicitly visible in screenshot profile %>
-        <div class="d-none">
-          <p><strong>Starts:</strong> <%= @study_group.start_time.strftime("%a, %b %-d") %></p>
-          <%= render "description", group: @study_group %>
-        </div>
+
+        <p class="text-muted small mb-2">
+          <strong>When:</strong> <%= study_group_schedule(@study_group) %>
+        </p>
+        <%= render "description", group: @study_group %>
 
         <h2 class="h6 text-muted mb-2">Members ( <%= @study_group.members.size %> )</h2>
         <div class="list-group list-group-flush border-top">
