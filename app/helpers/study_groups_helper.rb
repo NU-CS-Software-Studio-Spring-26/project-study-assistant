@@ -4,7 +4,7 @@ module StudyGroupsHelper
     end_time = study_group.end_time.in_time_zone
 
     if start_time.to_date == end_time.to_date
-      "#{start_time.strftime('%a, %b %-d')} · #{start_time.strftime('%-I:%M %p')}-#{end_time.strftime('%-I:%M %p')}"
+      "#{start_time.strftime('%a, %b %-d')} from #{start_time.strftime('%-I:%M %p')} - #{end_time.strftime('%-I:%M %p')}"
     else
       safe_join([
         "#{start_time.strftime('%a, %b %-d at %-I:%M %p')} -",
