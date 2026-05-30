@@ -53,7 +53,7 @@ export default class extends Controller {
   }
 
   scaleForColumns(columns) {
-    return 3 / columns
+    return 1;
   }
 
   labelForColumns(columns) {

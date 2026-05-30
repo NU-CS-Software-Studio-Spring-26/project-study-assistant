@@ -1,7 +1,6 @@
 <% content_for :title, "Groups" %>
 
 
-<!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h1 class="study-title mb-0">Study Groups</h1>
@@ -11,7 +10,6 @@
 </div>
 
 <div data-controller="study-group-grid" data-study-group-grid-columns-value="3" data-study-group-grid-storage-key-value="study-group-grid-columns">
-  <!-- Search Form Section -->
   <%= form_with url: study_groups_path, method: :get, class: "row g-3 align-items-end mb-4" do |form| %>
     <div class="col-12 col-lg-5">
       <%= form.label :query, "Search by title, tags, or study style", class: "form-label search-label" %>
@@ -50,7 +48,6 @@
     </div>
   <% end %>
 
-<!-- Empty State -->
 <% if @study_groups.empty? %>
   <div class="alert alert-light border text-center p-5 study-subtitle">
     <% if @query.present? %>
@@ -61,28 +58,20 @@
   </div>
 <% end %>
 
-  <!-- Groups List -->
   <div class="study-group-grid" data-study-group-grid-target="grid">
     <% @study_groups.each do |group| %>
       <% current_user_is_member = group.members.include?(current_user) %>
       <div class="col d-flex">
         <div class="group-card h-100 w-100 d-flex flex-column">
-        <!-- Banner Image using your custom wrapper -->
         <div class="group-banner-wrapper">
   <% default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" %>
   
   <%# .presence checks if the column is filled. If empty, it uses the default banner %>
-  <img src="<%= group.banner_url || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
-
-
-        <div class="group-description">
-          <%= render "description", group: group %>
+  <img src="<%= group.banner_url.presence || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
         </div>
-      </div>
 
       <div class="group-card-body">
         <div class="row g-3">
-          <!-- Left side content -->
           <div class="col-12 col-md-7">
             <h2 class="group-name">
               <%= link_to group.name, study_group_path(group) %>
@@ -94,22 +83,23 @@
 
             <div class="study-subtitle d-flex align-items-start gap-1 flex-nowrap group-time-row mb-3">
               <%= image_tag "/clock.png",
-                  alt: "Clock Icon",
-                  class: "group-time-icon",
-                  style: "image-rendering: pixelated;" %>
+                alt: "Clock Icon",
+                class: "group-time-icon",
+                style: "image-rendering: pixelated;" %>
               <span class="group-time-text">
                 <%= study_group_schedule(group) %>
               </span>
             </div>
             
-            <div class="group-description">
-              <%= render "description", group: group %>
-            </div>
+            <% if group.description.present? %>
+              <div class="group-description text-muted" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word;">
+                <%= group.description %>
+              </div>
+            <% end %>
           </div>
         </div>
 
-        <!-- Tags Layout -->
-        <div class="group-tags-row d-flex flex-wrap gap-2 mb-3">
+        <div class="group-tags-row d-flex flex-wrap gap-2 mb-3 mt-3">
           <% group.all_tags.each_with_index do |tag, index| %>
             <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
             <% bg_color = custom_colors[index % custom_colors.length] %>
