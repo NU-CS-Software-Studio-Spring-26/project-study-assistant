@@ -1,5 +1,6 @@
 class AssignmentsController < ApplicationController
   before_action :require_login
+  skip_before_action :require_ical, only: :study_plan
   before_action :set_assignment, only: %i[ show edit update destroy ]
 
   def index
@@ -79,6 +80,10 @@ class AssignmentsController < ApplicationController
     @assignment = current_user.assignments.find(params[:id])
     @assignment.update(done: !@assignment.done)
     head :ok
+  end
+
+  def study_plan
+    render json: { plan: StudyPlanSuggestionService.new(current_user).call }
   end
 
   private

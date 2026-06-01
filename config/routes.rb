@@ -4,6 +4,7 @@ Rails.application.routes.draw do
       patch :toggle_done
     end
   end
+  get "/study_plan", to: "assignments#study_plan", as: "study_plan"
   resources :users, except: [ :index ] do
     post :sync_ical, on: :member
   end
