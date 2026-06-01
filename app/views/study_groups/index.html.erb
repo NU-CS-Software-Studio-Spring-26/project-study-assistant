@@ -1,7 +1,5 @@
 <% content_for :title, "Groups" %>
 
-
-<!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h1 class="study-title mb-0">Study Groups</h1>
@@ -11,7 +9,6 @@
 </div>
 
 <div data-controller="study-group-grid" data-study-group-grid-columns-value="3" data-study-group-grid-storage-key-value="study-group-grid-columns">
-  <!-- Search Form Section -->
   <%= form_with url: study_groups_path, method: :get, class: "row g-3 align-items-end mb-4" do |form| %>
     <div class="col-12 col-lg-5">
       <%= form.label :query, "Search by title, tags, or study style", class: "form-label search-label" %>
@@ -50,54 +47,45 @@
     </div>
   <% end %>
 
-<!-- Empty State -->
-<% if @study_groups.empty? %>
-  <div class="alert alert-light border text-center p-5 study-subtitle">
-    <% if @query.present? %>
-      No groups matched "<%= @query %>".
-    <% else %>
-      No groups yet. Create the first one!
-    <% end %>
-  </div>
-<% end %>
+  <% if @study_groups.empty? %>
+    <div class="alert alert-light border text-center p-5 study-subtitle">
+      <% if @query.present? %>
+        No groups matched "<%= @query %>".
+      <% else %>
+        No groups yet. Create the first one!
+      <% end %>
+    </div>
+  <% end %>
 
-  <!-- Groups List -->
   <div class="study-group-grid" data-study-group-grid-target="grid">
     <% @study_groups.each do |group| %>
       <% current_user_is_member = group.members.include?(current_user) %>
       <div class="col d-flex">
         <div class="group-card h-100 w-100 d-flex flex-column">
-        <!-- Banner Image using your custom wrapper -->
-        <div class="group-banner-wrapper">
-  <% default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" %>
-  
-  <%# .presence checks if the column is filled. If empty, it uses the default banner %>
-  <img src="<%= group.banner_url || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
+          <div class="group-banner-wrapper">
+            <% default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" %>
+            <%# .presence checks if the column is filled. If empty, it uses the default banner %>
+            <img src="<%= group.banner_url || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
+            <div class="group-description">
+              <%= render "description", group: group %>
+            </div>
+          </div>
 
-
-        <div class="group-description">
-          <%= render "description", group: group %>
-        </div>
-      </div>
-
-      <div class="group-card-body">
-        <div class="row g-3">
-          <!-- Left side content -->
-          <div class="col-12 col-md-7">
+          <div class="group-card-body d-flex flex-column flex-grow-1">
             <h2 class="group-name">
               <%= link_to group.name, study_group_path(group) %>
             </h2>
             
-            <div class="study-subtitle mb-3 text-nowrap group-created-row">
+            <div class="study-subtitle mb-3 group-created-row" style="word-break: break-word;">
               Created by&nbsp;<strong><%= group.creator.name %></strong>
             </div>
 
-            <div class="study-subtitle d-flex align-items-start gap-1 flex-nowrap group-time-row mb-3">
+            <div class="study-subtitle d-flex align-items-start gap-1 group-time-row mb-3">
               <%= image_tag "/clock.png",
-                  alt: "Clock Icon",
-                  class: "group-time-icon",
-                  style: "image-rendering: pixelated;" %>
-              <span class="group-time-text">
+                alt: "Clock Icon",
+                class: "group-time-icon",
+                style: "image-rendering: pixelated; margin-top: 2px;" %>
+              <span class="group-time-text" style="white-space: normal; word-break: break-word;">
                 <%= study_group_schedule(group) %>
               </span>
             </div>
@@ -105,57 +93,51 @@
             <div class="group-description">
               <%= render "description", group: group %>
             </div>
-          </div>
-        </div>
 
-        <!-- Tags Layout -->
-        <div class="group-tags-row d-flex flex-wrap gap-2 mb-3">
-          <% group.all_tags.each_with_index do |tag, index| %>
-            <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
-            <% bg_color = custom_colors[index % custom_colors.length] %>
-            <span class="badge group-tag-badge" style="background-color: <%= bg_color %>;">
-              #<%= tag %>
-            </span>
-          <% end %>
-        </div>
-
-        <div class="row g-3 align-items-center study-group-bottom-row">
-          <div class="col-12 col-md-7">
-            <div class="meta-row">
-             <span class="orange-dot"></span> <%= pluralize(group.members.size, "Member") %>
-            </div>
-          </div>
-          <div class="col-12 col-md-5 text-md-end">
-            <div>
-              <% if current_user_is_member %>
-                <% if group.creator == current_user %>
-                  <div class="group-owner-note text-muted small study-subtitle text-nowrap d-inline-flex align-items-center justify-content-end w-100">
-                    You created this group.
-                  </div>
-                <% else %>
-                  <%= button_to "Leave Group", leave_study_group_path(group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{group.name}?" } } %>
-                <% end %>
-              <% else %>
-                <%= form_with url: join_study_group_path(group), method: :post, class: "d-grid gap-2" do |join_form| %>
-                  <% if group.password_protected? %>
-                    <%= password_field_tag :join_password, nil, class: "form-control form-control-sm", placeholder: "Password" %>
-                  <% else %>
-                    <%= hidden_field_tag :join_password, "" %>
-                  <% end %>
-                  <div class="d-inline-flex justify-content-end align-items-center gap-2">
-                    <span class="badge <%= group.password_protected? ? "text-bg-warning" : "text-bg-success" %>">
-                      <%= group.password_protected? ? "Password" : "Open" %>
-                    </span>
-                    <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm" %>
-                  </div>
-                <% end %>
+            <div class="group-tags-row d-flex flex-wrap gap-2 mb-3 mt-auto pt-3">
+              <% group.all_tags.each_with_index do |tag, index| %>
+                <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
+                <% bg_color = custom_colors[index % custom_colors.length] %>
+                <span class="badge group-tag-badge" style="background-color: <%= bg_color %>; color: #333;">
+                  #<%= tag %>
+                </span>
               <% end %>
             </div>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 study-group-bottom-row w-100">
+              <div class="meta-row text-nowrap">
+                <span class="orange-dot"></span> <%= pluralize(group.members.size, "Member") %>
+              </div>
+              
+              <div class="d-flex justify-content-end" style="min-width: 0; flex: 1;">
+                <% if current_user_is_member %>
+                  <% if group.creator == current_user %>
+                    <div class="group-owner-note text-muted small study-subtitle text-end w-100">
+                      You created this group.
+                    </div>
+                  <% else %>
+                    <%= button_to "Leave Group", leave_study_group_path(group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{group.name}?" } } %>
+                  <% end %>
+                <% else %>
+                  <%= form_with url: join_study_group_path(group), method: :post, class: "d-flex flex-column align-items-end gap-2 w-100" do |join_form| %>
+                    <% if group.password_protected? %>
+                      <%= password_field_tag :join_password, nil, class: "form-control form-control-sm", placeholder: "Password", style: "max-width: 150px;" %>
+                    <% else %>
+                      <%= hidden_field_tag :join_password, "" %>
+                    <% end %>
+                    <div class="d-flex flex-wrap justify-content-end align-items-center gap-2">
+                      <span class="badge <%= group.password_protected? ? "text-bg-warning" : "text-bg-success" %>">
+                        <%= group.password_protected? ? "Password" : "Open" %>
+                      </span>
+                      <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm text-nowrap" %>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+
           </div>
         </div>
-
-      </div>
-    </div>
       </div>
     <% end %>
   </div>
