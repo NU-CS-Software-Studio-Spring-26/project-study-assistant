@@ -1,4 +1,19 @@
 module StudyGroupsHelper
+  CENSORED_WORDS = %w[
+    asshole
+    bastard
+    bitch
+    bitching
+    crap
+    cunt
+    dick
+    fuck
+    fucker
+    shitty
+    shit
+    piss
+  ].freeze
+
   def study_group_schedule(study_group)
     start_time = study_group.start_time.in_time_zone
     end_time = study_group.end_time.in_time_zone
@@ -25,5 +40,16 @@ module StudyGroupsHelper
 
   def study_group_time_separator(start_time, end_time)
     start_time.strftime('%p') == end_time.strftime('%p') ? '–' : "#{start_time.strftime('%p')} –"
+  end
+
+  def censor_chat_content(content)
+    text = content.to_s.dup
+    return text if text.blank?
+
+    pattern = /\b(#{CENSORED_WORDS.sort_by { |word| -word.length }.map { |word| Regexp.escape(word) }.join('|')})\b/i
+
+    text.gsub(pattern) do |match|
+      '#' * match.length
+    end
   end
 end

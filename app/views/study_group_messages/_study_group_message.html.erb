@@ -8,5 +8,5 @@
       data-local-time-iso-value="<%= message.created_at.iso8601 %>"
     ><%= message.created_at.in_time_zone.strftime("%b %-d, %-I:%M %p") %></time>
   </div>
-  <div><%= message.content %></div>
+  <div><%= censor_chat_content(message.content) %></div>
 </div>

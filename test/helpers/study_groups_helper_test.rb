@@ -32,4 +32,12 @@ class StudyGroupsHelperTest < ActionView::TestCase
       study_group_schedule(group).to_s
     )
   end
+
+  test "censors bad words with hash characters" do
+    assert_equal "This is #### and #####.", censor_chat_content("This is shit and bitch.")
+  end
+
+  test "censors bad words case-insensitively" do
+    assert_equal "#######", censor_chat_content("FuCkEr")
+  end
 end
