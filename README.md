@@ -37,7 +37,7 @@ ruby bin/bundler-audit
 
 ## Configuration
 
-Database credentials should be provided with environment variables instead of committed secrets:
+Database credentials and the AI study-plan API key should be provided with environment variables instead of committed secrets:
 
 ```env
 POSTGRES_USER=postgres
@@ -45,7 +45,31 @@ POSTGRES_PASSWORD=postgres
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 DATABASE_URL=postgres://user:password@host/database
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_BASE_URL=https://api.openai.com/v1/chat/completions
 ```
+
+For local development, copy `.env.example` to `.env`, then fill in your own values. If `OPENAI_API_KEY` is missing, the dashboard study plan falls back to a local heuristic summary.
+
+### OpenAI setup
+
+1. Create or sign in to your OpenAI account.
+2. Generate an API key in your account settings.
+3. Put that key into `OPENAI_API_KEY` in your `.env` file.
+4. Optional: override `OPENAI_MODEL` or `OPENAI_BASE_URL` if you are using a different provider or deployment.
+
+### Heroku setup
+
+Set the same values as config vars on Heroku:
+
+```bash
+heroku config:set OPENAI_API_KEY=your_openai_api_key
+heroku config:set OPENAI_MODEL=gpt-4.1-mini
+heroku config:set OPENAI_BASE_URL=https://api.openai.com/v1/chat/completions
+```
+
+If you do not set the API key, the app still works and shows the local fallback study plan.
 
 ## Data Model
 
