@@ -97,9 +97,6 @@ font-family: 'Share Tech Mono', monospace;
 
 
 
-.card:hover {
-  transform: scale(1.05);
-}
 
 .card-img {
   width: 100%;
@@ -487,6 +484,18 @@ footer {
   min-height: 38px;
   font-family: 'Share Tech Mono', monospace;
 }
+
+.custom-orange-btn-n{
+  background-color: #f27b50;
+  border: none;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  min-width: 45px;
+  min-height: 38px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 5px;
+}
 .custom-orange-btn:hover {
   background-color: #d9663d;
 }
@@ -534,7 +543,7 @@ footer {
   margin-bottom: 0;
 }
 .group-banner-wrapper {
-  position: relative;
+  position: fixed;
   height: 8.5em;
   overflow: hidden;
 }
@@ -551,7 +560,7 @@ footer {
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 0.2rem;
-  font-size: 1em;
+  font-size: 2em;
 }
 .group-name a {
   color: #4a4a4a;
@@ -591,10 +600,11 @@ footer {
 }
 
 .group-time-icon {
-  width: 1em;
-  height: 1em;
+  width: 5em;
+  height: 5em;
   flex: 0 0 auto;
   margin-top: 0;
+  margin-right: 5;
 }
 
 .group-time-text {
@@ -724,12 +734,12 @@ footer {
 
 
  
-.clock{
-  width: 12px;
-  height: 12px;
+.ClockIcon{
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 6px;
+  margin-right: 7px;
 }
 
 
@@ -771,12 +781,19 @@ body {
   background-color: #ff9b85;
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 10px 20px;
+  border-radius: 6px;
+  padding: 5px 20px;
   font-weight: bold;
+  height: 64px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+.reservers{
+  align-items: center;
+  justify-content: center;
+
+
 }
 .btn-reserve:hover {
   background-color: #e0846f;
@@ -803,3 +820,21 @@ body {
   transform: scale(1.05);
 }
 
+
+
+
+/* Keep your standard card appearance crisp and predictable */
+.group-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.4s ease-in-out; 
+}
+
+.password-text{
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 20px;
+  color: #6b5c54;
+
+}

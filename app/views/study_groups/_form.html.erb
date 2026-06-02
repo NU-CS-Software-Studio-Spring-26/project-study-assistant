@@ -62,30 +62,52 @@
   </div>
 
   <!-- Choose Group Banner Section -->
-  <div class="mb-4 mt-4">
-    <label class="form-label search-label d-block mb-2">Choose a Group Banner Style</label>
-    <div class="row g-2">
-      <% presets = [
-           { name: "Water Lilies", url: "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" },
-           { name: "Howls Moving Castle", url: "https://i.redd.it/8r788se4ay661.jpg" },
-           { name: "Ariety", url: "https://wallpapercave.com/wp/wp7147395.png" }
-         ] %>
+  <div class="mb-5 mt-4">
+  <div class="row row-cols-3 g-4">
+    <% presets = [
+         { name: "Arriety", url: "https://i.redd.it/8r788se4ay661.jpg", css: nil },
+         { name: "Howls Moving Castle", url: "https://external-preview.redd.it/howls-moving-castle-v0-imYs0f7aP4r1jKfehK-eehRjJvEVCETuT43_NuMCeSo.jpg?auto=webp&s=adcd88fa0f3936b022a6b929b199d96408a1820c", css: nil },
+         { name: "Totoro", url: "https://preview.redd.it/i-made-a-set-of-totoro-wallpaper-for-pc-and-mobile-phone-v0-aqhyo4zoqiqb1.jpg?width=4000&format=pjpg&auto=webp&s=529ce3d113d751095d7670e770b4bbdc2feadb3e", css: nil },
+         { name: "Spirited Away", url: "https://c4.wallpaperflare.com/wallpaper/556/593/206/anime-studio-ghibli-spirted-away-spirited-away-wallpaper-preview.jpg", css: nil },
+         { name: "Ponyo", url: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/134dd0d8-53a6-44e0-9e48-cb6bcf7f8f71/d88hvf1-12438e3d-3a56-4912-9d43-5cda1ec571af.jpg/v1/fill/w_1024,h_640,q_75,strp/ponyo_wallpaper_hd_by_atonyynot_d88hvf1-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjQwIiwicGF0aCI6Ii9mLzEzNGRkMGQ4LTUzYTYtNDRlMC05ZTQ4LWNiNmJjZjdmOGY3MS9kODhodmYxLTEyNDM4ZTNkLTNhNTYtNDkxMi05ZDQzLTVjZGExZWM1NzFhZi5qcGciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.Dn7eaL-cLWmYF9RNwnGL2aQ5xWFA7wR74s-7n2DbpAQ
+         ", css: nil },
 
-      <% presets.each do |preset| %>
-        <div class="col-4">
-          <label class="d-block text-center" style="cursor: pointer;">
-            <%= form.radio_button :banner_url, preset[:url], 
-                  class: "d-block mx-auto mb-2", 
-                  checked: (study_group.banner_url == preset[:url] || (study_group.new_record? && preset == presets.first)) %>
-            <div class="border rounded overflow-hidden mb-1" style="height: 65px; border-style: dashed !important;">
-              <img src="<%= preset[:url] %>" class="w-100 h-100" style="object-fit: cover;" alt="<%= preset[:name] %>">
-            </div>
-            <span class="study-subtitle" style="font-size: 0.75rem;"><%= preset[:name] %></span>
-          </label>
-        </div>
-      <% end %>
-    </div>
+
+     
+         # 2. Minimalist Solid Colors
+         { name: "Cerulean Blue", url: "banner-solid-cerulean", css: "background-color: #2A52BE;" },
+         { name: "Solid Orange", url: "banner-solid-orange", css: "background-color: #D87A53;" },
+
+         # 3. Modern Tech Gradients
+         { name: "Sunset", url: "banner-grad-sunset", css: "background: linear-gradient(135deg, #0a138f 0%, #c70a4f 100%);" },
+         { name: "Emerald", url: "banner-grad-mint", css: "background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);" }
+       ] %>
+
+    <% presets.each_with_index do |preset, idx| %>
+      <div class="ol mb-2">
+        <label class="w-100 d-flex flex-column align-items-center position-relative style-preset-container" style="cursor: pointer;">
+          
+          <%= form.radio_button :banner_url, preset[:url], class: "form-check-input style-preset-radio mb-3", checked: (idx == 0) %>
+          
+          <div class="w-100 style-preset-strip overflow-hidden shadow-sm" style="border-radius: 12px; height: 65px;">
+            <% if preset[:css].nil? %>
+              <img src="<%= preset[:url] %>" alt="<%= preset[:name] %> Preview" class="w-100 h-100 object-fit-cover" style="display: block;">
+            <% else %>
+              <div class="w-100 h-100" style="<%= preset[:css] %>"></div>
+            <% end %>
+          </div>
+
+          <div class="mt-3 text-center">
+            <span class="study-subtitle text-dark d-block" style="font-size: 1.0em; letter-spacing: 0.05em; font-family: monospace;">
+              <%= preset[:name] %>
+            </span>
+          </div>
+
+        </label>
+      </div>
+    <% end %>
   </div>
+</div>
 
   <div class="mb-4">
     <%= form.label :description, "Group Description", class: "form-label search-label" %>
@@ -100,3 +122,5 @@
     <%= link_to "Cancel", study_groups_path, class: "btn btn-outline-secondary study-subtitle d-inline-flex align-items-center px-3", style: "border-radius: 8px;" %>
   </div>
 <% end %>
+
+

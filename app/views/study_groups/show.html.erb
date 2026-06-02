@@ -54,19 +54,36 @@
         </div>
       </div>
     </div>
+    
 
-    <%= link_to "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", class: "btn btn-reserve w-100 justify-content-center align-items-center shadow-sm", target: "_blank", rel: "noopener" do %>
-      <span>⭐ reserve a room</span>
+    <%= link_to "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", class: "btn btn-reserve w-100 h-40 justify-content-center align-items-center shadow-sm", target: "_blank", rel: "noopener" do %>
+      <div class=" reservers d-flex gap-2 align-items-center mb-3">
+      <img src="/book.svg" alt="Book Icon" width="60" height="70">
+      <span> reserve a room</span>
+    </div>
     <% end %>
+  
   </div>
 
   <div class="col-lg-9">
-    <% if @study_group.respond_to?(:banner_url) && @study_group.banner_url.present? %>
+  <%
+  preset_css_styles = {
+    "banner-solid-cerulean"   => "background-color: #2A52BE;",
+    "banner-solid-orange"     => "background-color: #D87A53;",
+    "banner-grad-sunset"      => "background: linear-gradient(135deg, #0a138f 0%, #c70a4f 100%);",
+    "banner-grad-mint"        => "background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"
+  }
+  default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg"
+  saved_url = @study_group.banner_url.present? ? @study_group.banner_url : default_banner
+  %>
+
+  <% if saved_url.start_with?("http://", "https://") %>
       <div class="mb-4 rounded-4 overflow-hidden shadow-sm" style="height: 180px;">
-        <img src="<%= @study_group.banner_url %>" class="w-100 h-100" style="object-fit: cover;" alt="Group Banner">
+        <img src="<%= saved_url %>" class="w-100 h-100" style="object-fit: cover;" alt="Group Banner">
       </div>
     <% else %>
-      <div class="mb-4 rounded-4 overflow-hidden shadow-sm" style="height: 180px; background: linear-gradient(135deg, #e3eedc, #bfcda9);"></div>
+      <% matched_style = preset_css_styles[saved_url] || "background-color: #c46d46;" %>
+      <div class="mb-4 rounded-4 overflow-hidden shadow-sm group-banner w-100" style="<%= matched_style %> height: 180px;"></div>
     <% end %>
 
     <div class="card custom-card p-4">

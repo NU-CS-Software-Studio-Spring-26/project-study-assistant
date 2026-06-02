@@ -1,5 +1,6 @@
 <% content_for :title, "Groups" %>
 
+<!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h1 class="study-title mb-0">Study Groups</h1>
@@ -8,47 +9,48 @@
   <%= link_to "New Study Group", new_study_group_path, class: "custom-orange-btn text-decoration-none d-inline-flex align-items-center justify-content-center" %>
 </div>
 
+<!-- Unified Outer Grid Wrapper to safely bind your Layout Picker targets -->
 <div data-controller="study-group-grid" data-study-group-grid-columns-value="3" data-study-group-grid-storage-key-value="study-group-grid-columns">
-  <%= form_with url: study_groups_path, method: :get, class: "row g-3 align-items-end mb-4" do |form| %>
-    <div class="col-12 col-lg-5">
+  
+  <!-- Search Form Section -->
+  <%= form_with url: study_groups_path, method: :get, class: "row g-2 align-items-end mb-5" do |form| %>
+    <div class="col-12 col-md-8 col-lg-6">
       <%= form.label :query, "Search by title, tags, or study style", class: "form-label search-label" %>
       <%= form.search_field :query, value: @query, class: "form-control custom-search-input", placeholder: "e.g. calculus, online, quiet" %>
     </div>
-    <div class="col-12 col-lg-7">
-      <div class="d-flex flex-wrap align-items-end gap-3 study-search-controls">
-        <div class="d-flex gap-2 flex-wrap align-items-end">
-          <%= form.submit "Search", class: "custom-orange-btn" %>
-        </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap study-layout-picker">
-          <span class="study-subtitle small text-muted study-layout-label" data-study-group-grid-target="label">3 per row</span>
-          <button type="button" class="study-layout-button" aria-label="1 tile per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="1" data-action="click->study-group-grid#selectLayout">
-            <span class="study-layout-preview study-layout-preview-1" aria-hidden="true">
-              <span></span>
-            </span>
-          </button>
-          <button type="button" class="study-layout-button" aria-label="2 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="2" data-action="click->study-group-grid#selectLayout">
-            <span class="study-layout-preview study-layout-preview-2" aria-hidden="true">
-              <span></span><span></span>
-              <span></span><span></span>
-            </span>
-          </button>
-          <button type="button" class="study-layout-button" aria-label="3 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="3" data-action="click->study-group-grid#selectLayout">
-            <span class="study-layout-preview study-layout-preview-3" aria-hidden="true">
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
-            </span>
-          </button>
-          <% if @query.present? %>
-            <%= link_to "Clear", study_groups_path, class: "btn btn-link link-secondary px-0 study-subtitle" %>
-          <% end %>
-        </div>
+    <div class="col-12 col-md-auto">
+      <%= form.submit "Search", class: "custom-orange-btn" %>
+    </div>
+    <div class="col-12 col-md-auto ms-md-auto">
+      <div class="d-flex align-items-center gap-2 flex-wrap study-layout-picker">
+        <span class="study-subtitle small text-muted study-layout-label" data-study-group-grid-target="label">3 per row</span>
+        <button type="button" class="study-layout-button" aria-label="1 tile per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="1" data-action="click->study-group-grid#selectLayout">
+          <span class="study-layout-preview study-layout-preview-1" aria-hidden="true">
+            <span></span>
+          </span>
+        </button>
+        <button type="button" class="study-layout-button" aria-label="2 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="2" data-action="click->study-group-grid#selectLayout">
+          <span class="study-layout-preview study-layout-preview-2" aria-hidden="true">
+            <span></span><span></span>
+            <span></span><span></span>
+          </span>
+        </button>
+        <button type="button" class="study-layout-button" aria-label="3 tiles per row" aria-pressed="false" data-study-group-grid-target="option" data-columns="3" data-action="click->study-group-grid#selectLayout">
+          <span class="study-layout-preview study-layout-preview-3" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+        <% if @query.present? %>
+          <%= link_to "Clear", study_groups_path, class: "btn btn-link link-secondary px-0 study-subtitle" %>
+        <% end %>
       </div>
     </div>
   <% end %>
 
   <% if @study_groups.empty? %>
-    <div class="alert alert-light border text-center p-5 study-subtitle">
+    <div class="alert alert-light border text-center p-5 study-subtitle mb-4">
       <% if @query.present? %>
         No groups matched "<%= @query %>".
       <% else %>
@@ -58,79 +60,131 @@
   <% end %>
 
   <div class="study-group-grid" data-study-group-grid-target="grid">
-    <% @study_groups.each do |group| %>
-      <% current_user_is_member = group.members.include?(current_user) %>
-      <div class="col d-flex">
-        <div class="group-card h-100 w-100 d-flex flex-column">
-          <div class="group-banner-wrapper">
-            <% default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg" %>
-            <%# .presence checks if the column is filled. If empty, it uses the default banner %>
-            <img src="<%= group.banner_url || default_banner %>" alt="<%= group.name %> Banner" class="group-banner">
-            <div class="group-description">
-              <%= render "description", group: group %>
-            </div>
-          </div>
+  <% @study_groups.each do |group| %>
+    <% current_user_is_member = group.members.include?(current_user) %>
+    <div class="col d-flex">
+      
+      <div class="group-card h-100 w-100 d-flex flex-column position-relative" data-controller="toggle">
+        
+        <div class="position-absolute top-0 start-0 w-100 h-100 rounded d-none" 
+             data-toggle-target="toggleable" 
+             style="background-color: rgba(0, 0, 0, 0.2); backdrop-filter: blur(0.5px); z-index: 2; pointer-events: auto;">
+        </div>
 
-          <div class="group-card-body d-flex flex-column flex-grow-1">
-            <h2 class="group-name">
-              <%= link_to group.name, study_group_path(group) %>
-            </h2>
+        <% if !current_user_is_member && group.password_protected? %>
+          <div class="position-absolute top-50 start-50 translate-middle bg-white rounded p-4 shadow d-none border" 
+               data-toggle-target="toggleable" 
+               style="width: 85%; z-index: 10;">
+               
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <p class="password-text fw-bold">Enter password to join</p>
+              <button type="button" class="btn-close small" style="font-size: 0.75rem;" data-action="click->toggle#toggle" aria-label="Close"></button>
+            </div>
+
+            <%= form_with url: join_study_group_path(group), method: :post, class: "d-flex gap-2" do |join_form| %>
+              <%= password_field_tag :join_password, nil, class: "form-control form-control-sm", placeholder: "Password" %>
+              <%= join_form.submit "Join Group", class: "custom-orange-btn btn-sm border-0 text-nowrap text-white py-1 px-3 rounded" %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="group-banner-wrapper position-relative">
+          <%
+            # 1. Fixed the 'bbackground' typo string to 'background'
+            preset_css_styles = {
+              "banner-solid-cerulean"   => "background-color: #2A52BE;",
+              "banner-solid-orange"     => "background-color: #D87A53;",
+              "banner-grad-sunset"      => "background: linear-gradient(135deg, #0a138f 0%, #c70a4f 100%);",
+              "banner-grad-mint"        => "background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"
+            }
+
+            default_banner = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg"
+            saved_url = group.banner_url.present? ? group.banner_url : default_banner
+            %>
+
+          <% if saved_url.start_with?("http://", "https://") %>
+            <img src="<%= saved_url %>" alt="<%= group.name %> Banner" class="group-banner w-100" style="height: 160px; object-fit: cover; display: block;">
+          <% else %>
+            <% matched_style = preset_css_styles[saved_url] || "background-color: #c46d46;" %>
+            <div class="group-banner w-100" style="<%= matched_style %> height: 160px;"></div>
+          <% end %>
+
+          <div class="position-absolute top-0 end-0 m-3 z-3">
+            <% if current_user_is_member %>
+              <%= link_to study_group_path(group), class: "custom-orange-btn d-flex align-items-center justify-content-center p-0", style: "width: 45px; height: 45px; text-decoration: none;" do %>
+                <span class="text-white fs-4 fw-bold">&rarr;</span>
+              <% end %>
+            <% else %>
+              <% if group.password_protected? %>
+                <button type="button" class="custom-orange-btn d-flex align-items-center justify-content-center p-0" style="width: 45px; height: 45px;" data-action="click->toggle#toggle">
+                  <span class="text-white fs-4 fw-bold">&rarr;</span>
+                </button>
+              <% else %>
+                <%= button_to join_study_group_path(group), method: :post, class: "custom-orange-btn d-flex align-items-center justify-content-center p-0 border-0", style: "width: 45px; height: 45px;" do %>
+                  <span class="text-white fs-4 fw-bold">&rarr;</span>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        
+
+          
+
+          <!-- INCREASED PADDING HERE: Changed p-3 to p-4 / p-md-5 for generous spacing -->
+          <div class="group-card-body d-flex flex-column flex-grow-1 p-4 p-md-5">
             
-            <div class="study-subtitle mb-3 group-created-row" style="word-break: break-word;">
+            <!-- Title & Member Row -->
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+              <h2 class="group-name mb-0 text-uppercase fw-bold m-0 h3">
+                <%= link_to group.name, study_group_path(group), class: "text-decoration-none text-dark" %>
+              </h2>
+              <div class="meta-row text-nowrap study-subtitle text-muted small d-flex align-items-center gap-2">
+                <span class="orange-dot" style="background-color: #c46d46; width: 10px; height: 10px; display: inline-block; border-radius: 50%;"></span> 
+                <%= pluralize(group.members.size, "Member") %>
+              </div>
+            </div>
+            
+            <!-- Created By Subtitle Row (Added mb-4 for breathing space underneath) -->
+            <div class="study-subtitle mb-4 text-muted small group-created-row" style="word-break: break-word;">
               Created by&nbsp;<strong><%= group.creator.name %></strong>
             </div>
-
-            <div class="study-subtitle d-flex align-items-start gap-1 group-time-row mb-3">
-              <%= image_tag "/clock.png",
-                alt: "Clock Icon",
-                class: "group-time-icon",
-                style: "image-rendering: pixelated; margin-top: 2px;" %>
-              <span class="group-time-text" style="white-space: normal; word-break: break-word;">
-                <%= study_group_schedule(group) %>
-              </span>
-            </div>
             
-            <div class="group-description">
+            <!-- Main Content Area: Left-bordered layout style block to mirror mockup description -->
+            <div class="group-description text-muted small mb-4 ps-3 border-start border-3" style="border-color: #dee2e6 !important;">
               <%= render "description", group: group %>
             </div>
 
-            <div class="group-tags-row d-flex flex-wrap gap-2 mb-3 mt-auto pt-3">
+            <!-- Tags Section (Pushed away cleanly using mb-5) -->
+            <div class="group-tags-row d-flex flex-wrap gap-2 mb-5 pt-2">
               <% group.all_tags.each_with_index do |tag, index| %>
                 <% custom_colors = ["#ffe7a3", "#a3ffab", "#f6bdff", "#bde7ff", "#ffc4bd"] %>
                 <% bg_color = custom_colors[index % custom_colors.length] %>
-                <span class="badge group-tag-badge" style="background-color: <%= bg_color %>; color: #333;">
+                <span class="badge group-tag-badge fw-normal" style="background-color: <%= bg_color %>; color: #333; padding: 0.5em 0.8em; border-radius: 4px;">
                   #<%= tag %>
                 </span>
               <% end %>
             </div>
 
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 study-group-bottom-row w-100">
-              <div class="meta-row text-nowrap">
-                <span class="orange-dot"></span> <%= pluralize(group.members.size, "Member") %>
+            <!-- Footer Section (Pushed straight to bottom with mt-auto, added pt-3) -->
+            <div class="mt-auto pt-3 d-flex justify-content-between align-items-center w-100">
+              <div class="study-subtitle d-flex align-items-center gap-3 group-time-row text-dark fw-bold">
+                <%= image_tag "/clock.png",
+                  alt: "Clock Icon",
+                  class: "group-time-icon me-1",
+                  style: "image-rendering: pixelated; width: 27px; height: 27px;" %>
+                <span class="group-time-text" style="white-space: normal; word-break: break-word;">
+                  <%= study_group_schedule(group) %>
+                </span>
               </div>
-              
-              <div class="d-flex justify-content-end" style="min-width: 0; flex: 1;">
+
+              <div>
                 <% if current_user_is_member %>
                   <% if group.creator == current_user %>
-                    <div class="group-owner-note text-muted small study-subtitle text-end w-100">
-                      You created this group.
-                    </div>
+                    <span class="badge text-bg-light border text-muted fw-normal">Owner</span>
                   <% else %>
-                    <%= button_to "Leave Group", leave_study_group_path(group), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Leave #{group.name}?" } } %>
-                  <% end %>
-                <% else %>
-                  <%= form_with url: join_study_group_path(group), method: :post, class: "d-flex flex-column align-items-end gap-2 w-100" do |join_form| %>
-                    <% if group.password_protected? %>
-                      <%= password_field_tag :join_password, nil, class: "form-control form-control-sm", placeholder: "Password", style: "max-width: 150px;" %>
-                    <% else %>
-                      <%= hidden_field_tag :join_password, "" %>
-                    <% end %>
-                    <div class="d-flex flex-wrap justify-content-end align-items-center gap-2">
-                      <span class="badge <%= group.password_protected? ? "text-bg-warning" : "text-bg-success" %>">
-                        <%= group.password_protected? ? "Password" : "Open" %>
-                      </span>
-                      <%= join_form.submit "Join Group", class: "btn btn-outline-primary btn-sm text-nowrap" %>
-                    </div>
+                    <%= button_to "Leave", leave_study_group_path(group), method: :delete, class: "btn btn-link btn-sm text-danger text-decoration-none p-0", form: { data: { turbo_confirm: "Leave #{group.name}?" } } %>
                   <% end %>
                 <% end %>
               </div>
