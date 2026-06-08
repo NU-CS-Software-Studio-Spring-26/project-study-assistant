@@ -112,8 +112,7 @@ class StudyPlanSuggestionService
 
     <<~PROMPT
       Build a short prioritized study plan for the next 24 hours.
-      Highlight the top 3 tasks.
-      Suggest a simple study order for those tasks.
+      Suggest a simple study order for the top 3 tasks.
       Keep it concise and easy to scan.
 
       Assignments:
