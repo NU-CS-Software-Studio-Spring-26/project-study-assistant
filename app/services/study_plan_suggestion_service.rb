@@ -10,7 +10,7 @@ class StudyPlanSuggestionService
   end
 
   def call
-    assignments = pending_assignments.limit(MAX_ASSIGNMENTS).to_a
+    assignments = prioritized_pending_assignments
     return "No assignments need attention right now." if assignments.empty?
     return fallback_summary(assignments) if api_key.blank?
 
@@ -26,6 +26,13 @@ class StudyPlanSuggestionService
 
   def pending_assignments
     user.assignments.where(done: [false, nil]).order(due_date: :asc, estimated_hours: :desc, created_at: :asc)
+  end
+
+  def prioritized_pending_assignments
+    upcoming = pending_assignments.where("due_date IS NULL OR due_date >= ?", Time.current).limit(MAX_ASSIGNMENTS).to_a
+    return upcoming if upcoming.any?
+
+    pending_assignments.limit(MAX_ASSIGNMENTS).to_a
   end
 
   def fallback_summary(assignments, reason: nil)
