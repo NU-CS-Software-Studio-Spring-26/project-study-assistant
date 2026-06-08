@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include Pagy::Method
   allow_browser versions: :modern
   stale_when_importmap_changes
   helper_method :current_user

@@ -7,7 +7,7 @@ class StudyGroupsController < ApplicationController
 
   def index
     @query = params[:query].to_s.strip
-    @study_groups = StudyGroup.includes(:creator, :members).keyword_search(@query).order(start_time: :asc)
+    @pagy, @study_groups = pagy(StudyGroup.includes(:creator, :members).keyword_search(@query).order(start_time: :asc))
   end
 
   def new

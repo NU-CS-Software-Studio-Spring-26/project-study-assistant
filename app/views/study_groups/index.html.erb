@@ -141,4 +141,10 @@
       </div>
     <% end %>
   </div>
+
+  <% if @pagy.pages > 1 %>
+    <div class="d-flex justify-content-center mt-4">
+      <%= raw @pagy.series_nav(:bootstrap) %>
+    </div>
+  <% end %>
 </div>
