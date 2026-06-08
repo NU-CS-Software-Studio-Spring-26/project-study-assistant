@@ -23,7 +23,7 @@ class AssignmentsController < ApplicationController
     when "hours_desc" then @assignments.order(estimated_hours: :desc)
     else @assignments.order(due_date: :asc)
     end
-    @assignments = sorted
+    @pagy, @assignments = pagy(sorted)
   end
 
   def show
