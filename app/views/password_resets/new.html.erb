@@ -1,0 +1,45 @@
+<% content_for :title, "Forgot Password" %>
+
+<div class="auth-page row justify-content-center align-items-center py-5">
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+
+  <div class="col-md-5">
+
+    <div class="d-flex justify-content-center align-items-center my-4">
+      <h3 class="d-flex align-items-center m-0" style="gap: 0.05px; color: #FFF4E0;">
+        <img src="/logo.svg" alt="TideTogether Icon" style="width: 5rem; height: 5rem;">
+        <span>TideTogether</span>
+      </h3>
+    </div>
+
+    <h2 class="text-center mb-4" style="color: #504441 !important; font-weight: 700; font-size: 2.5rem; letter-spacing: -0.03em;">
+      Reset your password
+    </h2>
+
+    <div class="card shadow-sm auth-card">
+      <div class="text-center m-4 mx-auto" style="color: #8c8582; font-size: 0.95rem; max-width: 90%; line-height: 1.5;">
+        Enter your Northwestern email and we'll send you a reset link if an account exists.
+      </div>
+      <div class="card-body p-4">
+        <%= form_with url: "/password/reset", method: :post, data: { turbo: false } do |form| %>
+          <div class="mb-3">
+            <%= form.label :email, "Email", class: "form-label" %>
+            <%= form.email_field :email, class: "form-control", placeholder: "example@u.northwestern.edu", autofocus: true %>
+          </div>
+          <div class="d-grid">
+            <%= form.submit "Send Reset Link", class: "btn btn-primary w-100" %>
+          </div>
+        <% end %>
+
+        <hr>
+        <p class="text-center auth-copy mb-0">
+          Remember your password? <%= link_to "Sign in", login_path %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

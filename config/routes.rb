@@ -18,6 +18,11 @@ Rails.application.routes.draw do
   get  "/login",   to: "sessions#new",     as: "login"
   post "/login",   to: "sessions#create"
   delete "/logout", to: "sessions#destroy", as: "logout"
+
+  get   "/password/reset",      to: "password_resets#new",    as: "new_password_reset"
+  post  "/password/reset",      to: "password_resets#create"
+  get   "/password/reset/edit", to: "password_resets#edit",   as: "edit_password_reset"
+  patch "/password/reset",      to: "password_resets#update"
   get "/dashboard", to: "assignments#index", as: "dashboard"
   get "/privacy", to: "pages#privacy", as: "privacy"
   get "/about", to: "pages#about", as: "about"

@@ -15,6 +15,7 @@ class User < ApplicationRecord
   validates :email, format: { with: /\A[^@]+@(u\.northwestern\.edu|northwestern\.edu)\z/, message: "must be a Northwestern email (@northwestern.edu or @u.northwestern.edu)" }, unless: :google_user?
   validates :password, presence: true, on: :create, unless: :google_user?
   validates :password, length: { minimum: 8 }, on: :create, unless: :google_user?
+  validates :password, length: { minimum: 8 }, if: -> { password.present? && persisted? }
   validate :avatar_format_and_size
   validate :terms_must_be_accepted, on: :create
 
@@ -48,6 +49,21 @@ class User < ApplicationRecord
     end
     user.save!
     user
+  end
+
+  def generate_password_reset_token!
+    update_columns(
+      reset_password_token: SecureRandom.urlsafe_base64,
+      reset_password_sent_at: Time.current
+    )
+  end
+
+  def password_reset_expired?
+    reset_password_sent_at < 2.hours.ago
+  end
+
+  def clear_password_reset!
+    update_columns(reset_password_token: nil, reset_password_sent_at: nil)
   end
 
   private

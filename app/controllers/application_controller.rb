@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
     return if controller_name == "sessions"
     return if controller_name == "pages"
     return if controller_name == "users" && action_name.in?(%w[new create])
+    return if controller_name == "password_resets"
     redirect_to login_path, alert: "Please sign in to continue."
   end
   def render_500(exception = nil)
