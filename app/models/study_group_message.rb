@@ -3,6 +3,7 @@ class StudyGroupMessage < ApplicationRecord
   belongs_to :user
 
   validates :content, presence: true, length: { maximum: 256 }
+  validates :content, profanity: true
   validate :user_must_be_group_member
 
   after_create_commit :broadcast_message

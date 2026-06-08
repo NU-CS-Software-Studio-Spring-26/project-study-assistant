@@ -12,7 +12,9 @@ class StudyGroup < ApplicationRecord
   before_validation :sync_legacy_study_time
 
   validates :name, presence: true, length: { maximum: 150 }
+  validates :name, profanity: true
   validates :description, length: { maximum: 2000 }, allow_blank: true
+  validates :description, profanity: true, allow_blank: true
   validate :tags_within_limits
 
   validates :start_time, presence: true

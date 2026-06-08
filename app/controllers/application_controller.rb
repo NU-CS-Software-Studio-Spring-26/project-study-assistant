@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
   def require_login
     return if current_user
     return if controller_name == "sessions"
+    return if controller_name == "pages"
     return if controller_name == "users" && action_name.in?(%w[new create])
     redirect_to login_path, alert: "Please sign in to continue."
   end

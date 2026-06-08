@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :study_group_messages, dependent: :destroy
   has_one_attached :avatar
 
+  attr_accessor :accept_terms
+
   normalizes :email, with: ->(email) { email.to_s.strip.downcase }
   validates :name, presence: true, length: { maximum: 100 }
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
@@ -14,6 +16,9 @@ class User < ApplicationRecord
   validates :password, presence: true, on: :create, unless: :google_user?
   validates :password, length: { minimum: 8 }, on: :create, unless: :google_user?
   validate :avatar_format_and_size
+  validate :terms_must_be_accepted, on: :create
+
+  before_save :stamp_terms_accepted_at
 
   def google_user?
     provider == "google_oauth2"
@@ -37,8 +42,27 @@ class User < ApplicationRecord
     user.provider = auth.provider
     user.uid = auth.uid
     user.google_token = auth.credentials.token
-    user.password = SecureRandom.hex(20) if user.new_record?
+    if user.new_record?
+      user.password = SecureRandom.hex(20)
+      user.terms_accepted_at = Time.current
+    end
     user.save!
     user
   end
+
+  private
+
+    def terms_must_be_accepted
+      return if google_user?
+      unless accept_terms == "1" || accept_terms == true
+        errors.add(:accept_terms, "must be accepted to create an account")
+      end
+    end
+
+    def stamp_terms_accepted_at
+      return if google_user?
+      if (accept_terms == "1" || accept_terms == true) && terms_accepted_at.blank?
+        self.terms_accepted_at = Time.current
+      end
+    end
 end

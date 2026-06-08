@@ -43,6 +43,33 @@
     </div>
   <% end %>
 
+  <% unless user.persisted? %>
+    <div class="mb-3 form-check">
+      <%= form.check_box :accept_terms, class: "form-check-input", required: true %>
+      <%= form.label :accept_terms, class: "form-check-label" do %>
+        I agree to the
+        <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Service and Community Guidelines</a>
+      <% end %>
+    </div>
+
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="termsModalLabel">Terms of Service &amp; Community Guidelines</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <%= render partial: "pages/terms_content" %>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <div class="d-flex gap-2">
     <%= form.submit class: "btn btn-primary" %>
     <%= link_to "Cancel", current_user ? user_path(current_user) : login_path, class: "btn btn-outline-secondary" %>

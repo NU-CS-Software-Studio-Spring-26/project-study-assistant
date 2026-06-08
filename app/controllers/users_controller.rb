@@ -68,7 +68,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      permitted = params.expect(user: [ :name, :email, :ical_url, :password, :password_confirmation,:avatar ])
+      permitted = params.expect(user: [ :name, :email, :ical_url, :password, :password_confirmation, :avatar, :accept_terms ])
       if permitted[:password].blank? && permitted[:password_confirmation].blank?
         permitted.except(:password, :password_confirmation)
       else

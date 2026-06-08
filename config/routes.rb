@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   get "/dashboard", to: "assignments#index", as: "dashboard"
   get "/privacy", to: "pages#privacy", as: "privacy"
   get "/about", to: "pages#about", as: "about"
+  get "/terms", to: "pages#terms", as: "terms"
 
   get  "/auth/google_oauth2/callback", to: "sessions#google_callback"
   post "/auth/google_oauth2/callback", to: "sessions#google_callback"
