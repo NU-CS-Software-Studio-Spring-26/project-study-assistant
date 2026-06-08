@@ -12,7 +12,7 @@ class StudyPlanSuggestionService
   def call
     assignments = prioritized_pending_assignments
     return "No assignments need attention right now." if assignments.empty?
-    return fallback_summary(assignments) if api_key.blank?
+    return fallback_summary(assignments, reason: "OPENAI_API_KEY is missing") if api_key.blank?
 
     generate_with_openai(assignments)
   rescue StandardError => e
@@ -86,8 +86,11 @@ class StudyPlanSuggestionService
       raise "OpenAI request failed with #{response.code}: #{error_message}"
     end
 
-    content = JSON.parse(response.body).dig("choices", 0, "message", "content").to_s.strip
-    content.present? ? content : fallback_summary(assignments)
+    parsed = JSON.parse(response.body)
+    content = extract_message_content(parsed)
+    return content if content.present?
+
+    raise "OpenAI response did not include message content"
   end
 
   def parse_openai_error(body)
@@ -103,6 +106,22 @@ class StudyPlanSuggestionService
     body.to_s
   end
 
+  def extract_message_content(parsed_response)
+    content = parsed_response.dig("choices", 0, "message", "content")
+
+    case content
+    when String
+      content.strip
+    when Array
+      content
+        .filter_map { |part| part.is_a?(Hash) ? part["text"] : nil }
+        .join("\n")
+        .strip
+    else
+      ""
+    end
+  end
+
   def prompt_for(assignments)
     assignment_lines = assignments.map do |assignment|
       due_text = assignment.due_date ? assignment.due_date.strftime("%a, %b %-d at %-l:%M %p") : "no due date"
@@ -112,9 +131,11 @@ class StudyPlanSuggestionService
 
     <<~PROMPT
       Build a short prioritized study plan for the next 24 hours.
-      Suggest a simple study order for the top 3 tasks.
+      Focus on the most urgent and time-consuming tasks, but also consider any that are due soon without an estimated time.
+      Provide a simple study order for the top 3 tasks and suggest how many hours to spend on each.
       Keep it concise and easy to scan.
-
+      Do not add anything before the list of tasks to keep it concise.
+    
       Assignments:
       #{assignment_lines.join("\n")}
     PROMPT
