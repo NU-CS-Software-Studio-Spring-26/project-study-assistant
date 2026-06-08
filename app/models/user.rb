@@ -16,6 +16,7 @@ class User < ApplicationRecord
   validates :password, presence: true, on: :create, unless: :google_user?
   validates :password, length: { minimum: 8 }, on: :create, unless: :google_user?
   validates :password, length: { minimum: 8 }, if: -> { password.present? && persisted? }
+  validates :password, confirmation: true, if: -> { password.present? && !password_confirmation.nil? }
   validate :avatar_format_and_size
   validate :terms_must_be_accepted, on: :create
 
