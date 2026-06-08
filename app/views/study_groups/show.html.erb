@@ -56,12 +56,15 @@
     </div>
     
 
-    <%= link_to "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", class: "btn btn-reserve w-100 h-40 justify-content-center align-items-center shadow-sm", target: "_blank", rel: "noopener" do %>
-      <div class=" reservers d-flex gap-2 align-items-center mb-3">
-      <img src="/book.svg" alt="Book Icon" width="60" height="70">
-      <span> reserve a room</span>
-    </div>
-    <% end %>
+    <%= link_to "https://www.library.northwestern.edu/use-the-libraries/spaces-study-rooms/rooms-and-spaces/", 
+    class: "btn btn-reserve btn-sm w-100 h-32 d-flex justify-content-center align-items-center shadow-sm", 
+    target: "_blank", 
+    rel: "noopener" do %>
+<div class="reservers d-flex gap-2 align-items-center">
+<img src="/book.svg" alt="Book Icon" width="60" height="60">
+<span class="text-capitalize small">reserve a room</span>
+</div>
+<% end %>
   
   </div>
 

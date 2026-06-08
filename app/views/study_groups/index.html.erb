@@ -76,9 +76,9 @@
                data-toggle-target="toggleable" 
                style="width: 85%; z-index: 10;">
                
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class=" texxxt d-flex justify-content-between align-items-center mb-2">
               <p class="password-text fw-bold">Enter password to join</p>
-              <button type="button" class="btn-close small" style="font-size: 0.75rem;" data-action="click->toggle#toggle" aria-label="Close"></button>
+              <button type="button" class="btn-close small" data-action="click->toggle#toggle" aria-label="Close"></button>
             </div>
 
             <%= form_with url: join_study_group_path(group), method: :post, class: "d-flex gap-2" do |join_form| %>

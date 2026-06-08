@@ -418,6 +418,7 @@ footer {
 .scroll-text{
   font-family: 'Kode Mono', monospace;
   color: #5A4A42;
+  font-size: 30px;
 }
 
 
@@ -784,7 +785,8 @@ body {
   border-radius: 6px;
   padding: 5px 20px;
   font-weight: bold;
-  height: 64px;
+  font-size: 14px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -820,7 +822,28 @@ body {
   transform: scale(1.05);
 }
 
+.section-title{
+  font-size: 3.5rem;
+  color: #4a3e3d;
+  margin-bottom: 1rem;
+  font-family: 'Kode Mono', monospace;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+   color: #645555 !important; /* Large text color */
+}
 
+
+.hero-lead{
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 2.5rem;
+  color: #8c8c8c;
+  margin-bottom: 5rem;
+}
+
+.texxxt{
+  container-type: inline-size;
+  width: 100%; /* Ensure it fills the button/box area */
+}
 
 
 /* Keep your standard card appearance crisp and predictable */
