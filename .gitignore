@@ -1,6 +1,48 @@
+# Bundler
+/.bundle/
+/vendor/bundle
+
+# Ruby / Rails
+*.rbc
+capybara-*.html
+.rspec
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/storage/*
+!/storage/.keep
+/public/assets
+/public/packs
+/public/packs-test
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
 /config/master.key
 /config/credentials.yml.enc
-.env
-/log/*
-/tmp/*
+
+# Generated docs (never commit RDoc/YARD output)
+/doc/
+
+# Database
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Editor / OS
+.DS_Store
+/.idea/
+/.vscode/
+*.swp
+*~
+.byebug_history
+
+# Kamal / Docker
+.kamal/
+
+# Node
 /node_modules
+
+# Test coverage
+/coverage
