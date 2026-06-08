@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_one_attached :avatar
 
   normalizes :email, with: ->(email) { email.to_s.strip.downcase }
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 100 }
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :email, format: { with: /\A[^@]+@(u\.northwestern\.edu|northwestern\.edu)\z/, message: "must be a Northwestern email (@northwestern.edu or @u.northwestern.edu)" }, unless: :google_user?
   validates :password, presence: true, on: :create, unless: :google_user?

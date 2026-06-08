@@ -11,7 +11,10 @@ class StudyGroup < ApplicationRecord
 
   before_validation :sync_legacy_study_time
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 150 }
+  validates :description, length: { maximum: 2000 }, allow_blank: true
+  validate :tags_within_limits
+
   validates :start_time, presence: true
   validates :end_time, presence: true
   validate :start_time_must_be_in_the_future
@@ -44,6 +47,16 @@ class StudyGroup < ApplicationRecord
 
   def sync_legacy_study_time
     self.study_time = start_time if has_attribute?(:study_time) && study_time.blank? && start_time.present?
+  end
+
+  def tags_within_limits
+    return if tags.blank?
+    if tags.size > 20
+      errors.add(:tags, "cannot have more than 20 tags")
+    end
+    if tags.any? { |t| t.to_s.length > 50 }
+      errors.add(:tags, "each tag must be under 50 characters")
+    end
   end
 
   def start_time_must_be_in_the_future
