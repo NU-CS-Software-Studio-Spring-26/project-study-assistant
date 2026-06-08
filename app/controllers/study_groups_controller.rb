@@ -117,13 +117,13 @@ class StudyGroupsController < ApplicationController
 
   def study_group_params
     params.require(:study_group).permit(
-      :name, 
-      :description, 
-      :start_time, 
-      :end_time, 
-      :location_mode, 
-      :communication_style, 
-      :join_password, 
+      :name,
+      :description,
+      :start_time,
+      :end_time,
+      :location_mode,
+      :communication_style,
+      :join_password,
       :banner_url
     )
   end
@@ -136,4 +136,3 @@ class StudyGroupsController < ApplicationController
     StudyGroup.where("end_time < ?", Time.current).destroy_all
   end
 end
-

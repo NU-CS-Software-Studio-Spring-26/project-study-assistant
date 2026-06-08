@@ -18,10 +18,10 @@ class AssignmentsController < ApplicationController
     @assignments = @assignments.where("due_date >= ?", Time.current) if @hide_past_due
 
     sorted = case @sort
-      when "due_desc"   then @assignments.order(due_date: :desc)
-      when "hours_asc"  then @assignments.order(estimated_hours: :asc)
-      when "hours_desc" then @assignments.order(estimated_hours: :desc)
-      else @assignments.order(due_date: :asc)
+    when "due_desc"   then @assignments.order(due_date: :desc)
+    when "hours_asc"  then @assignments.order(estimated_hours: :asc)
+    when "hours_desc" then @assignments.order(estimated_hours: :desc)
+    else @assignments.order(due_date: :asc)
     end
     @assignments = sorted
   end

@@ -29,17 +29,17 @@ module StudyGroupsHelper
   end
 
   def study_group_date_label(time)
-    time.strftime('%a, %b %-d')
+    time.strftime("%a, %b %-d")
   end
 
   def study_group_time_label(time, meridiem: true)
-    label = time.strftime('%-I')
-    label += time.min.zero? ? '' : time.strftime(':%M')
+    label = time.strftime("%-I")
+    label += time.min.zero? ? "" : time.strftime(":%M")
     meridiem ? "#{label} #{time.strftime('%p')}" : label
   end
 
   def study_group_time_separator(start_time, end_time)
-    start_time.strftime('%p') == end_time.strftime('%p') ? '–' : "#{start_time.strftime('%p')} –"
+    start_time.strftime("%p") == end_time.strftime("%p") ? "–" : "#{start_time.strftime('%p')} –"
   end
 
   def censor_chat_content(content)
@@ -49,7 +49,7 @@ module StudyGroupsHelper
     pattern = /\b(#{CENSORED_WORDS.sort_by { |word| -word.length }.map { |word| Regexp.escape(word) }.join('|')})\b/i
 
     text.gsub(pattern) do |match|
-      '#' * match.length
+      "#" * match.length
     end
   end
 end

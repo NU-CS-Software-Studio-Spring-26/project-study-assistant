@@ -33,7 +33,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.update(user_params)
         IcalSyncService.new(@user).sync if @user.ical_url.present?
-        format.html { redirect_to assignments_path, notice: "Canvas calendar synced.", status: :see_other }        
+        format.html { redirect_to assignments_path, notice: "Canvas calendar synced.", status: :see_other }
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render :edit, status: :unprocessable_entity }

@@ -25,7 +25,7 @@ class StudyPlanSuggestionService
   attr_reader :user
 
   def pending_assignments
-    user.assignments.where(done: [false, nil]).order(due_date: :asc, estimated_hours: :desc, created_at: :asc)
+    user.assignments.where(done: [ false, nil ]).order(due_date: :asc, estimated_hours: :desc, created_at: :asc)
   end
 
   def prioritized_pending_assignments
@@ -98,7 +98,7 @@ class StudyPlanSuggestionService
     error = parsed_body.is_a?(Hash) ? parsed_body["error"] : nil
 
     if error.is_a?(Hash)
-      [error["type"], error["message"]].compact.join(": ").presence || body.to_s
+      [ error["type"], error["message"] ].compact.join(": ").presence || body.to_s
     else
       body.to_s
     end
@@ -135,7 +135,7 @@ class StudyPlanSuggestionService
       Provide a simple study order for the top 3 tasks and suggest how many hours to spend on each.
       Keep it concise and easy to scan.
       Do not add anything before the list of tasks to keep it concise.
-    
+
       Assignments:
       #{assignment_lines.join("\n")}
     PROMPT
