@@ -27,12 +27,8 @@ class SessionsController < ApplicationController
     user = User.from_google(auth)
     session[:user_id] = user.id
 
-    if user.ical_url.blank?
-      redirect_to edit_user_path(user), alert: "Please add your Canvas iCal URL to sync your assignments."
-    else
-      IcalSyncService.new(user).sync
-      redirect_to assignments_path
-    end
+    IcalSyncService.new(user).sync if user.ical_url.present?
+    redirect_to assignments_path
   rescue => e
     Rails.logger.error "Google OAuth error: #{e.message}"
     redirect_to login_path, alert: "Google sign-in failed. Please try again."

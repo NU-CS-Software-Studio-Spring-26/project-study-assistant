@@ -1,17 +1,19 @@
 <div id="<%= dom_id user %>">
+  <% if user.avatar.attached? %>
+    <div class="mb-3">
+      <%= image_tag user.avatar, alt: "Profile photo", style: "width:96px; height:96px; border-radius:50%; object-fit:cover;" %>
+    </div>
+  <% end %>
   <div>
     <strong>Name:</strong>
     <%= user.name %>
   </div>
-
   <div>
     <strong>Email:</strong>
     <%= user.email %>
   </div>
-
   <div>
     <strong>Canvas iCal URL:</strong>
     <%= user.ical_url.present? ? "Saved" : "Not added" %>
   </div>
-
 </div>

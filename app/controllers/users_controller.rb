@@ -33,7 +33,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.update(user_params)
         IcalSyncService.new(@user).sync if @user.ical_url.present?
-        format.html { redirect_to @user, notice: "User was successfully updated.", status: :see_other }
+        format.html { redirect_to assignments_path, notice: "Canvas calendar synced.", status: :see_other }        
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -68,7 +68,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      permitted = params.expect(user: [ :name, :email, :ical_url, :password, :password_confirmation ])
+      permitted = params.expect(user: [ :name, :email, :ical_url, :password, :password_confirmation,:avatar ])
       if permitted[:password].blank? && permitted[:password_confirmation].blank?
         permitted.except(:password, :password_confirmation)
       else

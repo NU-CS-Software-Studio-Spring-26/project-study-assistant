@@ -30,6 +30,7 @@
     <div style="margin-bottom:1rem;">
       <label style="font-size:0.7rem; font-weight:600; color:#7A7060; display:block; margin-bottom:0.3rem;">Search</label>
       <%= form.search_field :q, value: @query, placeholder: "Search assignments…",
+          oninput: "clearTimeout(window._fq); window._fq=setTimeout(()=>document.getElementById('filter-form').requestSubmit(),400);",
           style: "width:100%; font-size:0.78rem; padding:5px 9px; border:0.5px solid #EDE4D0; border-radius:6px; background:#FFF4E0; color:#272A2D; box-sizing:border-box;" %>
     </div>
 
@@ -37,7 +38,7 @@
     <div style="margin-bottom:1rem;">
       <label style="font-size:0.7rem; font-weight:600; color:#7A7060; display:block; margin-bottom:0.3rem;">Course</label>
       <% courses = current_user.assignments.pluck(:course_name).uniq.compact.sort %>
-      <select name="course" style="width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid #EDE4D0; border-radius:6px; background:#FFF4E0; color:#272A2D; box-sizing:border-box;">
+      <select name="course" onchange="document.getElementById('filter-form').requestSubmit();" style="width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid #EDE4D0; border-radius:6px; background:#FFF4E0; color:#272A2D; box-sizing:border-box;">
         <option value="">All courses</option>
         <% courses.each do |c| %>
           <option value="<%= c %>" <%= params[:course] == c ? "selected" : "" %>><%= c.gsub(/^[0-9A-Z_]+SP_/, '').gsub(/_SEC\d+$/, '').gsub('_', ' ') %></option>
@@ -49,6 +50,7 @@
     <div style="margin-bottom:1rem;">
       <label style="font-size:0.7rem; font-weight:600; color:#7A7060; display:block; margin-bottom:0.3rem;">Sort by</label>
       <%= form.select :sort, [["Due soonest","due_asc"],["Due latest","due_desc"]], { selected: @sort },
+          onchange: "document.getElementById('filter-form').requestSubmit();",
           style: "width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid #EDE4D0; border-radius:6px; background:#FFF4E0; color:#272A2D; box-sizing:border-box;" %>
     </div>
 
@@ -56,6 +58,7 @@
     <div style="margin-bottom:1rem;">
       <label style="font-size:0.7rem; font-weight:600; color:#7A7060; display:block; margin-bottom:0.3rem;">Group by</label>
       <%= form.select :group_by, [["Day","day"],["Week","week"],["Course","course"],["Urgency","urgency"]], { selected: params[:group_by] || "day" },
+          onchange: "document.getElementById('filter-form').requestSubmit();",
           style: "width:100%; font-size:0.78rem; padding:5px 8px; border:0.5px solid #EDE4D0; border-radius:6px; background:#FFF4E0; color:#272A2D; box-sizing:border-box;" %>
     </div>
 
@@ -114,11 +117,6 @@
       </label>
     </div>
 
-    <button type="submit"
-            style="width:100%; font-size:0.78rem; padding:6px 12px; border-radius:6px; border:none; background:#F38046; color:#fff; cursor:pointer; font-weight:600;">
-      Apply Filters
-    </button>
-
     <% if params.to_unsafe_h.except("controller", "action").any? %>
       <%= link_to "Clear all", assignments_path, style: "display:block; text-align:center; font-size:0.72rem; color:#7A7060; margin-top:0.5rem; text-decoration:none;" %>
     <% end %>
@@ -172,8 +170,18 @@
     %>
 
     <% if filtered.empty? %>
-      <div style="background:#FFFFFF; border:0.5px solid #EDE4D0; border-radius:10px; padding:2rem; text-align:center; color:#7A7060; font-size:0.875rem;">
-        No assignments found. <%= link_to "Create your first", new_assignment_path, style: "color:#272A2D; font-weight:500;" %>.
+      <div style="background:#FFFFFF; border:0.5px solid #EDE4D0; border-radius:10px; padding:2.5rem 2rem; text-align:center; color:#7A7060; font-size:0.875rem;">
+        <% if current_user.ical_url.present? %>
+          No assignments found. <%= link_to "Create your first", new_assignment_path, style: "color:#272A2D; font-weight:500;" %>.
+        <% else %>
+          <div style="font-size:1rem; font-weight:600; color:#272A2D; margin-bottom:0.4rem;">Connect your Canvas calendar</div>
+          <p style="margin:0 auto 1.25rem; max-width:380px;">Sync your assignments automatically by adding your Canvas iCal feed URL.</p>
+          <button onclick="document.getElementById('ical-setup-overlay').style.display='flex'"
+                  style="font-size:0.85rem; font-weight:600; padding:9px 20px; border-radius:8px; border:none; background:#F38046; color:#fff; cursor:pointer;">
+            Set up Canvas Sync
+          </button>
+          <p style="margin:1.25rem 0 0; font-size:0.78rem;">Or <%= link_to "add an assignment manually", new_assignment_path, style: "color:#272A2D; font-weight:500;" %>.</p>
+        <% end %>
       </div>
     <% else %>
       <% group_labels.each do |label| %>
@@ -233,6 +241,29 @@
     <% end %>
 
 
+
+<%# ── ICAL SETUP MODAL ── %>
+<div id="ical-setup-overlay"
+     onclick="if(event.target===this)document.getElementById('ical-setup-overlay').style.display='none'"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:#FFFFFF; border-radius:12px; padding:1.5rem; width:100%; max-width:480px; position:relative; max-height:90vh; overflow-y:auto;">
+    <button onclick="document.getElementById('ical-setup-overlay').style.display='none'"
+            style="position:absolute; top:0.75rem; right:0.75rem; background:none; border:none; font-size:1.2rem; cursor:pointer; color:#7A7060;">&times;</button>
+    <h2 style="font-size:1rem; font-weight:700; margin:0 0 0.5rem;">Set up Canvas Sync</h2>
+    <p style="font-size:0.78rem; color:#7A7060; margin:0 0 1rem; line-height:1.5;">
+      1. Go to canvas.northwestern.edu and click <strong>Calendar</strong>.<br>
+      2. Scroll to the bottom right and click <strong>Calendar Feed</strong>.<br>
+      3. Copy the URL and paste it below.
+    </p>
+    <%= form_with model: current_user, url: user_path(current_user), method: :patch do |f| %>
+      <%= f.text_field :ical_url, value: current_user.ical_url,
+            placeholder: "https://canvas.northwestern.edu/feeds/calendars/user_XXXXX.ics",
+            style: "width:100%; font-size:0.82rem; padding:8px 10px; border:0.5px solid #EDE4D0; border-radius:6px; background:#FFF4E0; color:#272A2D; box-sizing:border-box; margin-bottom:1rem;" %>
+      <%= f.submit "Save & Sync",
+            style: "width:100%; font-size:0.85rem; font-weight:600; padding:9px 20px; border-radius:8px; border:none; background:#F38046; color:#fff; cursor:pointer;" %>
+    <% end %>
+  </div>
+</div>
 
 <%# ── EDIT MODAL ── %>
 <div id="edit-modal-overlay"
@@ -393,11 +424,17 @@ function toggleDone(btn, url, isDone) {
 }
 
 function initializeAssignmentsUI() {
+  function onThresholdChange() {
+    saveThresholds();
+    applyUrgencyColors();
+  }
   ['thresh-red','thresh-amber','thresh-green','thresh-red-unit','thresh-amber-unit','thresh-green-unit'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.removeEventListener('change', saveThresholds);
-      el.addEventListener('change', saveThresholds);
+      el.removeEventListener('change', onThresholdChange);
+      el.addEventListener('change', onThresholdChange);
+      el.removeEventListener('input', onThresholdChange);
+      el.addEventListener('input', onThresholdChange);
     }
   });
 

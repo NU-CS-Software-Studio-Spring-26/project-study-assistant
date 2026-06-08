@@ -1,6 +1,5 @@
 class AssignmentsController < ApplicationController
   before_action :require_login
-  skip_before_action :require_ical, only: :study_plan
   before_action :set_assignment, only: %i[ show edit update destroy ]
 
   def index
